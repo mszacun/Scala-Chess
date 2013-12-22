@@ -37,7 +37,7 @@ class Board(fen : String = "")
 
 	// quickly checks color of piece
 	def isOccupiedByOpponent(position : Int, myColor : Int) = 
-		isOccupied(position) && (board(position) % 2) != myColor
+		isOccupied(position) && (board(position) & 1) != myColor
 
 	def isOffTheBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 }	
