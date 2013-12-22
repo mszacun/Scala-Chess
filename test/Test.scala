@@ -1,6 +1,6 @@
 package test;
 
-trait Test
+abstract class Test(val name : String)
 {
 	def doAllTests : Unit
 }

@@ -5,7 +5,7 @@ import src.Board
 import src.Cord
 import src.Move
 
-class SimplePiecesMovesTest extends Test
+class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 {
 	def doAllTests = 
 	{

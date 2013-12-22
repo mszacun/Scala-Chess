@@ -2,7 +2,7 @@ package test;
 
 import src.Cord;
 
-class CordTest extends Test
+class CordTest extends Test("CordTest")
 {
 	def doAllTests = 
 	{
