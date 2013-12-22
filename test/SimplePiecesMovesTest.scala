@@ -14,6 +14,7 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		TestPawnMovesGenerationWithOtherPieceOnBoard
 		TestBlackPawnMovesGeneration
 		TestPawnMovesWithAttacksGeneration
+		TestPawnAttacksOnOwnPieces
 	}
 
 	def TestPawnMovesGeneration = 
@@ -81,5 +82,21 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		assert(moves.exists((m : Move) => (Cord.toString(m.end) == "C3")))
 		assert(moves.exists((m : Move) => (Cord.toString(m.end) == "C4")))
 	}
+
+	def TestPawnAttacksOnOwnPieces = 
+	{
+		val pawn = new Pawn("C4", Piece.BLACK, Board.BLACK_PAWN_1)
+		val target1 = new Pawn("B3", Piece.BLACK, Board.BLACK_PAWN_1)
+		val target2 = new Pawn("D3", Piece.BLACK, Board.BLACK_PAWN_2)
+		val board = new Board()
+
+		board.addPiece(pawn)
+		board.addPiece(target1)
+		board.addPiece(target2)
+
+		// no attacks present here
+		assert(pawn.generateAttacks(board).isEmpty)
+	}
+
 }
 
