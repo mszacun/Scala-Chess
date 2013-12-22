@@ -5,6 +5,7 @@ import src.Board
 import src.Cord
 import src.Move
 import src.Piece;
+import src.Knight;
 
 class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 {
@@ -15,6 +16,7 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		TestBlackPawnMovesGeneration
 		TestPawnMovesWithAttacksGeneration
 		TestPawnAttacksOnOwnPieces
+		TestKnightMoveGeneration
 	}
 
 	def TestPawnMovesGeneration = 
@@ -96,6 +98,32 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 
 		// no attacks present here
 		assert(pawn.generateAttacks(board).isEmpty)
+	}
+
+	def TestKnightMoveGeneration = 
+	{
+		val knight = new Knight("D4", Piece.BLACK, Board.BLACK_KNIGHT_1)
+		val target1 = new Pawn("E6", Piece.WHITE, Board.WHITE_PAWN_1)
+		val target2 = new Pawn("C2", Piece.WHITE, Board.WHITE_PAWN_2)
+		val ownPiece = new Pawn("B5", Piece.BLACK, Board.BLACK_PAWN_1)
+
+		val board = new Board()
+
+		board.addPiece(knight)
+		board.addPiece(target1)
+		board.addPiece(target2)
+		board.addPiece(ownPiece)
+
+		val moves = knight.generateMoves(board)
+		// 7 possible moves
+		assert(moves.size == 7)
+
+		// two atacks
+		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+		assert(attacks.size == 2)
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "E6"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "C2"))
+		
 	}
 
 }
