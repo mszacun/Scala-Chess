@@ -1,0 +1,23 @@
+package src;
+
+abstract class Move(val start : Int, val end : Int,  val enPassant1 : Int,
+	val enPassant2 : Int, val castlingRightsAfter : Seq[Boolean])
+{
+	// * start -> position from move started (if more than one piece takes part
+	// in move, primary piece start position is stored
+	// * end -> position where move ends
+	// * enPassant -> describes field from which en passant is possible, if
+	// pawn is present on this field, after this move was made
+	// * castlingRightsBefore -> describes who can castle, after move was made
+	
+	// applays move to board, doesn't check if it is possible, it should be 
+ 	// checked before calling this method
+	def apply(b : Board) : Unit
+
+	// undo move
+	// WARNING: doesnt't restor castiling rights and en passant information,
+	// that was before move was made, Board class is responsible for this,
+	// because it has required informations
+	def undo(b : Board) : Unit
+
+}
