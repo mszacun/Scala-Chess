@@ -1,13 +1,13 @@
 package src;
 
 
-class Pawn(position : Int, color : Boolean, id : Int) 
+class Pawn(position : Int, color : Int, id : Int) 
 	extends Piece(position, color, id)
 {
 	val whitePawnsStartingRow = 1 // remeber, that rows are 0 indexed
 	val blackPawnsStartingRow = 6
 
-	def this(position : String, color : Boolean, id : Int)= 
+	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
 
 	// see in Piece
@@ -15,7 +15,7 @@ class Pawn(position : Int, color : Boolean, id : Int)
 	{
 		var result : List[Move]= Nil
 
-		if (color)
+		if (color == Piece.WHITE)
 		{
 			// default move
 			if (b.isEmpty(Cord.moveS(position, 1)))
@@ -56,27 +56,26 @@ class Pawn(position : Int, color : Boolean, id : Int)
 
 	def generateAttacks(b : Board) : Traversable[Move] =
 	{
-/*		var result : List[Move] = Nil
-		if (color)
+		var result : List[Move] = Nil
+		if (color == Piece.WHITE)
 		{
-			if (b.isEmpty(Cord.moveSE(position, 1)))
-				result = new QuietMove(position, Cord.moveSE(position, 1), 0, 0,
+			if (b.isOccupied(Cord.moveSE(position, 1)))
+				result = new CaptureMove(position, Cord.moveSE(position, 1),
 				b.castlingRights) :: result
-			if (b.isEmpty(Cord.moveSW(position, 1)))
-				result = new QuietMove(position, Cord.moveSW(position, 1), 0, 0,
+			if (b.isOccupied(Cord.moveSW(position, 1)))
+				result = new CaptureMove(position, Cord.moveSW(position, 1),
 				b.castlingRights) :: result
 		}
 		else
 		{
-			if (b.isEmpty(Cord.moveNE(position, 1)))
-				result = new QuietMove(position, Cord.moveNE(position, 1), 0, 0,
+			if (b.isOccupied(Cord.moveNE(position, 1)) && true)
+				result = new CaptureMove(position, Cord.moveNE(position, 1),
 				b.castlingRights) :: result
-			if (b.isEmpty(Cord.moveNW(position, 1)))
-				result = new QuietMove(position, Cord.moveNW(position, 1), 0, 0,
+			if (b.isOccupied(Cord.moveNW(position, 1)))
+				result = new CaptureMove(position, Cord.moveNW(position, 1),
 				b.castlingRights) :: result
 		}
-		result */
-		Nil
+		result 
 	}
 	def generateMoves(b : Board) : Traversable[Move] =
 		generateAttacks(b) ++ generateQuietMoves(b)

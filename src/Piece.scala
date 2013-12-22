@@ -1,14 +1,14 @@
 package src;
 
-abstract class Piece(var position : Int, val color : Boolean, val id : Int)
+abstract class Piece(var position : Int, val color : Int, val id : Int)
 {
 	// * position -> actual position on board as index in array
-	// reprezenting board
-	// * color -> true - white, false - black
+	// representing board
+	// * color -> 1 - white, 0 - black
 	// * id -> id of this particular piece in board piece list, see Board class
 
 	// constructs piece from human-readable field name
-	def this(position : String, color : Boolean, id : Int) = 
+	def this(position : String, color : Int, id : Int) = 
 		this(Cord.fromString(position), color, id)
 
 	// WARNING: All generating moves methods may return moves which destination is
@@ -29,4 +29,10 @@ abstract class Piece(var position : Int, val color : Boolean, val id : Int)
 	// takes under consideration material value of piece and
 	// actual position of piece on board
 	def rank : Int
+}
+
+object Piece
+{
+	val WHITE = 1
+	val BLACK = 0
 }

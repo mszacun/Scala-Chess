@@ -33,7 +33,11 @@ class Board(fen : String = "")
 
 	def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
 
-	def ifOccupied(position : Int) = board(position) > 0
+	def isOccupied(position : Int) = board(position) > 0
+
+	// quickly checks color of piece
+	def isOccupiedByOppontent(position : Int, myColor : Int) = 
+		isOccupied(position) && (board(position) % 2) == myColor
 
 	def isOffTheBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 }	
@@ -43,40 +47,42 @@ object Board
 	val AUXILIARY_SQUARE = -1
 	val EMPTY_SQUARE = 0
 	// keys in piece list
-	val WHITE_PAWN_1 = 1
-	val WHITE_PAWN_2 = 2
-	val WHITE_PAWN_3 = 3
-	val WHITE_PAWN_4 = 4
-	val WHITE_PAWN_5 = 5
-	val WHITE_PAWN_6 = 6
-	val WHITE_PAWN_7 = 7
-	val WHITE_PAWN_8 = 8
-	
-	val WHITE_ROOK_1 = 9
-	val WHITE_ROOK_2 = 10
-	val WHITE_KNIGHT_1 = 11
-	val WHITE_KNIGHT_2 = 12
-	val WHITE_BISHOP_1 = 13
-	val WHITE_BISHOP_2 = 14
-	val WHITE_QUEEN = 15
-	val WHITE_KING = 16
 
+	// white's are even
+	val WHITE_PAWN_1 = 1
+	val WHITE_PAWN_2 = 3
+	val WHITE_PAWN_3 = 5
+	val WHITE_PAWN_4 = 7
+	val WHITE_PAWN_5 = 9
+	val WHITE_PAWN_6 = 11
+	val WHITE_PAWN_7 = 13
+	val WHITE_PAWN_8 = 15
 	
-	val BLACK_PAWN_1 = 17
-	val BLACK_PAWN_2 = 18
-	val BLACK_PAWN_3 = 19
-	val BLACK_PAWN_4 = 20
-	val BLACK_PAWN_5 = 21
-	val BLACK_PAWN_6 = 22
-	val BLACK_PAWN_7 = 23
-	val BLACK_PAWN_8 = 24
+	val WHITE_ROOK_1 = 17
+	val WHITE_ROOK_2 = 19
+	val WHITE_KNIGHT_1 = 21
+	val WHITE_KNIGHT_2 = 23
+	val WHITE_BISHOP_1 = 25
+	val WHITE_BISHOP_2 = 27
+	val WHITE_QUEEN = 29
+	val WHITE_KING = 31
+
+	// blacks are odd, this is used in fast check of piece color on certain square
+	val BLACK_PAWN_1 = 2
+	val BLACK_PAWN_2 = 4
+	val BLACK_PAWN_3 = 6
+	val BLACK_PAWN_4 = 8
+	val BLACK_PAWN_5 = 10
+	val BLACK_PAWN_6 = 12
+	val BLACK_PAWN_7 = 14
+	val BLACK_PAWN_8 = 16
 	
-	val BLACK_ROOK_1 = 25
-	val BLACK_ROOK_2 = 26
-	val BLACK_KNIGHT_1 = 27
-	val BLACK_KNIGHT_2 = 28
-	val BLACK_BISHOP_1 = 29
-	val BLACK_BISHOP_2 = 30
-	val BLACK_QUEEN = 31
+	val BLACK_ROOK_1 = 18
+	val BLACK_ROOK_2 = 20
+	val BLACK_KNIGHT_1 = 22
+	val BLACK_KNIGHT_2 = 24
+	val BLACK_BISHOP_1 = 26
+	val BLACK_BISHOP_2 = 28
+	val BLACK_QUEEN = 30
 	val BLACK_KING = 32
 }
