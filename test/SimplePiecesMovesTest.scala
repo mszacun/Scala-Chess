@@ -2,8 +2,13 @@ package test;
 
 import src.Pawn;
 
-class SimplePiecesMovesTest
+class SimplePiecesMovesTest extends Test
 {
+	def doAllTests = 
+	{
+		TestPawnMovesGeneration
+	}
+
 	def TestPawnMovesGeneration = 
 	{
 		val pawn = new Pawn("D2");
