@@ -18,37 +18,41 @@ class Pawn(position : Int, color : Int, id : Int)
 		if (color == Piece.WHITE)
 		{
 			// default move
-			if (b.isEmpty(Cord.moveS(position, 1)))
+			var move = Cord.moveS(position, 1)
+			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
 				result = new QuietMove(position,
-					Cord.moveS(position, 1), 0, 0,
-					b.castlingRights) :: result
+					move, 0, 0, b.castlingRights) :: result
 
 				// double move if on starting position
 				if (Cord.getRow(position) == whitePawnsStartingRow)
-					if (b.isEmpty(Cord.moveS(position, 2)))
+				{
+					move = Cord.moveS(position, 2)
+					if (b.isEmpty(move) && !b.isOffBoard(move))
 						result = new QuietMove(position, 
-							Cord.moveS(position, 2), 
-							Cord.moveSW(position, 1), Cord.moveSE(position, 1),
-							b.castlingRights) :: result
+							move, Cord.moveSW(position, 1), // enPasant is possible
+							Cord.moveSE(position, 1), b.castlingRights) :: result
+				}
 			}
 		}
 		else
 		{
 			// default move
-			if (b.isEmpty(Cord.moveN(position, 1)))
+			var move = Cord.moveN(position, 1)
+			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
-				result = new QuietMove(position,
-					Cord.moveN(position, 1), 0, 0,
+				result = new QuietMove(position, move, 0, 0,
 					b.castlingRights) :: result
 
 				// double move if on starting position
 				if (Cord.getRow(position) == blackPawnsStartingRow)
-					if (b.isEmpty(Cord.moveN(position, 2)))
+				{
+					move = Cord.moveN(position, 2)
+					if (b.isEmpty(move) && !b.isOffBoard(move))
 						result = new QuietMove(position, 
-							Cord.moveN(position, 2),
-							Cord.moveNW(position, 1), Cord.moveNE(position, 1),
-							b.castlingRights) :: result
+							move, Cord.moveNW(position, 1),
+							Cord.moveNE(position, 1), b.castlingRights) :: result
+				}
 			}
 		}
 		result
@@ -61,19 +65,19 @@ class Pawn(position : Int, color : Int, id : Int)
 		{
 			if (b.isOccupiedByOpponent(Cord.moveSE(position, 1), color))
 				result = new CaptureMove(position, Cord.moveSE(position, 1),
-				b.castlingRights) :: result
+					b.castlingRights) :: result
 			if (b.isOccupiedByOpponent(Cord.moveSW(position, 1), color))
 				result = new CaptureMove(position, Cord.moveSW(position, 1),
-				b.castlingRights) :: result
+					b.castlingRights) :: result
 		}
 		else
 		{
 			if (b.isOccupiedByOpponent(Cord.moveNE(position, 1), color))
 				result = new CaptureMove(position, Cord.moveNE(position, 1),
-				b.castlingRights) :: result
+					b.castlingRights) :: result
 			if (b.isOccupiedByOpponent(Cord.moveNW(position, 1), color))
 				result = new CaptureMove(position, Cord.moveNW(position, 1),
-				b.castlingRights) :: result
+					b.castlingRights) :: result
 		}
 		result 
 	}

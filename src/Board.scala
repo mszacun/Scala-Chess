@@ -39,7 +39,7 @@ class Board(fen : String = "")
 	def isOccupiedByOpponent(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) != myColor
 
-	def isOffTheBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
+	def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 }	
 
 object Board
