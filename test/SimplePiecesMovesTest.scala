@@ -11,6 +11,7 @@ class SimplePiecesMovesTest extends Test
 	{
 		TestPawnMovesGeneration
 		TestPawnMovesGenerationWithOtherPieceOnBoard
+		TestBlackPawnMovesGeneration
 	}
 
 	def TestPawnMovesGeneration = 
@@ -41,5 +42,18 @@ class SimplePiecesMovesTest extends Test
 
 		// there should be no possible moves
 		assert(pawn.generateMoves(board).isEmpty)
+	}
+
+	def TestBlackPawnMovesGeneration = 
+	{
+		val pawn = new Pawn("A4", false, Board.BLACK_PAWN_1)
+		val board = new Board()
+
+		board.addPiece(pawn)
+
+		val moves = pawn.generateMoves(board)
+
+		assert(moves.size == 1)
+		assert(moves.exists((m : Move) => (Cord.toString(m.end) == "A3")))
 	}
 }
