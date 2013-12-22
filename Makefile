@@ -7,12 +7,9 @@ default: source
 all: source tests
 
 source: 
-	$(SCALAC) src/Cord.scala
-
+	$(SCALAC) src/*.scala
 tests:
-	$(SCALAC) test/Test.scala 
-	$(SCALAC) test/CordTest.scala
-	$(SCALAC) test/AllTests.scala
+	$(SCALAC) test/*.scala
 
 	$(SCALA) test.AllTests
 

@@ -3,7 +3,7 @@ package test;
 
 object AllTests extends Test
 {
-	val tests = new CordTest() :: Nil
+	val tests = new CordTest() :: new SimplePiecesMovesTest() :: Nil
 
 	def doAllTests = tests.foreach((t : Test) => t.doAllTests)
 

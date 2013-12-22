@@ -1,6 +1,9 @@
-package test;
+package test
 
-import src.Pawn;
+import src.Pawn
+import src.Board
+import src.Cord
+import src.Move
 
 class SimplePiecesMovesTest extends Test
 {
@@ -11,7 +14,7 @@ class SimplePiecesMovesTest extends Test
 
 	def TestPawnMovesGeneration = 
 	{
-		val pawn = new Pawn("D2");
+		val pawn = new Pawn("D2", true, Board.WHITE_PAWN_1);
 		val board = new Board();
 
 		board.addPiece(pawn);
@@ -20,8 +23,9 @@ class SimplePiecesMovesTest extends Test
 		val attacks = pawn.generateAttacks(board)
 
 		// assertions
-		assert(moves.exists((field : Int) => (Cord.toString(field) == "D4")))
-		assert(moves.exists((field : Int) => (Cord.toString(field) == "D3")))
+		attacks.foreach((m : Move) => println(Cord.toString(m.end)))
+		assert(moves.exists((m : Move) => (Cord.toString(m.end) == "D4")))
+		assert(moves.exists((m : Move) => (Cord.toString(m.end) == "D3")))
 		assert(attacks.isEmpty)
 	}
 }
