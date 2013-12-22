@@ -126,5 +126,31 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		
 	}
 
+	def TestBishioMoveGeneration = 
+	{
+		val bishop = new Bishop("E5", Piece.WHITE, Board.WHITE_BISHOP_1)
+		val target1 = new Knight("C3", Piece.BLACK, Board.BLACK_KNIGHT_1)
+		val target2 = new Pawn("G7", Piece.BLACK, Board.BLACK_PAWN_1)
+		val ally = new Knight("D6", Piece.WHITE, Board.WHITE_KNIGHT_1)
+		val unreachableTarget = new Pawn("B8", Piece.BLACK, Board.BLACK_PAWN_2)
+
+		val board = new Board()
+
+		board.addPiece(bishop)
+		board.addPiece(target1)
+		board.addPiece(target2)
+		board.addPiece(ally)
+		board.addPiece(unreachableTarget)
+
+		val moves = bishop.generateMoves(board)
+		// 7 possible moves
+		assert(moves.size == 2 + 2 + 3)
+
+		// two attacks
+		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+		assert(attacks.size == 2)
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "C3"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "G7"))
+
 }
 
