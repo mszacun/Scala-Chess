@@ -16,12 +16,6 @@ abstract class Piece(var position : Int, val color : Int, val id : Int)
 	// generated moves may case own king to be in check, Board class also has to
 	// take care of it
 
-	// moves, that dont causes capture
-	def generateQuietMoves(b : Board) : Traversable[Move]
-
-	// possible captures this piece can make
-	def generateAttacks(b : Board) : Traversable[Move]
-
 	// quiteMoves + attacks
 	def generateMoves(b : Board) : Traversable[Move]
 

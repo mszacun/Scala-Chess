@@ -77,7 +77,7 @@ class Pawn(position : Int, color : Int, id : Int)
 		}
 		result 
 	}
-	def generateMoves(b : Board) : Traversable[Move] =
+	override def generateMoves(b : Board) : Traversable[Move] =
 		generateAttacks(b) ++ generateQuietMoves(b)
 
 	/* TODO: Implement */
