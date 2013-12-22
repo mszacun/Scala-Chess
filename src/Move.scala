@@ -1,7 +1,8 @@
 package src;
 
-abstract class Move(val start : Int, val end : Int,  val enPassant1 : Int,
-	val enPassant2 : Int, val castlingRightsAfter : Seq[Boolean])
+abstract class Move(val moveType : Int, val start : Int, val end : Int,
+	val enPassant1 : Int, val enPassant2 : Int, 
+	val castlingRightsAfter : Seq[Boolean])
 {
 	// * start -> position from move started (if more than one piece takes part
 	// in move, primary piece start position is stored
@@ -20,4 +21,11 @@ abstract class Move(val start : Int, val end : Int,  val enPassant1 : Int,
 	// because it has required informations
 	def undo(b : Board) : Unit
 
+}
+
+object Move
+{
+	val QUIET_MOVE = 0
+	val CAPTURE_MOVE = 1
+	val CASTLE_MOVE = 2
 }

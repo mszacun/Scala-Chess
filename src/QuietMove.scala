@@ -2,7 +2,8 @@ package src;
 
 class QuietMove(startPos : Int, endPos: Int, enPassant1 : Int,
 	enPassant2 : Int, castlingRightsAfter : Seq[Boolean]) 
-	extends Move(startPos, endPos, enPassant1, enPassant2, castlingRightsAfter)
+	extends Move(Move.QUIET_MOVE, startPos, endPos, enPassant1, enPassant2,
+	castlingRightsAfter)
 {
 	// see in Move
 	override def apply(b : Board) =

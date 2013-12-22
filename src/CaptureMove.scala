@@ -1,8 +1,8 @@
 package src;
 
 class CaptureMove(startPos : Int, endPos : Int, 
-	castlingRightsAfter : Seq[Boolean]) extends Move(startPos, endPos, 0, 0,
-	castlingRightsAfter)
+	castlingRightsAfter : Seq[Boolean]) extends Move(Move.CAPTURE_MOVE,
+	startPos, endPos, 0, 0, castlingRightsAfter)
 	{
 		// will be assigned during applaying to board
 		var capturedPiece : Piece = null 
