@@ -59,19 +59,19 @@ class Pawn(position : Int, color : Int, id : Int)
 		var result : List[Move] = Nil
 		if (color == Piece.WHITE)
 		{
-			if (b.isOccupied(Cord.moveSE(position, 1)))
+			if (b.isOccupiedByOpponent(Cord.moveSE(position, 1), color))
 				result = new CaptureMove(position, Cord.moveSE(position, 1),
 				b.castlingRights) :: result
-			if (b.isOccupied(Cord.moveSW(position, 1)))
+			if (b.isOccupiedByOpponent(Cord.moveSW(position, 1), color))
 				result = new CaptureMove(position, Cord.moveSW(position, 1),
 				b.castlingRights) :: result
 		}
 		else
 		{
-			if (b.isOccupied(Cord.moveNE(position, 1)) && true)
+			if (b.isOccupiedByOpponent(Cord.moveNE(position, 1), color))
 				result = new CaptureMove(position, Cord.moveNE(position, 1),
 				b.castlingRights) :: result
-			if (b.isOccupied(Cord.moveNW(position, 1)))
+			if (b.isOccupiedByOpponent(Cord.moveNW(position, 1), color))
 				result = new CaptureMove(position, Cord.moveNW(position, 1),
 				b.castlingRights) :: result
 		}
