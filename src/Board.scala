@@ -15,8 +15,10 @@ class Board(fen : String = "")
 	 * castlingRights[1] -> white ability to castle queenside
 	 * castlingRights[2] -> black ability to castle kingside
 	 * castlingRights[3] -> black ability to castle queenside
+	 * castlingRights[4] -> this is set by rook that during move isn't on starting
+	 *	position
 	 */
-	var castlingRights : Seq[Boolean] = Array(true, true, true, true)
+	var castlingRights : Seq[Boolean] = Array(true, true, true, true, false)
 
 	// fields from which enPassant capture is possible
 	var enPassant1 : Int = 0
