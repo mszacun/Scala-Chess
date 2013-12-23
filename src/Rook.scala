@@ -1,12 +1,11 @@
 package src;
 
 class Rook(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id)
+	extends Piece(position, color, id, Piece.ROOK)
 {
 	// startingPos - position on which this certain root is placed at the beginning
 	// of the game
 	// posible move direction for rook
-	val possibleDirections = Array(1, -1, 10, -10)
 	
 
 	def this(position : String, color : Int, id : Int)= 
@@ -54,7 +53,7 @@ class Rook(position : Int, color : Int, id : Int)
 	override def generateMoves(b : Board) = 
 	{
 		var result : List[Move] = Nil
-		possibleDirections.foreach((dir : Int) => 
+		Rook.possibleDirections.foreach((dir : Int) => 
 			result = generateDirectionMoves(b, result, dir))
 
 		result
@@ -62,4 +61,9 @@ class Rook(position : Int, color : Int, id : Int)
 
 	/* TODO: Implement */
 	override def rank : Int = 0
+}
+
+object Rook
+{
+	val possibleDirections = Array(1, -1, 10, -10)
 }

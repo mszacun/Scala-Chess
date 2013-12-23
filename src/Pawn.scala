@@ -2,7 +2,7 @@ package src;
 
 
 class Pawn(position : Int, color : Int, id : Int) 
-	extends Piece(position, color, id)
+	extends Piece(position, color, id, Piece.PAWN)
 {
 	val whitePawnsStartingRow = 1 // remeber, that rows are 0 indexed
 	val blackPawnsStartingRow = 6

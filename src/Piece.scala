@@ -1,6 +1,7 @@
 package src;
 
-abstract class Piece(var position : Int, val color : Int, val id : Int)
+abstract class Piece(var position : Int, val color : Int, val id : Int,
+	val pieceType : Int)
 {
 	// * position -> actual position on board as index in array
 	// representing board
@@ -8,8 +9,8 @@ abstract class Piece(var position : Int, val color : Int, val id : Int)
 	// * id -> id of this particular piece in board piece list, see Board class
 
 	// constructs piece from human-readable field name
-	def this(position : String, color : Int, id : Int) = 
-		this(Cord.fromString(position), color, id)
+	def this(position : String, color : Int, id : Int, pieceType : Int) = 
+		this(Cord.fromString(position), color, id, pieceType)
 
 	// WARNING: All generating moves methods may return moves which destination is
 	// outside the board! Board class is responsible for checking this, also
@@ -29,4 +30,11 @@ object Piece
 {
 	val WHITE = 1
 	val BLACK = 0
+
+	val PAWN = 1
+	val KNIGHT = 2
+	val BISHOP = 3
+	val ROOK = 4
+	val QUEEN = 5
+	val KING = 6
 }

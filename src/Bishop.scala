@@ -1,9 +1,8 @@
 package src;
 
 class Bishop(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id)
+	extends Piece(position, color, id, Piece.BISHOP)
 {
-	val possibleDirections = Array(9, 11, -9, -11)
 
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
@@ -33,7 +32,7 @@ class Bishop(position : Int, color : Int, id : Int)
 	override def generateMoves(b : Board) = 
 	{
 		var result : List[Move] = Nil
-		possibleDirections.foreach((dir : Int) => 
+		Bishop.possibleDirections.foreach((dir : Int) => 
 			result = generateDirectionMoves(b, result, dir))
 
 		result
@@ -41,4 +40,9 @@ class Bishop(position : Int, color : Int, id : Int)
 
 	/* TODO: Implement */
 	override def rank : Int = 0
+}
+
+object Bishop
+{
+	val possibleDirections = Array(9, 11, -9, -11)
 }

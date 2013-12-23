@@ -1,9 +1,13 @@
 package src;
 
-class Knight(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id)
+object Knight
 {
 	val possibleMovesDirection = Array(-19, -21, -12, -8, 19, 21, 8, 12)
+}
+
+class Knight(position : Int, color : Int, id : Int)
+	extends Piece(position, color, id, Piece.KNIGHT)
+{
 	
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
@@ -11,7 +15,7 @@ class Knight(position : Int, color : Int, id : Int)
 	def generateMoves(b : Board) = 
 	{
 		var result : List[Move] = Nil
-		possibleMovesDirection.foreach((dir : Int) => 
+		Knight.possibleMovesDirection.foreach((dir : Int) => 
 		{
 			if (b.isOccupiedByOpponent(position + dir, color))
 				result = new CaptureMove(position, position + dir,

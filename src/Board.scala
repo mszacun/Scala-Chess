@@ -57,6 +57,92 @@ class Board(fen : String = "")
 		moveToUndo.undo(this)
 	}
 
+	// checks wheter opponent can attack this field, used in looking for check
+	def isAttacked(position : Int, myColor : Int) : Boolean =
+	{
+		// check for rook and queen moving straight
+		var tmpPos = position
+		for (dir <- Rook.possibleDirections)
+		{
+			tmpPos = position + dir
+			while (isEmpty(tmpPos)) // ommit all empty squares
+				tmpPos += dir
+			if (isOccupiedByOpponent(tmpPos, myColor) &&	
+				(piecesList(board(tmpPos)).pieceType == Piece.ROOK ||
+				piecesList(board(tmpPos)).pieceType == Piece.QUEEN))
+				return true
+		}
+
+		// check for bishop or queen moving crosswise
+		tmpPos = position
+		for (dir <- Bishop.possibleDirections)
+		{
+			tmpPos = position + dir
+			while (isEmpty(tmpPos)) // ommit all empty squares
+				tmpPos += dir
+			if (isOccupiedByOpponent(tmpPos, myColor) &&	
+				(piecesList(board(tmpPos)).pieceType == Piece.BISHOP ||
+				piecesList(board(tmpPos)).pieceType == Piece.QUEEN))
+				return true
+		}
+
+		// check for black powns
+		if (myColor == Piece.WHITE)
+		{
+			// where pawn must be to attack this square
+			val possibilities = Cord.moveSE(position, 1) :: Cord.moveSW(position, 1) :: Nil
+			
+			// check is on any of this square is opponent piece and this piece is pawn
+			if (possibilities.exists((x : Int) =>
+				isOccupiedByOpponent(x, myColor) && 
+					piecesList(board(x)).pieceType == Piece.PAWN
+				))
+				return true
+		}
+		// check for white pawn
+		else
+		{
+			// where pawn must be to attack this square
+			val possibilities = Cord.moveNE(position, 1) :: Cord.moveNW(position, 1) :: Nil
+
+			if (possibilities.exists((x : Int) =>
+				isOccupiedByOpponent(x, myColor) && 
+					piecesList(board(x)).pieceType == Piece.PAWN
+				))
+				return true
+		}
+
+		// check for knight
+		var possibilities = Knight.possibleMovesDirection.map((dir : Int) => 
+			position + dir)
+
+		if (possibilities.exists((x : Int) =>
+			isOccupiedByOpponent(x, myColor) && 
+				piecesList(board(x)).pieceType == Piece.KNIGHT
+			))
+			return true
+
+		// check for king
+		possibilities = King.possibleDirections.map((dir : Int) => 
+			position + dir)
+
+		if (possibilities.exists((x : Int) =>
+			isOccupiedByOpponent(x, myColor) && 
+				piecesList(board(x)).pieceType == Piece.KING
+			))
+			return true
+
+		return false
+
+	}
+
+	// check if color king is in check
+	def isCheck(color : Int) = 
+	{
+		val king = piecesList(if (color == Piece.WHITE) Board.WHITE_KING else Board.BLACK_KING)
+		isAttacked(king.position, color)
+	}
+
 	// WARNING: if you use one of those methods, make sure, you've choosen the
 	// right one, becasue there are no 2 like in boolean, but 3(empty, occupied, 
 	// off the board)!!

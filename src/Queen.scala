@@ -1,7 +1,7 @@
 package src;
 
 class Queen(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id)
+	extends Piece(position, color, id, Piece.QUEEN)
 {
 	val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
 
