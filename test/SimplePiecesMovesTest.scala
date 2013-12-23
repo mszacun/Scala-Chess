@@ -7,6 +7,7 @@ import src.Move
 import src.Piece
 import src.Knight
 import src.Bishop
+import src.Rook
 
 class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 {
@@ -19,6 +20,7 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		TestPawnAttacksOnOwnPieces
 		TestKnightMoveGeneration
 		TestBishioMoveGeneration
+		TestRookMoveGeneration
 	}
 
 	def TestPawnMovesGeneration = 
@@ -179,5 +181,6 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "E3"))
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "G7"))
 
+	}
 }
 
