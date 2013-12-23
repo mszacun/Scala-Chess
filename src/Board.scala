@@ -47,7 +47,7 @@ class Board(fen : String = "")
 
 	def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
 
-	def isOccupied(position : Int) = board(position) > 0
+	def isOccupied(position : Int) = board(position) >= 0
 
 	// quickly checks color of piece
 	def isOccupiedByOpponent(position : Int, myColor : Int) = 
@@ -59,7 +59,7 @@ class Board(fen : String = "")
 object Board
 {
 	val AUXILIARY_SQUARE = -1
-	val EMPTY_SQUARE = 0
+	val EMPTY_SQUARE = -2
 	// keys in piece list
 
 	// white's are even
@@ -82,21 +82,21 @@ object Board
 	val WHITE_KING = 31
 
 	// blacks are odd, this is used in fast check of piece color on certain square
-	val BLACK_PAWN_1 = 2
-	val BLACK_PAWN_2 = 4
-	val BLACK_PAWN_3 = 6
-	val BLACK_PAWN_4 = 8
-	val BLACK_PAWN_5 = 10
-	val BLACK_PAWN_6 = 12
-	val BLACK_PAWN_7 = 14
-	val BLACK_PAWN_8 = 16
+	val BLACK_PAWN_1 = 0
+	val BLACK_PAWN_2 = 2
+	val BLACK_PAWN_3 = 4
+	val BLACK_PAWN_4 = 6
+	val BLACK_PAWN_5 = 8
+	val BLACK_PAWN_6 = 10
+	val BLACK_PAWN_7 = 12
+	val BLACK_PAWN_8 = 14
 	
-	val BLACK_ROOK_1 = 18
-	val BLACK_ROOK_2 = 20
-	val BLACK_KNIGHT_1 = 22
-	val BLACK_KNIGHT_2 = 24
-	val BLACK_BISHOP_1 = 26
-	val BLACK_BISHOP_2 = 28
-	val BLACK_QUEEN = 30
-	val BLACK_KING = 32
+	val BLACK_ROOK_1 = 16
+	val BLACK_ROOK_2 = 18
+	val BLACK_KNIGHT_1 = 20
+	val BLACK_KNIGHT_2 = 22
+	val BLACK_BISHOP_1 = 24
+	val BLACK_BISHOP_2 = 26
+	val BLACK_QUEEN = 28
+	val BLACK_KING = 30
 }
