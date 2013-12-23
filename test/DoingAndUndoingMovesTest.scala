@@ -7,14 +7,17 @@ import src.King
 import src.Rook
 import src.Bishop
 import src.Board
+import src.Queen
 import src.Move
 
 class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 {
+	/* TODO: When hashing board will be ready add testing it here! */
 	def doAllTests = 
 	{
 		JustOneQuietMoveTest
 		OneCaptureMoveTest
+		FewMovesSequenceTest
 	}
 
 	def JustOneQuietMoveTest = 
@@ -67,6 +70,7 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 
 		// captured piece position shouldnt change
 		assert(Cord.toString(pawn.position) == end) 
+		assert(board.piecesList(pawn.id) == null)
 
 		assert(board.board(Cord.fromString(end)) == rook.id)
 		assert(board.isEmpty(Cord.fromString(start)))
@@ -80,6 +84,61 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 
 		assert(Cord.toString(pawn.position) == end)
 		assert(board.board(Cord.fromString(end)) == pawn.id)
+	}
+
+	def FewMovesSequenceTest = 
+	{
+		val pawn = new Pawn("D4", Piece.BLACK, Board.BLACK_PAWN_1)
+		val rook = new Rook("G3", Piece.BLACK, Board.BLACK_ROOK_1)
+		val queen = new Queen("B5", Piece.WHITE, Board.WHITE_QUEEN)
+		val board = new Board()
+
+		board.addPiece(pawn)
+		board.addPiece(rook)
+		board.addPiece(queen)
+
+		// firstly move pawn
+		var desiredMove = pawn.generateMoves(board).filter((m : Move) =>
+			Cord.toString(m.end) == "D3").head
+		board.makeMove(desiredMove)
+
+		// capture pawn with queen
+		desiredMove = queen.generateMoves(board).filter((m : Move) =>
+			m.moveType == Move.CAPTURE_MOVE).head
+		board.makeMove(desiredMove)
+
+		// capture queen with rook
+		desiredMove = rook.generateMoves(board).filter((m : Move) =>
+			m.moveType == Move.CAPTURE_MOVE).head
+		board.makeMove(desiredMove)
+
+		// check situation after this moves
+		assert(board.isEmpty(Cord.fromString("D4")))
+		assert(board.isEmpty(Cord.fromString("B5")))
+		assert(board.isEmpty(Cord.fromString("G3")))
+		assert(board.board(Cord.fromString("D3")) == rook.id)
+		assert(board.piecesList(queen.id) == null)
+		assert(board.piecesList(pawn.id) == null)
+
+		// undo this 3 moves
+		board.undoMove
+		board.undoMove
+		board.undoMove
+
+		// make sure everything is the same as at the beginning
+		assert(Cord.toString(pawn.position) == "D4")
+		assert(Cord.toString(rook.position) == "G3")
+		assert(Cord.toString(queen.position) == "B5")
+
+		// check if in piecesList are certainly the same pieces
+		assert(board.piecesList(pawn.id) eq pawn)
+		assert(board.piecesList(rook.id) eq rook)
+		assert(board.piecesList(queen.id) eq queen)
+
+		// check is also in board array representation everything in ok
+		assert(board.board(Cord.fromString("D4")) == pawn.id)
+		assert(board.board(Cord.fromString("G3")) == rook.id)
+		assert(board.board(Cord.fromString("B5")) == queen.id)
 	}
 }
 
