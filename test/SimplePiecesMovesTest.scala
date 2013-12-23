@@ -9,6 +9,7 @@ import src.Knight
 import src.Bishop
 import src.Rook
 import src.Queen
+import src.King
 
 class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 {
@@ -215,6 +216,31 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		assert(attacks.size == 3)
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "H8"))
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "D6"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "A4"))
+	}
+
+	def TestKingMoveGeneration = 
+	{
+		// WARNING: king's generateMoves returns also move, which causes check!
+
+		val king = new King("A5", Piece.BLACK, Board.BLACK_KING)
+		val target = new Bishop("A4", Piece.WHITE, Board.WHITE_BISHOP_1)
+		val attacker = new Pawn("B3", Piece.WHITE, Board.WHITE_PAWN_1)
+		val ally = new Pawn("A6", Piece.BLACK, Board.BLACK_PAWN_1)
+
+		val board = new Board()
+
+		board.addPiece(king)
+		board.addPiece(target)
+		board.addPiece(attacker)
+		board.addPiece(ally)
+
+		val moves = king.generateMoves(board)
+
+		assert(moves.size == 4)
+		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+
+		assert(attacks.size == 1)
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "A4"))
 	}
 
