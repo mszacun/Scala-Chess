@@ -140,5 +140,29 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		assert(board.board(Cord.fromString("G3")) == rook.id)
 		assert(board.board(Cord.fromString("B5")) == queen.id)
 	}
+
+	def PromotionMoveTest = 
+	{
+		val pawn = new Pawn("H7", Piece.WHITE, Board.WHITE_PAWN_1)
+		val board = new Board()
+
+		board.addPiece(pawn)
+
+		val desiredMove = pawn.generateMoves(board).head
+
+		board.makeMove(desiredMove)
+
+		// assertions
+		assert(board.isEmpty(Cord.fromString("H7")))
+		assert(board.board(desiredMove.end) == pawn.id)
+		assert(board.piecesList(pawn.id).pieceType == Piece.QUEEN)
+
+		// undo
+		board.undoMove
+
+		assert(pawn.pieceType == Piece.PAWN)
+		assert(board.isEmpty(desiredMove.end))
+		assert(pawn.position == desiredMove.start)
+		assert(board.board(pawn.position) == pawn.id)
 }
 
