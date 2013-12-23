@@ -55,6 +55,17 @@ class Board(fen : String = "")
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
+
+		// revert enPassants and castlingRights
+		val previousMove : Move = movesStack match
+			{
+				case h :: t => h
+				case Nil => new QuietMove(0, 0, 0, 0, Array(true, true, true,
+					true, false))
+			}
+		castlingRights = previousMove.castlingRightsAfter
+		enPassant1 = previousMove.enPassant1
+		enPassant2 = previousMove.enPassant2
 	}
 
 	// checks wheter opponent can attack this field, used in looking for check

@@ -20,6 +20,7 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		OneCaptureMoveTest
 		FewMovesSequenceTest
 		PromotionMoveTest
+		WhiteCastlingRightsChangingMoveTest
 	}
 
 	def JustOneQuietMoveTest = 
@@ -166,6 +167,40 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		assert(board.isEmpty(desiredMove.end))
 		assert(pawn.position == desiredMove.start)
 		assert(board.board(pawn.position) == pawn.id)
+	}
+
+	def WhiteCastlingRightsChangingMoveTest = 
+	{
+		val rook1 = new Rook("A1", Piece.WHITE, Board.WHITE_ROOK_1)
+		val rook2 = new Rook("H1", Piece.WHITE, Board.WHITE_ROOK_2)
+
+		val board = new Board()
+
+		board.addPiece(rook1)
+		board.addPiece(rook2)
+
+		// at the beginning everyone can castle
+		assert(board.castlingRights.count((right : Boolean) => right) == 4)
+
+		var desiredMove = rook1.generateMoves(board).head
+		board.makeMove(desiredMove)
+
+		// now we cant castle queen side
+		assert(!board.castlingRights(1))
+		assert(board.castlingRights.count((right : Boolean) => right) == 3)
+
+		desiredMove = rook2.generateMoves(board).head
+		board.makeMove(desiredMove)
+
+		assert(!board.castlingRights(0))
+		assert(board.castlingRights.count((right : Boolean) => right) == 2)
+
+		// undo
+		board.undoMove
+		board.undoMove
+
+		// now we should be able to castle again
+		assert(board.castlingRights.count((right : Boolean) => right) == 4)
 	}
 }
 
