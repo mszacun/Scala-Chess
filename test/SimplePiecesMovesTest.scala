@@ -8,6 +8,7 @@ import src.Piece
 import src.Knight
 import src.Bishop
 import src.Rook
+import src.Queen
 
 class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 {
@@ -21,6 +22,7 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		TestKnightMoveGeneration
 		TestBishioMoveGeneration
 		TestRookMoveGeneration
+		TestQueenMoveGeneration
 	}
 
 	def TestPawnMovesGeneration = 
@@ -190,9 +192,9 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		val target2 = new Knight("D6", Piece.BLACK, Board.BLACK_KNIGHT_1) // 2 moves
 		val target3 = new Bishop("A4", Piece.BLACK, Board.BLACK_BISHOP_1) // 3 moves
 		val ally1 = new Rook("D2", Piece.WHITE, Board.WHITE_ROOK_1) // 1 move
-		val ally2 = new Pawn("G4", Piece.WHITE, BOARD.WHITE_PAWN_1) // 2 moves
+		val ally2 = new Pawn("G4", Piece.WHITE, Board.WHITE_PAWN_1) // 2 moves
 
-		// 4 moves possible up
+		// 3 moves NE possible
 		// 3 moves NW possible
 		// 3 move SE possible
 		val board = new Board()
@@ -205,8 +207,9 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		board.addPiece(ally2)
 
 		val moves = queen.generateMoves(board)
+		moves.foreach((m : Move) => println(Cord.toString(m.end)))
 
-		assert(moves.sie == 4 + 2 + 3 + 1 +2 + 4 + 3 + 3)
+		assert(moves.size == 4 + 2 + 3 + 1 +2 + 3 + 3 + 3)
 
 		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
 		assert(attacks.size == 3)
