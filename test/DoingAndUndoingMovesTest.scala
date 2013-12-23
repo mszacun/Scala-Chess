@@ -8,6 +8,7 @@ import src.Rook
 import src.Bishop
 import src.Board
 import src.Queen
+import src.PromotionMove
 import src.Move
 
 class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
@@ -18,6 +19,7 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		JustOneQuietMoveTest
 		OneCaptureMoveTest
 		FewMovesSequenceTest
+		PromotionMoveTest
 	}
 
 	def JustOneQuietMoveTest = 
@@ -164,5 +166,6 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		assert(board.isEmpty(desiredMove.end))
 		assert(pawn.position == desiredMove.start)
 		assert(board.board(pawn.position) == pawn.id)
+	}
 }
 

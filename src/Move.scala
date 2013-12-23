@@ -28,4 +28,5 @@ object Move
 	val QUIET_MOVE = 0
 	val CAPTURE_MOVE = 1
 	val CASTLE_MOVE = 2
+	val PROMOTION_MOVE = 3
 }

@@ -13,7 +13,6 @@ class QuietMove(startPos : Int, endPos: Int, enPassant1 : Int,
 		b.board(start) = Board.EMPTY_SQUARE
 		b.board(end) = pieceID
 
-		// TOCHECK: If position will be changed in pieceList also
 		piece.position = end
 
 		b.castlingRights = castlingRightsAfter

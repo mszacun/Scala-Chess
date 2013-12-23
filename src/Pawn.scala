@@ -21,17 +21,23 @@ class Pawn(position : Int, color : Int, id : Int)
 			var move = Cord.moveS(position, 1)
 			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
-				result = new QuietMove(position,
-					move, 0, 0, b.castlingRights) :: result
-
-				// double move if on starting position
-				if (Cord.getRow(position) == whitePawnsStartingRow)
+				if (Cord.getRow(move) == 7)
+					result = new PromotionMove(position, move, b.castlingRights,
+						Piece.QUEEN) :: result // AI always will promote to queen!
+				else
 				{
-					move = Cord.moveS(position, 2)
-					if (b.isEmpty(move) && !b.isOffBoard(move))
-						result = new QuietMove(position, 
-							move, Cord.moveSW(position, 1), // enPasant is possible
-							Cord.moveSE(position, 1), b.castlingRights) :: result
+					result = new QuietMove(position,
+						move, 0, 0, b.castlingRights) :: result
+
+					// double move if on starting position
+					if (Cord.getRow(position) == whitePawnsStartingRow)
+					{
+						move = Cord.moveS(position, 2)
+						if (b.isEmpty(move) && !b.isOffBoard(move))
+							result = new QuietMove(position, 
+								move, Cord.moveSW(position, 1), // enPasant is possible
+								Cord.moveSE(position, 1), b.castlingRights) :: result
+					}
 				}
 			}
 		}
@@ -41,17 +47,23 @@ class Pawn(position : Int, color : Int, id : Int)
 			var move = Cord.moveN(position, 1)
 			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
-				result = new QuietMove(position, move, 0, 0,
-					b.castlingRights) :: result
-
-				// double move if on starting position
-				if (Cord.getRow(position) == blackPawnsStartingRow)
+				if (Cord.getRow(move) == 0)
+					result = new PromotionMove(position, move, b.castlingRights,
+						Piece.QUEEN) :: result
+				else
 				{
-					move = Cord.moveN(position, 2)
-					if (b.isEmpty(move) && !b.isOffBoard(move))
-						result = new QuietMove(position, 
-							move, Cord.moveNW(position, 1),
-							Cord.moveNE(position, 1), b.castlingRights) :: result
+					result = new QuietMove(position, move, 0, 0,
+						b.castlingRights) :: result
+
+					// double move if on starting position
+					if (Cord.getRow(position) == blackPawnsStartingRow)
+					{
+						move = Cord.moveN(position, 2)
+						if (b.isEmpty(move) && !b.isOffBoard(move))
+							result = new QuietMove(position, 
+								move, Cord.moveNW(position, 1),
+								Cord.moveNE(position, 1), b.castlingRights) :: result
+					}
 				}
 			}
 		}
@@ -88,4 +100,3 @@ class Pawn(position : Int, color : Int, id : Int)
 	def rank = 0
 
 }
-
