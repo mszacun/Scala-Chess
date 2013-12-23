@@ -155,5 +155,29 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "G7"))
 	}
 
+	def TestRookMoveGeneration = 
+	{
+		val rook = new Rook("E7", Piece.BLACK, Board.BLACK_ROOK_1)
+		val target1 = new Pawn("E3", Piece.WHITE, Board.WHITE_PAWN_1)
+		val target2 = new Bishop("G7", Piece.WHITE, Board.WHITE_BISHOP_1)
+		val unreachableTarget = new Knight("E1", Piece.WHITE, Board.WHITE_KNIGHT_1)
+		val ally = new Rook("C7", Piece.BLACK, Board.BLACK_ROOK_2)
+
+		val board = new Board()
+
+		board.addPiece(rook)
+		board.addPiece(target1)
+		board.addPiece(target2)
+		board.addPiece(unreachableTarget)
+		board.addPiece(ally)
+
+		val moves = rook.generateMoves(board)
+
+		assert(moves.size == 2 + 1 + 4 + 1)
+		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+		assert(attacks.size == 2)
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "E3"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "G7"))
+
 }
 
