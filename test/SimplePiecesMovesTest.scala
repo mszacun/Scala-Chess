@@ -183,5 +183,37 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 
 	}
 
+	def TestQueenMoveGeneration = 
+	{
+		val queen = new Queen("D4", Piece.WHITE, Board.WHITE_QUEEN)
+		val target1 = new Pawn("H8", Piece.BLACK, Board.BLACK_PAWN_1) // 4 moves
+		val target2 = new Knight("D6", Piece.BLACK, Board.BLACK_KNIGHT_1) // 2 moves
+		val target3 = new Bishop("A4", Piece.BLACK, Board.BLACK_BISHOP_1) // 3 moves
+		val ally1 = new Rook("D2", Piece.WHITE, Board.WHITE_ROOK_1) // 1 move
+		val ally2 = new Pawn("G4", Piece.WHITE, BOARD.WHITE_PAWN_1) // 2 moves
+
+		// 4 moves possible up
+		// 3 moves NW possible
+		// 3 move SE possible
+		val board = new Board()
+
+		board.addPiece(queen)
+		board.addPiece(target1)
+		board.addPiece(target2)
+		board.addPiece(target3)
+		board.addPiece(ally1)
+		board.addPiece(ally2)
+
+		val moves = queen.generateMoves(board)
+
+		assert(moves.sie == 4 + 2 + 3 + 1 +2 + 4 + 3 + 3)
+
+		val attacks = moves.filter((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+		assert(attacks.size == 3)
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "H8"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "D6"))
+		assert(attacks.exists((m : Move) => Cord.toString(m.end) == "A4"))
+	}
+
 }
 
