@@ -24,6 +24,9 @@ class Board(fen : String = "")
 	var enPassant1 : Int = 0
 	var enPassant2 : Int = 0
 
+	// history of moves on board in stack form
+	var movesStack : List[Move] = Nil
+
 	/* empty board */
 	for	(i <- 0 to 119)
 	{
@@ -33,12 +36,25 @@ class Board(fen : String = "")
 			board(i) = Board.EMPTY_SQUARE
 	}
 
-	/* TODO: Game history: here or in Game class */
-
 	def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id
 		piecesList(piece.id) = piece
+	}
+
+	// this method should be called instead of Move.apply!
+	def makeMove(m : Move) = 
+	{
+		movesStack = m :: movesStack
+		m.apply(this)
+	}
+
+	// reverts last move, may throw an exception if moves stack is empty
+	def undoMove() = 
+	{
+		val moveToUndo = movesStack.head
+		movesStack = movesStack.tail
+		moveToUndo.undo(this)
 	}
 
 	// WARNING: if you use one of those methods, make sure, you've choosen the
