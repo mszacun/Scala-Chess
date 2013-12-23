@@ -4,9 +4,21 @@ class Board(fen : String = "")
 {
 	// TODO: Implement fen parsing
 
+	// board 10 x 12 representation with auxilary fields
 	val board : Array[Int] = new Array[Int](10 * 12)
+
+	// list of all pieces, indexed by keys defined below
 	val piecesList : Array[Piece] = new Array[Piece](32)
+
+	/* 
+	 * castlingRights[0] -> white ability to castle kingside
+	 * castlingRights[1] -> white ability to castle queenside
+	 * castlingRights[2] -> black ability to castle kingside
+	 * castlingRights[3] -> black ability to castle queenside
+	 */
 	var castlingRights : Seq[Boolean] = Array(true, true, true, true)
+
+	// fields from which enPassant capture is possible
 	var enPassant1 : Int = 0
 	var enPassant2 : Int = 0
 

@@ -159,11 +159,11 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 
 	def TestRookMoveGeneration = 
 	{
-		val rook = new Rook("E7", Piece.BLACK, Board.BLACK_ROOK_1)
+		val rook = new Rook("E7", Piece.BLACK, Board.BLACK_ROOK_1, "A8")
 		val target1 = new Pawn("E3", Piece.WHITE, Board.WHITE_PAWN_1)
 		val target2 = new Bishop("G7", Piece.WHITE, Board.WHITE_BISHOP_1)
 		val unreachableTarget = new Knight("E1", Piece.WHITE, Board.WHITE_KNIGHT_1)
-		val ally = new Rook("C7", Piece.BLACK, Board.BLACK_ROOK_2)
+		val ally = new Rook("C7", Piece.BLACK, Board.BLACK_ROOK_2, "H8")
 
 		val board = new Board()
 
