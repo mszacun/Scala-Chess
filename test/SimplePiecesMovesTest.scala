@@ -24,6 +24,7 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		TestBishioMoveGeneration
 		TestRookMoveGeneration
 		TestQueenMoveGeneration
+		TestKingMoveGeneration
 	}
 
 	def TestPawnMovesGeneration = 
@@ -208,7 +209,6 @@ class SimplePiecesMovesTest extends Test("SimplePiecesMovesTest")
 		board.addPiece(ally2)
 
 		val moves = queen.generateMoves(board)
-		moves.foreach((m : Move) => println(Cord.toString(m.end)))
 
 		assert(moves.size == 4 + 2 + 3 + 1 +2 + 3 + 3 + 3)
 
