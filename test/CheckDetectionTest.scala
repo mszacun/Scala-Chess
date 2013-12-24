@@ -80,7 +80,8 @@ class CheckDetectionTest extends Test("CheckDetectionTest")
 		board.addPiece(enemyKnight)
 
 		val start = System.currentTimeMillis;
-		assert(!board.isCheck(king.color))
+		for (i <- 1 to 100000)
+			assert(!board.isCheck(king.color))
 		println("Looking for check: " + (System.currentTimeMillis - start))
 	}
 

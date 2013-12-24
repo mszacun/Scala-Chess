@@ -43,14 +43,6 @@ class Board()
 		for (i <- 1 until 32) piecesList(i) = null
 	}
 
-	def setStartingPosition = 
-	{
-		clearBoard
-		
-		addPiece(new Rook("A1", Piece.WHITE, Board.WHITE_ROOK_1))
-		addPiece(new Knight("B1", Piece.WHITE, Board.WHITE_KNIGHT_1))
-	}
-
 	def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id
@@ -75,6 +67,7 @@ class Board()
 		val previousMove : Move = movesStack match
 			{
 				case h :: t => h
+				// at the beginning everyone can castle
 				case Nil => new QuietMove(0, 0, 0, 0, Array(true, true, true,
 					true, false))
 			}
@@ -94,8 +87,7 @@ class Board()
 			while (isEmpty(tmpPos)) // ommit all empty squares
 				tmpPos += dir
 			if (isOccupiedByOpponent(tmpPos, myColor) &&	
-				(piecesList(board(tmpPos)).pieceType == Piece.ROOK ||
-				piecesList(board(tmpPos)).pieceType == Piece.QUEEN))
+				(Board.isRook(board(tmpPos)) || Board.isQueen(board(tmpPos))))
 				return true
 		}
 
@@ -107,8 +99,7 @@ class Board()
 			while (isEmpty(tmpPos)) // ommit all empty squares
 				tmpPos += dir
 			if (isOccupiedByOpponent(tmpPos, myColor) &&	
-				(piecesList(board(tmpPos)).pieceType == Piece.BISHOP ||
-				piecesList(board(tmpPos)).pieceType == Piece.QUEEN))
+				(Board.isBishop(board(tmpPos)) || Board.isQueen(board(tmpPos))))
 				return true
 		}
 
@@ -120,9 +111,7 @@ class Board()
 			
 			// check is on any of this square is opponent piece and this piece is pawn
 			if (possibilities.exists((x : Int) =>
-				isOccupiedByOpponent(x, myColor) && 
-					piecesList(board(x)).pieceType == Piece.PAWN
-				))
+				isOccupiedByOpponent(x, myColor) && Board.isPawn(board(x))))
 				return true
 		}
 		// check for white pawn
@@ -132,9 +121,7 @@ class Board()
 			val possibilities = Cord.moveNE(position, 1) :: Cord.moveNW(position, 1) :: Nil
 
 			if (possibilities.exists((x : Int) =>
-				isOccupiedByOpponent(x, myColor) && 
-					piecesList(board(x)).pieceType == Piece.PAWN
-				))
+				isOccupiedByOpponent(x, myColor) && Board.isPawn(board(x))))
 				return true
 		}
 
@@ -143,9 +130,7 @@ class Board()
 			position + dir)
 
 		if (possibilities.exists((x : Int) =>
-			isOccupiedByOpponent(x, myColor) && 
-				piecesList(board(x)).pieceType == Piece.KNIGHT
-			))
+			isOccupiedByOpponent(x, myColor) && Board.isKnight(board(x))))
 			return true
 
 		// check for king
@@ -153,9 +138,7 @@ class Board()
 			position + dir)
 
 		if (possibilities.exists((x : Int) =>
-			isOccupiedByOpponent(x, myColor) && 
-				piecesList(board(x)).pieceType == Piece.KING
-			))
+			isOccupiedByOpponent(x, myColor) && Board.isKing(board(x))))
 			return true
 
 		return false
@@ -233,6 +216,27 @@ object Board
 						true, true, true, true, true, true, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false)
+	val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						true, true, true, true, false, false, false, false, false, false,
+						false, false)
+	val isRook = Array(false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, true, true, true, true,
+						false, false, false, false, false, false, false, false, false, false,
+						false, false)
+	val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, true, true, true, true, false, false,
+						false, false)
+	val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, true, true,
+						false, false)
+	val isKing = Array(false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						true, true)
+
 
 	def apply(fen : String) =
 	{
