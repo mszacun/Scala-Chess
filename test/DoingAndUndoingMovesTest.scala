@@ -21,6 +21,7 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		FewMovesSequenceTest
 		PromotionMoveTest
 		WhiteCastlingRightsChangingMoveTest
+//		BlackEnPasantDetectionDoingAndUndoingTest
 	}
 
 	def JustOneQuietMoveTest = 
@@ -202,5 +203,60 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		// now we should be able to castle again
 		assert(board.castlingRights.count((right : Boolean) => right) == 4)
 	}
+
+/*	def BlackEnPasantDetectionDoingAndUndoingTest = 
+	{
+		val targetWhitePawn = new Pawn("H2", Piece.WHITE, Board.WHITE_PAWN_1)
+		val attackingBlackPawn = new Pawn("G4", Piece.BLACK, Board.BLACK_PAWN_1)
+		val board = new Board()
+
+		board.addPiece(targetWhitePawn)
+		board.addPiece(targetWhitePawn)
+
+		// double move pawn
+		var desiredMove = board.generateMovesfor(targetWhitePawn.color).filter(
+			(m : Move) => Cord.toString(m.end) == "H4").head
+		board.makeMove(desiredMove)
+
+		// check if en passant was detected
+		assert(board.enPassant1 == Cord.fromString("G4"))
+		// in east direction en passant is not possible
+		assert(board.isOffBoard(board.enPassant2)) 
+
+		// find en passant move
+		val attackerMoves = board.generateMovesfor(attackingBlackPawn.color).filter(
+			(m : Move) => m.moveType == Move.ENPASSANT_MOVE)
+		assert(attackerMoves.size == 1)
+
+		// do en passant capture
+		board.makeMove(attackerMoves.head)
+
+		// assertion after move
+		assert(board.piecesList(targetWhitePawn.id) == null)
+		assert(board.isEmpty(Cord.fromString("H2")))
+		assert(board.isEmpty(Cord.fromString("G4")))
+		assert(board.isEmpty(Cord.fromString("H4"))) // captured pawn was here
+		assert(board.board(Cord.fromString("H3")) == attackingPawn.id)
+		assert(attackingBlackPawn.position == Cord.fromString("H3"))
+
+		// no en passant rights after capture
+		assert(board.isOffBoard(board.enPassant1))
+		assert(board.isOffBoard(board.enPassant2))
+
+		// undo en passant
+		board.undoMove
+		// check if en passant was restored
+		assert(board.enPassant1 == Cord.fromString("G4"))
+		assert(board.isOffBoard(board.enPassant2)) 
+
+		assert(board.piecesList(targetWhitePawn.id) eq targetWhitePawn)
+		assert(board.board(Cord.fromString("H4")) == targetWhitePawn.id)
+		assert(board.board(Cord.fromString("G4")) == attackingBlackPawn.id)
+
+		// restore to beginning
+		board.undoMove
+		assert(board.isOffBoard(board.enPassant1))
+		assert(board.isOffBoard(board.enPassant2))
+	} */
 }
 
