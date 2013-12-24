@@ -1,5 +1,7 @@
 package src;
 
+import scala.collection.mutable.MutableList
+
 class Queen(position : Int, color : Int, id : Int)
 	extends Piece(position, color, id, Piece.QUEEN)
 {
@@ -8,7 +10,7 @@ class Queen(position : Int, color : Int, id : Int)
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
 
-	def generateDirectionMoves(b : Board, acc : List[Move], dir : Int) :List[Move] = 
+	def generateDirectionMoves(b : Board, acc : MutableList[Move], dir : Int) :MutableList[Move] = 
 	{
 		var tmpPos = position
 		var result = acc
@@ -16,23 +18,21 @@ class Queen(position : Int, color : Int, id : Int)
 		{
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
-				result = new QuietMove(position, tmpPos, 0, 0, 
-				b.castlingRights) :: result
+				result += new QuietMove(position, tmpPos, 0, 0, b.castlingRights)
 			else
 			{
 				if (b.isOccupiedByOpponent(tmpPos, color))
-					result = new CaptureMove(position, tmpPos,
-						b.castlingRights) :: result
+					result += new CaptureMove(position, tmpPos, b.castlingRights)
 				return result
 			}
 		}
 		// never reaches here
-		Nil
+		result
 	}
 
 	override def generateMoves(b : Board) = 
 	{
-		var result : List[Move] = Nil
+		var result : MutableList[Move] = new MutableList[Move]
 		possibleDirections.foreach((dir : Int) => 
 			result = generateDirectionMoves(b, result, dir))
 

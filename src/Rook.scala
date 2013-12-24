@@ -1,17 +1,14 @@
 package src;
 
+import scala.collection.mutable.MutableList
+
 class Rook(position : Int, color : Int, id : Int)
 	extends Piece(position, color, id, Piece.ROOK)
 {
-	// startingPos - position on which this certain root is placed at the beginning
-	// of the game
-	// posible move direction for rook
-	
-
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
 
-	def generateDirectionMoves(b : Board, acc : List[Move], dir : Int) :List[Move] = 
+	def generateDirectionMoves(b : Board, acc : MutableList[Move], dir : Int) : MutableList[Move] = 
 	{
 		var tmpPos = position
 		var result = acc
@@ -36,23 +33,21 @@ class Rook(position : Int, color : Int, id : Int)
 		{
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
-				result = new QuietMove(position, tmpPos, 0, 0, 
-				castlingRightsAfter) :: result
+				result += new QuietMove(position, tmpPos, 0, 0, castlingRightsAfter)
 			else
 			{
 				if (b.isOccupiedByOpponent(tmpPos, color))
-					result = new CaptureMove(position, tmpPos,
-						castlingRightsAfter) :: result
+					result += new CaptureMove(position, tmpPos, castlingRightsAfter)
 				return result
 			}
 		}
 		// never reaches here
-		Nil
+		result
 	}
 
 	override def generateMoves(b : Board) = 
 	{
-		var result : List[Move] = Nil
+		var result : MutableList[Move] = new MutableList[Move]()
 		Rook.possibleDirections.foreach((dir : Int) => 
 			result = generateDirectionMoves(b, result, dir))
 
@@ -65,5 +60,6 @@ class Rook(position : Int, color : Int, id : Int)
 
 object Rook
 {
+	// posible move direction for rook
 	val possibleDirections = Array(1, -1, 10, -10)
 }

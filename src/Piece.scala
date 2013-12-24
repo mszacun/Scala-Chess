@@ -1,5 +1,7 @@
 package src;
 
+import scala.collection.mutable.MutableList
+
 abstract class Piece(var position : Int, val color : Int, val id : Int,
 	val pieceType : Int)
 {
@@ -18,7 +20,7 @@ abstract class Piece(var position : Int, val color : Int, val id : Int,
 	// take care of it
 
 	// quiteMoves + attacks
-	def generateMoves(b : Board) : Traversable[Move]
+	def generateMoves(b : Board) : MutableList[Move]
 
 	// rank value of this piece in actual position
 	// takes under consideration material value of piece and

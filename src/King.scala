@@ -1,5 +1,7 @@
 package src;
 
+import scala.collection.mutable.MutableList
+
 class King(position : Int, color : Int, id : Int)
 	extends Piece(position, color, id, Piece.KING)
 {
@@ -9,19 +11,17 @@ class King(position : Int, color : Int, id : Int)
 
 	override def generateMoves(b : Board) = 
 	{
-		var result : List[Move] = Nil
+		var result : MutableList[Move] = new MutableList[Move]
 		// if you move king, you loose all castling rights
 		val castlingRightsAfter = Array(false, false, false, false, false)
 		King.possibleDirections.foreach((dir : Int) => 
 		{
 			val tmpPos = position + dir
 			if (b.isEmpty(tmpPos))
-				result = new QuietMove(position, tmpPos, 0, 0,
-					castlingRightsAfter) :: result
+				result += new QuietMove(position, tmpPos, 0, 0, castlingRightsAfter)
 			else
 				if (b.isOccupiedByOpponent(tmpPos, color))
-					result = new CaptureMove(position, tmpPos,
-						castlingRightsAfter) :: result
+					result += new CaptureMove(position, tmpPos, castlingRightsAfter)
 		})
 
 		result
