@@ -1,9 +1,9 @@
 package src;
 
-class Board(fen : String = "") 
-{
-	// TODO: Implement fen parsing
+import scala.collection.mutable.Map
 
+class Board() 
+{
 	// board 10 x 12 representation with auxilary fields
 	val board : Array[Int] = new Array[Int](10 * 12)
 
@@ -21,19 +21,34 @@ class Board(fen : String = "")
 	var castlingRights : Seq[Boolean] = Array(true, true, true, true, false)
 
 	// fields from which enPassant capture is possible
-	var enPassant1 : Int = 0
-	var enPassant2 : Int = 0
+	var enPassant1 : Int = 0 // in west direction
+	var enPassant2 : Int = 0 // in east direction
 
 	// history of moves on board in stack form
 	var movesStack : List[Move] = Nil
+	var whoseMove = Piece.WHITE
+
+	clearBoard
 
 	/* empty board */
-	for	(i <- 0 to 119)
+	def clearBoard =
 	{
-		if (i < 20 || i > 100 || i % 10 == 0 || i % 10 == 9)
-			board(i) = Board.AUXILIARY_SQUARE
-		else
-			board(i) = Board.EMPTY_SQUARE
+		for	(i <- 0 to 119)
+		{
+			if (i < 20 || i > 100 || i % 10 == 0 || i % 10 == 9)
+				board(i) = Board.AUXILIARY_SQUARE
+			else
+				board(i) = Board.EMPTY_SQUARE
+		}
+		for (i <- 1 until 32) piecesList(i) = null
+	}
+
+	def setStartingPosition = 
+	{
+		clearBoard
+		
+		addPiece(new Rook("A1", Piece.WHITE, Board.WHITE_ROOK_1))
+		addPiece(new Knight("B1", Piece.WHITE, Board.WHITE_KNIGHT_1))
 	}
 
 	def addPiece(piece : Piece) = 
@@ -212,4 +227,107 @@ object Board
 	val BLACK_BISHOP_2 = 26
 	val BLACK_QUEEN = 28
 	val BLACK_KING = 30
+
+	// array indexed by piece key, telling if given piece is pawn
+	val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
+						true, true, true, true, true, true, false, false, false, false,
+						false, false, false, false, false, false, false, false, false, false,
+						false, false)
+
+	def apply(fen : String) =
+	{
+		val board = new Board()
+		var stringIndex = 0
+		var arrayPos = Cord.fromString("A8")
+
+		// store information how much of certain type of pieces we lack 
+		// from starting state
+		val nextPieceKey = Map('r' -> 1, 'n' -> 1, 'b' -> 1, 'q' -> 0, 'k' -> 0,
+			'p' -> 7, 'R' -> 1, 'N' -> 1, 'B' -> 1, 'Q' -> 0, 'K' -> 0, 'P' -> 7)
+		val piecesKeys = Map(
+			'r' -> Array(BLACK_ROOK_2, BLACK_ROOK_1),
+			'n' -> Array(BLACK_KNIGHT_2, BLACK_KNIGHT_1),
+			'b' -> Array(BLACK_BISHOP_2, BLACK_BISHOP_1),
+			'q' -> Array(BLACK_QUEEN),
+			'k' -> Array(BLACK_KING),
+			'p' -> Array(BLACK_PAWN_8, BLACK_PAWN_7, BLACK_PAWN_6, BLACK_PAWN_5,
+				BLACK_PAWN_4, BLACK_PAWN_3, BLACK_PAWN_2, BLACK_PAWN_1),
+			'R' -> Array(WHITE_ROOK_2, WHITE_ROOK_1),
+			'N' -> Array(WHITE_KNIGHT_2, WHITE_KNIGHT_1),
+			'B' -> Array(WHITE_BISHOP_2, WHITE_BISHOP_1),
+			'Q' -> Array(WHITE_QUEEN),
+			'K' -> Array(WHITE_KING),
+			'P' -> Array(WHITE_PAWN_8, WHITE_PAWN_7, WHITE_PAWN_6, WHITE_PAWN_5,
+				WHITE_PAWN_4, WHITE_PAWN_3, WHITE_PAWN_2, WHITE_PAWN_1))
+
+		while (fen.charAt(stringIndex) != ' ')
+		{
+			val char : Char = fen.charAt(stringIndex)
+			if (char == '/') arrayPos -= 18 // got to next row
+			else if (Character.isDigit(char)) arrayPos += char.toInt - '0'.toInt
+			// have to put new piece
+			else 
+			{
+				var pieceID = 0
+				if (nextPieceKey(char) >= 0)
+				{
+					val index : Int = nextPieceKey(char)
+					pieceID = piecesKeys(char)(index)
+					nextPieceKey(char) -= 1
+				}
+				// there was promotion during game
+				else
+				{
+					val pawnLetter = if (Character.isUpperCase(char)) 'P' else 'p'
+					val index : Int = nextPieceKey(pawnLetter)
+					pieceID = piecesKeys(pawnLetter)(index)
+					nextPieceKey(pawnLetter) = index - 1
+				}
+				val newPiece = char match
+				{
+					case 'r' => new Rook(arrayPos, Piece.BLACK, pieceID)
+					case 'R' => new Rook(arrayPos, Piece.WHITE, pieceID)
+					case 'n' => new Knight(arrayPos, Piece.BLACK, pieceID)
+					case 'N' => new Knight(arrayPos, Piece.WHITE, pieceID)
+					case 'b' => new Bishop(arrayPos, Piece.BLACK, pieceID)
+					case 'B' => new Bishop(arrayPos, Piece.WHITE, pieceID)
+					case 'q' => new Queen(arrayPos, Piece.BLACK, pieceID)
+					case 'Q' => new Queen(arrayPos, Piece.WHITE, pieceID)
+					case 'k' => new King(arrayPos, Piece.BLACK, pieceID)
+					case 'K' => new King(arrayPos, Piece.WHITE, pieceID)
+					case 'p' => new Pawn(arrayPos, Piece.BLACK, pieceID)
+					case 'P' => new Pawn(arrayPos, Piece.WHITE, pieceID)
+				}
+				board.addPiece(newPiece)
+				arrayPos += 1
+			}
+			stringIndex += 1
+		}
+		stringIndex += 1 // ommit space
+		board.whoseMove = if (fen.charAt(stringIndex) == 'w') Piece.WHITE
+						  else 								  Piece.BLACK
+
+		stringIndex += 2 
+		val castlingRights = Array(false, false, false, false, false)
+		while (fen.charAt(stringIndex) != ' ')
+		{
+			fen.charAt(stringIndex) match
+			{
+				case 'K' => castlingRights(0) = true
+				case 'Q' => castlingRights(1) = true
+				case 'k' => castlingRights(2) = true
+				case 'q' => castlingRights(3) = true
+			}
+			stringIndex += 1
+		}
+		board.castlingRights = castlingRights
+
+		// TODO: restoring en passant nor supported!
+		board.enPassant1 = 0
+		board.enPassant2 = 0
+
+		// TODO: Halfmove and Fullmove clocks not supported
+
+		board
+	} 
 }
