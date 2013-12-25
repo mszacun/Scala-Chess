@@ -7,8 +7,8 @@ object Knight
 	val possibleMovesDirection = Array(-19, -21, -12, -8, 19, 21, 8, 12)
 }
 
-class Knight(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id, Piece.KNIGHT)
+class Knight(pos : Int, col : Int, identifire : Int)
+	extends Piece(pos, col, identifire, Piece.KNIGHT)
 {
 	
 	def this(position : String, color : Int, id : Int)= 

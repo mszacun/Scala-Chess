@@ -26,6 +26,7 @@ abstract class Piece(var position : Int, val color : Int, val id : Int,
 	// takes under consideration material value of piece and
 	// actual position of piece on board
 	def rank : Int
+
 }
 
 object Piece

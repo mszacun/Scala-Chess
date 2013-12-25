@@ -70,6 +70,10 @@ class FenParsingTest extends Test("FenParsingTest")
 		assert(board.isOffBoard(board.enPassant2))
 
 		assert(board.whoseMove == Piece.WHITE)
+
+		// check also in opposite direction
+		val expectedFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq"
+		assert(board.toFen == expectedFen)
 	}
 
 	def FenWithEmptySquaresBetweenPiecesTest = 
@@ -126,5 +130,8 @@ class FenParsingTest extends Test("FenParsingTest")
 
 		// whose next move
 		assert(board.whoseMove == Piece.BLACK)
+
+		val expectedFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq"
+		assert(board.toFen == expectedFen)
 	}
 }

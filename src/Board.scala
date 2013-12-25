@@ -1,6 +1,7 @@
 package src;
 
 import scala.collection.mutable.Map
+import scala.collection.mutable.MutableList
 
 class Board() 
 {
@@ -43,6 +44,18 @@ class Board()
 		for (i <- 1 until 32) piecesList(i) = null
 	}
 
+	def generateMoves(player : Int) =
+	{
+		val result = new MutableList[Move]
+		piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
+			{
+				if (piece != null && piece.color == player)
+					acc ++ piece.generateMoves(this)
+				else
+					acc
+			})
+	}
+
 	def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id
@@ -54,6 +67,7 @@ class Board()
 	{
 		movesStack = m :: movesStack
 		m.apply(this)
+		whoseMove ^= 1 // hacker style to switch player :)
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
@@ -74,6 +88,8 @@ class Board()
 		castlingRights = previousMove.castlingRightsAfter
 		enPassant1 = previousMove.enPassant1
 		enPassant2 = previousMove.enPassant2
+
+		whoseMove ^= 1 // hacker style to switch player :)
 	}
 
 	// checks wheter opponent can attack this field, used in looking for check
@@ -165,6 +181,48 @@ class Board()
 		isOccupied(position) && (board(position) & 1) != myColor
 
 	def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
+
+	def toFen =
+	{
+		var builder = new StringBuilder()
+		var spaceBetweenPieces = 0
+		for (row <- (1 to 8).reverse)
+		{
+			for (col <- 'A' to 'H')
+			{
+				val pos = Cord.fromString(col.toString + row)
+				if (isEmpty(pos))
+					spaceBetweenPieces += 1
+				else
+				{
+					if (spaceBetweenPieces > 0)
+					{
+						builder.append(spaceBetweenPieces)
+						spaceBetweenPieces = 0
+					}
+					builder.append(Board.pieceKeyToFEN(board(pos)))
+				}
+			}
+			if (spaceBetweenPieces > 0)
+			{
+				builder.append(spaceBetweenPieces)
+				spaceBetweenPieces = 0
+			}
+			// on the end of piece position description there is no '/'
+			if (row > 1) builder.append('/')
+		}
+
+		val playerChar = if (whoseMove == Piece.WHITE) 'w' else 'b'
+		builder.append(" " + playerChar + " ")
+
+		// castlingRights
+		if (castlingRights(0)) builder.append('K')
+		if (castlingRights(1)) builder.append('Q')
+		if (castlingRights(2)) builder.append('k')
+		if (castlingRights(3)) builder.append('q')
+
+		builder.toString
+	}
 }	
 
 object Board
@@ -236,6 +294,18 @@ object Board
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true)
+	val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
+		WHITE_PAWN_3 -> 'P', WHITE_PAWN_4 -> 'P', WHITE_PAWN_5 -> 'P',
+		WHITE_PAWN_6 -> 'P', WHITE_PAWN_7 -> 'P', WHITE_PAWN_8 -> 'P',
+		WHITE_ROOK_1 -> 'R', WHITE_ROOK_2 -> 'R', WHITE_KNIGHT_1 -> 'N',
+		WHITE_KNIGHT_2 -> 'N', WHITE_BISHOP_1 -> 'B', WHITE_BISHOP_2 -> 'B',
+		WHITE_QUEEN -> 'Q', WHITE_KING -> 'K',
+		BLACK_PAWN_1 -> 'p', BLACK_PAWN_2 -> 'p',
+		BLACK_PAWN_3 -> 'p', BLACK_PAWN_4 -> 'p', BLACK_PAWN_5 -> 'p',
+		BLACK_PAWN_6 -> 'p', BLACK_PAWN_7 -> 'p', BLACK_PAWN_8 -> 'p',
+		BLACK_ROOK_1 -> 'r', BLACK_ROOK_2 -> 'r', BLACK_KNIGHT_1 -> 'n',
+		BLACK_KNIGHT_2 -> 'n', BLACK_BISHOP_1 -> 'b', BLACK_BISHOP_2 -> 'b',
+		BLACK_QUEEN -> 'q', BLACK_KING -> 'k')
 
 
 	def apply(fen : String) =

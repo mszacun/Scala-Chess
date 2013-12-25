@@ -3,8 +3,8 @@ package src;
 import scala.collection.mutable.MutableList
 
 
-class Pawn(position : Int, color : Int, id : Int) 
-	extends Piece(position, color, id, Piece.PAWN)
+class Pawn(pos : Int, col : Int, identifier : Int) 
+	extends Piece(pos, col, identifier, Piece.PAWN)
 {
 	val whitePawnsStartingRow = 1 // remeber, that rows are 0 indexed
 	val blackPawnsStartingRow = 6

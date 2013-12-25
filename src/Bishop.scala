@@ -2,8 +2,8 @@ package src;
 
 import scala.collection.mutable.MutableList;
 
-class Bishop(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id, Piece.BISHOP)
+class Bishop(pos : Int, col : Int, identifier : Int)
+	extends Piece(pos, col, identifier, Piece.BISHOP)
 {
 
 	def this(position : String, color : Int, id : Int)= 

@@ -2,8 +2,8 @@ package src;
 
 import scala.collection.mutable.MutableList
 
-class King(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id, Piece.KING)
+class King(pos : Int, col : Int, identifier : Int)
+	extends Piece(pos, col, identifier, Piece.KING)
 {
 
 	def this(position : String, color : Int, id : Int)= 

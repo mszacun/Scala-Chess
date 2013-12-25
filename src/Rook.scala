@@ -2,8 +2,8 @@ package src;
 
 import scala.collection.mutable.MutableList
 
-class Rook(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id, Piece.ROOK)
+class Rook(pos : Int, col : Int, identifier : Int)
+	extends Piece(pos, col, identifier, Piece.ROOK)
 {
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)

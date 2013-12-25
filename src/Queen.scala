@@ -2,8 +2,8 @@ package src;
 
 import scala.collection.mutable.MutableList
 
-class Queen(position : Int, color : Int, id : Int)
-	extends Piece(position, color, id, Piece.QUEEN)
+class Queen(pos : Int, col : Int, identifier : Int)
+	extends Piece(pos, col, identifier, Piece.QUEEN)
 {
 	val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
 
