@@ -18,7 +18,7 @@ class Queen(pos : Int, col : Int, identifier : Int)
 		{
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
-				result += new QuietMove(position, tmpPos, 0, 0, b.castlingRights)
+				result += new QuietMove(position, tmpPos, 0, b.castlingRights)
 			else
 			{
 				if (b.isOccupiedByOpponent(tmpPos, color))

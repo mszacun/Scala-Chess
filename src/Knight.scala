@@ -24,7 +24,7 @@ class Knight(pos : Int, col : Int, identifire : Int)
 				result += new CaptureMove(position, tmpPos, b.castlingRights)
 			else
 				if (b.isEmpty(tmpPos))
-					result += new QuietMove(position, tmpPos, 0, 0, b.castlingRights)
+					result += new QuietMove(position, tmpPos, 0, b.castlingRights)
 		})
 		result
 	}

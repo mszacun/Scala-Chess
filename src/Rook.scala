@@ -33,7 +33,7 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		{
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
-				result += new QuietMove(position, tmpPos, 0, 0, castlingRightsAfter)
+				result += new QuietMove(position, tmpPos, 0, castlingRightsAfter)
 			else
 			{
 				if (b.isOccupiedByOpponent(tmpPos, color))

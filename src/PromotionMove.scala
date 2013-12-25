@@ -1,7 +1,7 @@
 package src;
 
-class PromotionMove(start : Int, end : Int, castlingRightsAfter : Seq[Boolean], promotion : Int) 
-	extends Move(Move.PROMOTION_MOVE, start, end, 0, 0, castlingRightsAfter)
+class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolean], promotion : Int) 
+	extends Move(Move.PROMOTION_MOVE, start, end, 0, castlingRightsAfterMove)
 {
 	// pawn that was promoted, will be set during applying to board
 	var pawnPromoted : Piece = null
@@ -15,19 +15,20 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfter : Seq[Boolean], 
 		b.board(start) = Board.EMPTY_SQUARE
 		b.board(end) = pieceID
 		
+		// change data in Board.is* arrays
+		Board.isPawn(pieceID) = false
+		
 		// promote it
+		Board.isQueen(pieceID) = true
 		val newPiece = promotion match
 			{
-				case Piece.ROOK => new Rook(end, pawnPromoted.color, pieceID)
 				case Piece.QUEEN => new Queen(end, pawnPromoted.color, pieceID)
-				case Piece.BISHOP => new Bishop(end, pawnPromoted.color, pieceID)
-				case Piece.KNIGHT => new Knight(end, pawnPromoted.color, pieceID)
+				case _ => throw new NotImplementedError
 			}
 		b.piecesList(pieceID) = newPiece
 
 		b.castlingRights = castlingRightsAfter
-		b.enPassant1 = enPassant1
-		b.enPassant2 = enPassant2
+		b.enPassant = enPassant
 	}
 
 	override def undo(b : Board) = 
@@ -37,5 +38,8 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfter : Seq[Boolean], 
 		b.board(end) = Board.EMPTY_SQUARE
 		b.board(start) = pieceID
 		b.piecesList(pieceID) = pawnPromoted
+
+		Board.isPawn(pieceID) = true
+		Board.isQueen(pieceID) = false
 	}
 }

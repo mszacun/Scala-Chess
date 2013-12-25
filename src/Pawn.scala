@@ -28,7 +28,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						Piece.QUEEN) // FIXME: AI always will promote to queen!
 				else
 				{
-					result += new QuietMove(position, move, 0, 0, b.castlingRights)
+					result += new QuietMove(position, move, 0, b.castlingRights)
 
 					// double move if on starting position
 					if (Cord.getRow(position) == whitePawnsStartingRow)
@@ -36,8 +36,8 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						move = Cord.moveS(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
 							result += new QuietMove(position, 
-								move, Cord.moveSW(position, 1), // enPasant is possible
-								Cord.moveSE(position, 1), b.castlingRights)
+								move, Cord.moveN(position, 1), // enPasant is possible
+								b.castlingRights)
 					}
 				}
 			}
@@ -53,7 +53,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						Piece.QUEEN)
 				else
 				{
-					result += new QuietMove(position, move, 0, 0, b.castlingRights)
+					result += new QuietMove(position, move, 0, b.castlingRights)
 
 					// double move if on starting position
 					if (Cord.getRow(position) == blackPawnsStartingRow)
@@ -61,8 +61,8 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						move = Cord.moveN(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
 							result += new QuietMove(position, 
-								move, Cord.moveNW(position, 1),
-								Cord.moveNE(position, 1), b.castlingRights)
+								move, Cord.moveS(position, 1),
+								b.castlingRights)
 					}
 				}
 			}

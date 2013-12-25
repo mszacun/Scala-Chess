@@ -14,7 +14,8 @@ object Cord
 	 // Translates position on board into array index used in board representation
 	def fromString(position : String) = 
 	{
-		val column = position.charAt(0).toInt - 'A'.toInt
+		val columnChar = Character.toUpperCase(position.charAt(0))
+		val column = columnChar - 'A'.toInt
 		val row = position.charAt(1).toInt - '1'.toInt
 
 		21 + row * 10 + column

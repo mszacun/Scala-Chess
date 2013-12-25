@@ -1,8 +1,8 @@
 package src;
 
-class CaptureMove(startPos : Int, endPos : Int, 
-	castlingRightsAfter : Seq[Boolean]) extends Move(Move.CAPTURE_MOVE,
-	startPos, endPos, 0, 0, castlingRightsAfter)
+class CaptureMove(start : Int, end : Int, 
+	castlingRightsAfterMove : Seq[Boolean]) extends Move(Move.CAPTURE_MOVE,
+	start, end, 0, castlingRightsAfterMove)
 	{
 		// will be assigned during applaying to board
 		var capturedPiece : Piece = null 
@@ -21,8 +21,7 @@ class CaptureMove(startPos : Int, endPos : Int,
 			b.piecesList(capturedPieceID) = null
 
 			b.castlingRights = castlingRightsAfter
-			b.enPassant1 = 0
-			b.enPassant2 = 0
+			b.enPassant = 0
 		}
 
 		override def undo(b : Board) = 

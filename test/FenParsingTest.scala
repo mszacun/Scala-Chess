@@ -66,13 +66,12 @@ class FenParsingTest extends Test("FenParsingTest")
 		assert(board.castlingRights.count((right : Boolean) => right) == 4)
 
 		// en passant
-		assert(board.isOffBoard(board.enPassant1))
-		assert(board.isOffBoard(board.enPassant2))
+		assert(board.isOffBoard(board.enPassant))
 
 		assert(board.whoseMove == Piece.WHITE)
 
 		// check also in opposite direction
-		val expectedFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq"
+		val expectedFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 		assert(board.toFen == expectedFen)
 	}
 
@@ -125,13 +124,12 @@ class FenParsingTest extends Test("FenParsingTest")
 		assert(board.castlingRights.count((right : Boolean) => right) == 4)
 
 		// en passant
-		assert(board.isOffBoard(board.enPassant1))
-		assert(board.isOffBoard(board.enPassant2))
+		assert(Cord.toString(board.enPassant) == "E3")
 
 		// whose next move
 		assert(board.whoseMove == Piece.BLACK)
 
-		val expectedFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq"
+		val expectedFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq E3"
 		assert(board.toFen == expectedFen)
 	}
 }

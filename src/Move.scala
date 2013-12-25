@@ -1,8 +1,7 @@
 package src;
 
 abstract class Move(val moveType : Int, val start : Int, val end : Int,
-	val enPassant1 : Int, val enPassant2 : Int, 
-	val castlingRightsAfter : Seq[Boolean])
+	val enPassant : Int, val castlingRightsAfter : Seq[Boolean])
 {
 	// * start -> position from move started (if more than one piece takes part
 	// in move, primary piece start position is stored

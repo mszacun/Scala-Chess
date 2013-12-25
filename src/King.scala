@@ -18,7 +18,7 @@ class King(pos : Int, col : Int, identifier : Int)
 		{
 			val tmpPos = position + dir
 			if (b.isEmpty(tmpPos))
-				result += new QuietMove(position, tmpPos, 0, 0, castlingRightsAfter)
+				result += new QuietMove(position, tmpPos, 0, castlingRightsAfter)
 			else
 				if (b.isOccupiedByOpponent(tmpPos, color))
 					result += new CaptureMove(position, tmpPos, castlingRightsAfter)

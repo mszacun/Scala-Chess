@@ -14,6 +14,10 @@ class CordTest extends Test("CordTest")
 	{
 		assert(Cord.fromString("A1") == 21)
 		assert(Cord.fromString("D4") == 54)
+
+		// small letters
+		assert(Cord.fromString("c6") == 73)
+		assert(Cord.fromString("e3") == 45)
 	}
 
 	def testToStringConversion = 

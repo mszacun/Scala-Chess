@@ -22,8 +22,7 @@ class Board()
 	var castlingRights : Seq[Boolean] = Array(true, true, true, true, false)
 
 	// fields from which enPassant capture is possible
-	var enPassant1 : Int = 0 // in west direction
-	var enPassant2 : Int = 0 // in east direction
+	var enPassant : Int = 0 // target en passant square
 
 	// history of moves on board in stack form
 	var movesStack : List[Move] = Nil
@@ -82,12 +81,11 @@ class Board()
 			{
 				case h :: t => h
 				// at the beginning everyone can castle
-				case Nil => new QuietMove(0, 0, 0, 0, Array(true, true, true,
+				case Nil => new QuietMove(0, 0, 0, Array(true, true, true,
 					true, false))
 			}
 		castlingRights = previousMove.castlingRightsAfter
-		enPassant1 = previousMove.enPassant1
-		enPassant2 = previousMove.enPassant2
+		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
 	}
@@ -216,10 +214,19 @@ class Board()
 		builder.append(" " + playerChar + " ")
 
 		// castlingRights
+		// FIXME: When there are no castling rights we have to add '-'
 		if (castlingRights(0)) builder.append('K')
 		if (castlingRights(1)) builder.append('Q')
 		if (castlingRights(2)) builder.append('k')
 		if (castlingRights(3)) builder.append('q')
+
+		// enPassant
+		builder.append(" ")
+
+		if (!isOffBoard(enPassant))
+			builder.append(Cord.toString(enPassant))
+		else
+			builder.append("-")
 
 		builder.toString
 	}
@@ -395,10 +402,17 @@ object Board
 			stringIndex += 1
 		}
 		board.castlingRights = castlingRights
+		stringIndex += 1 // move to next field
 
-		// TODO: restoring en passant nor supported!
-		board.enPassant1 = 0
-		board.enPassant2 = 0
+		// en passant field
+		val enPassantFieldStart = stringIndex
+		while (fen.charAt(stringIndex) != ' ')
+			stringIndex += 1
+		val enPassantField = fen.substring(enPassantFieldStart, stringIndex)
+		if (enPassantField == "-")
+			board.enPassant = 0
+		else
+			board.enPassant = Cord.fromString(enPassantField)
 
 		// TODO: Halfmove and Fullmove clocks not supported
 
