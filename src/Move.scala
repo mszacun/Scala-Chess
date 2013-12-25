@@ -28,4 +28,5 @@ object Move
 	val CAPTURE_MOVE = 1
 	val CASTLE_MOVE = 2
 	val PROMOTION_MOVE = 3
+	val ENPASSANT_MOVE = 4
 }

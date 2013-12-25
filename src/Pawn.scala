@@ -36,7 +36,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						move = Cord.moveS(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
 							result += new QuietMove(position, 
-								move, Cord.moveN(position, 1), // enPasant is possible
+								move, Cord.moveS(position, 1), // enPasant is possible
 								b.castlingRights)
 					}
 				}
@@ -61,7 +61,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						move = Cord.moveN(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
 							result += new QuietMove(position, 
-								move, Cord.moveS(position, 1),
+								move, Cord.moveN(position, 1),
 								b.castlingRights)
 					}
 				}

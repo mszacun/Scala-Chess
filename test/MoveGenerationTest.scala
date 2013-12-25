@@ -46,7 +46,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 			// check if we have check in this leaf node
 			if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
 				checks += 1
-			val moves = board.generateMoves(board.whoseMove)
+			val moves = board.generateMovesForNextPlayer
 			leafNodes += moves.size
 			captures += moves.count((m : Move) => m.moveType == Move.CAPTURE_MOVE)
 
@@ -58,7 +58,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 								else                                Board.WHITE_KING
 			if (!board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove ^ 1))
 			{
-				board.generateMoves(board.whoseMove).foreach((m : Move) =>
+				board.generateMovesForNextPlayer.foreach((m : Move) =>
 					{
 						board.makeMove(m)
 						perft(board, depth - 1)

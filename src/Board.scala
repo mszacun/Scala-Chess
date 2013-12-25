@@ -43,12 +43,47 @@ class Board()
 		for (i <- 1 until 32) piecesList(i) = null
 	}
 
-	def generateMoves(player : Int) =
+	def generateMovesForNextPlayer =
 	{
 		val result = new MutableList[Move]
+
+		// check if en passant is possible
+		if (!isOffBoard(enPassant))
+		{
+			if (whoseMove == Piece.WHITE)
+			{
+				// on the left
+				var pawnSquare = enPassant - 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+				pawnSquare = enPassant - 11
+				// on the right
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+			}
+			else
+			{
+				var pawnSquare = enPassant + 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+				pawnSquare = enPassant + 11
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+			}
+		}
+
+		// generate quiet moves, captures an promotions
 		piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
 			{
-				if (piece != null && piece.color == player)
+				if (piece != null && piece.color == whoseMove)
 					acc ++ piece.generateMoves(this)
 				else
 					acc
@@ -177,6 +212,9 @@ class Board()
 	// quickly checks color of piece
 	def isOccupiedByOpponent(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) != myColor
+
+	def isOccupiedByMe(position : Int, myColor : Int) = 
+		isOccupied(position) && (board(position) & 1) == myColor
 
 	def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 
