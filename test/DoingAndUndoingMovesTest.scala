@@ -224,7 +224,6 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		// find en passant move
 		val enPassantMoves = board.generateMovesForNextPlayer.filter(
 			(m : Move) => m.moveType == Move.ENPASSANT_MOVE)
-		println(enPassantMoves.size)
 		assert(enPassantMoves.size == 1)
 
 		// do en passant capture

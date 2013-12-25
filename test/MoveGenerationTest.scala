@@ -19,13 +19,42 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	var leafNodes = 0
 	var captures = 0
 	var checks = 0
+	val max_indent = 10
 
 	def doAllTests = 
 	{
 		StartingMovesGenerationTest
+		DifficultPositionMoveGenerationTest
 	}
 
-	def startPerft(fen : String, depth : Int) : Int =
+	def doesCausesCheckForMe(m : Move, b : Board) = 
+	{
+		val myColor = b.whoseMove
+		val myKingID = if (myColor == Piece.WHITE) Board.WHITE_KING
+		             else                        Board.BLACK_KING
+
+		b.makeMove(m)
+		val king = b.piecesList(myKingID)
+		val result = b.isAttacked(king.position, myColor)
+		b.undoMove
+		result
+	}
+
+	def generateOnlyValidMoves(b : Board) = 
+	{
+		val allMoves = b.generateMovesForNextPlayer
+		allMoves.filter((m : Move) => !doesCausesCheckForMe(m, b))
+	}
+
+	def print_indent(str : String, indent : Int) = 
+	{
+		for (i <- 1 to indent)
+			print(" ")
+		println(str)
+	}
+
+
+	def startPerft(fen : String, depth : Int) : (Int, Int, Int) =
 	{
 		val board = Board(fen)
 
@@ -34,38 +63,36 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		checks = 0
 
 		perft(board, depth - 1)
-		leafNodes
+		(leafNodes, captures, checks)
 	}
 
 	def perft(board : Board, depth : Int) : Unit = 
 	{
 		if (depth == 0) 
 		{
-			val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.WHITE_KING
-								else                                Board.BLACK_KING
+			val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.BLACK_KING
+								else                                Board.WHITE_KING
 			// check if we have check in this leaf node
-			if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
-				checks += 1
-			val moves = board.generateMovesForNextPlayer
+			val moves = generateOnlyValidMoves(board)
+			moves.foreach((m: Move) => 
+			{
+				board.makeMove(m)
+				if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
+					checks += 1
+				board.undoMove
+			})
 			leafNodes += moves.size
-			captures += moves.count((m : Move) => m.moveType == Move.CAPTURE_MOVE)
+			captures += moves.count((m : Move) => m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE)
 
 		}
 		else
 		{
-			// if there side that make previous move is in check, then that was illegal move
-			val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.BLACK_KING
-								else                                Board.WHITE_KING
-			if (!board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove ^ 1))
-			{
-				board.generateMovesForNextPlayer.foreach((m : Move) =>
-					{
-						board.makeMove(m)
-						perft(board, depth - 1)
-						board.undoMove
-					})
-			}
-			else println("Check position")
+			generateOnlyValidMoves(board).foreach((m : Move) =>
+				{
+					board.makeMove(m)
+					perft(board, depth - 1)
+					board.undoMove
+				})
 		}
 		// return value
 		()
@@ -75,11 +102,22 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	{
 		val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-		assert(startPerft(startFEN, 1) == 20)
-		assert(startPerft(startFEN, 2) == 400)
-		assert(startPerft(startFEN, 3) == 8902)
-		println(startPerft(startFEN, 4))
-		println("Captures: " + captures)
-		println("Checks: " + checks)
+		println("Starting position: ")
+		assert(startPerft(startFEN, 1) == (20, 0, 0))
+		assert(startPerft(startFEN, 2) == (400, 0, 0))
+		assert(startPerft(startFEN, 3) == (8902, 34, 12))
+		assert(startPerft(startFEN, 4) == (197281, 1576, 469))
+		assert(startPerft(startFEN, 5) == (4865609, 82719, 27351))
+	}
+
+	def DifficultPositionMoveGenerationTest = 
+	{
+		val fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -"
+
+		println("Dfficult position: ")
+		assert(startPerft(fen, 1) == (14, 1, 2))
+		assert(startPerft(fen, 2) == (191, 14, 10))
+		assert(startPerft(fen, 3) == (2812, 209, 267))
+		assert(startPerft(fen, 4) == (43238, 3348, 1680))
 	}
 }
