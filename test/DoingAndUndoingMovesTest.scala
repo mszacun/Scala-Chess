@@ -4,6 +4,7 @@ import src.Cord
 import src.Pawn
 import src.Piece
 import src.King
+import src.CastleMove
 import src.Rook
 import src.Bishop
 import src.Board
@@ -22,6 +23,7 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		PromotionMoveTest
 		WhiteCastlingRightsChangingMoveTest
 		BlackEnPasantDetectionDoingAndUndoingTest
+		TwoCastlesDoingAndUndoingTest
 	}
 
 	def JustOneQuietMoveTest = 
@@ -257,5 +259,87 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 		board.undoMove
 		assert(board.isOffBoard(board.enPassant))
 	} 
+
+	def TwoCastlesDoingAndUndoingTest =
+	{
+		val whiteRook = new Rook("A1", Piece.WHITE, Board.WHITE_ROOK_1)
+		val whiteKing = new King("E1", Piece.WHITE, Board.WHITE_KING)
+		val blackRook = new Rook("H8", Piece.BLACK, Board.BLACK_ROOK_1)
+		val blackKing = new King("E8", Piece.BLACK, Board.BLACK_KING)
+
+		val whiteRookStartPos = Cord.fromString("A1")
+		val whiteKingStartPos = Cord.fromString("E1")
+		val blackRookStartPos = Cord.fromString("H8")
+		val blackKingStartPos = Cord.fromString("E8")
+
+		val whiteRookEndPos = Cord.fromString("D1")
+		val whiteKingEndPos = Cord.fromString("C1")
+		val blackRookEndPos = Cord.fromString("F8")
+		val blackKingEndPos = Cord.fromString("G8")
+
+		val board = new Board()
+		board.addPiece(whiteRook)
+		board.addPiece(whiteKing)
+		board.addPiece(blackRook)
+		board.addPiece(blackKing)
+
+		val castleRightsAfterWhiteCastle = Array(false, false, board.castlingRights(2),
+			board.castlingRights(3), false)
+
+		val castle1 = new CastleMove(whiteRookStartPos, whiteRookEndPos, 
+			whiteKingStartPos, whiteKingEndPos, castleRightsAfterWhiteCastle)
+
+		board.makeMove(castle1)
+
+		// assertions
+		assert(board.isEmpty(whiteRookStartPos))
+		assert(board.isEmpty(whiteKingStartPos))
+
+		assert(Board.isKing(board.board(whiteKingEndPos)))
+		assert(Board.isRook(board.board(whiteRookEndPos)))
+
+		assert(!board.castlingRights(0))
+		assert(!board.castlingRights(1))
+
+		val castleRightsAfterBlackCastle = Array(board.castlingRights(0), board.castlingRights(1),
+			false, false, false)
+		val castle2 = new CastleMove(blackRookStartPos, blackRookEndPos,
+			blackKingStartPos, blackKingEndPos, castleRightsAfterBlackCastle)
+
+		board.makeMove(castle2)
+
+		// assertions
+		assert(board.isEmpty(blackRookStartPos))
+		assert(board.isEmpty(blackKingStartPos))
+
+		assert(Board.isKing(board.board(blackKingEndPos)))
+		assert(Board.isRook(board.board(blackRookEndPos)))
+
+		assert(!board.castlingRights(2))
+		assert(!board.castlingRights(3))
+
+		// undo black castle
+		board.undoMove
+		assert(board.isEmpty(blackRookEndPos))
+		assert(board.isEmpty(blackKingEndPos))
+		
+		assert(Board.isKing(board.board(blackKingStartPos)))
+		assert(Board.isRook(board.board(blackRookStartPos)))
+
+		// check if castling rights are restored
+		assert(board.castlingRights(2))
+		assert(board.castlingRights(3))
+
+		// undo white castle
+		board.undoMove
+		assert(board.isEmpty(whiteKingEndPos))
+		assert(board.isEmpty(whiteRookEndPos))
+
+		assert(Board.isKing(board.board(whiteKingStartPos)))
+		assert(Board.isRook(board.board(whiteRookStartPos)))
+
+		assert(board.castlingRights(0))
+		assert(board.castlingRights(1))
+	}
 }
 

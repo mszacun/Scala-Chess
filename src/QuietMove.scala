@@ -10,6 +10,7 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 	{
 		val pieceID = b.board(start)
 		val piece = b.piecesList(pieceID)
+
 		b.board(start) = Board.EMPTY_SQUARE
 		b.board(end) = pieceID
 
