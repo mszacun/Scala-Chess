@@ -56,13 +56,13 @@ class Board()
 				var pawnSquare = enPassant - 9
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
 						castlingRights)
 				pawnSquare = enPassant - 11
 				// on the right
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
 						castlingRights)
 			}
 			else
@@ -252,7 +252,6 @@ class Board()
 		builder.append(" " + playerChar + " ")
 
 		// castlingRights
-		// FIXME: When there are no castling rights we have to add '-'
 		if (castlingRights(0)) builder.append('K')
 		if (castlingRights(1)) builder.append('Q')
 		if (castlingRights(2)) builder.append('k')
@@ -449,7 +448,7 @@ object Board
 
 		// en passant field
 		val enPassantFieldStart = stringIndex
-		while (fen.charAt(stringIndex) != ' ')
+		while (stringIndex < fen.size && fen.charAt(stringIndex) != ' ')
 			stringIndex += 1
 		val enPassantField = fen.substring(enPassantFieldStart, stringIndex)
 		if (enPassantField == "-")
