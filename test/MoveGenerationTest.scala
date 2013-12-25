@@ -68,31 +68,39 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 	def perft(board : Board, depth : Int) : Unit = 
 	{
-		if (depth == 0) 
+		val whoseKing = board.whoseMove ^ 1
+		val kingToCheckID = if (whoseKing == Piece.WHITE) Board.WHITE_KING
+							else                          Board.BLACK_KING
+		val pos = board.piecesList(kingToCheckID).position
+		if (!board.isAttacked(pos, whoseKing))
 		{
-			val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.BLACK_KING
-								else                                Board.WHITE_KING
-			// check if we have check in this leaf node
-			val moves = generateOnlyValidMoves(board)
-			moves.foreach((m: Move) => 
+			if (depth == 0) 
 			{
-				board.makeMove(m)
-				if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
-					checks += 1
-				board.undoMove
-			})
-			leafNodes += moves.size
-			captures += moves.count((m : Move) => m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE)
-
-		}
-		else
-		{
-			generateOnlyValidMoves(board).foreach((m : Move) =>
+				val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.BLACK_KING
+									else                                Board.WHITE_KING
+				// check if we have check in this leaf node
+				val moves = generateOnlyValidMoves(board)
+				moves.foreach((m: Move) => 
 				{
 					board.makeMove(m)
-					perft(board, depth - 1)
+					if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
+						checks += 1
 					board.undoMove
 				})
+				leafNodes += moves.size
+				captures += moves.count((m : Move) => m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE)
+
+			}
+			else
+			{
+			
+				board.generateMovesForNextPlayer.foreach((m : Move) =>
+					{
+						board.makeMove(m)
+						perft(board, depth - 1)
+						board.undoMove
+					})
+			}
 		}
 		// return value
 		()
@@ -103,11 +111,30 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 		println("Starting position: ")
+		var start = System.nanoTime
 		assert(startPerft(startFEN, 1) == (20, 0, 0))
+		var end = System.nanoTime
+		println("Depth 1: " + (end - start) + "ns")
+
+		start = System.nanoTime
 		assert(startPerft(startFEN, 2) == (400, 0, 0))
+		end = System.nanoTime
+		println("Depth 2: " + (end - start) + "ns")
+
+		start = System.nanoTime
 		assert(startPerft(startFEN, 3) == (8902, 34, 12))
+		end = System.nanoTime
+		println("Depth 3: " + (end - start) + "ns")	
+
+		start = System.nanoTime
 		assert(startPerft(startFEN, 4) == (197281, 1576, 469))
+		end = System.nanoTime
+		println("Depth 4: " + (end - start) + "ns")
+
+		start = System.nanoTime
 		assert(startPerft(startFEN, 5) == (4865609, 82719, 27351))
+		end = System.nanoTime
+		println("Depth 5: " + (end - start) + "ns")
 	}
 
 	def DifficultPositionMoveGenerationTest = 
@@ -115,9 +142,24 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		val fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -"
 
 		println("Dfficult position: ")
+		var start = System.nanoTime
 		assert(startPerft(fen, 1) == (14, 1, 2))
+		var end = System.nanoTime
+		println("Depth 1: " + (end - start) + " ns")
+
+		start = System.nanoTime
 		assert(startPerft(fen, 2) == (191, 14, 10))
+		end = System.nanoTime
+		println("Depth 2: " + (end - start) + " ns")
+
+		start = System.nanoTime
 		assert(startPerft(fen, 3) == (2812, 209, 267))
+		end = System.nanoTime
+		println("Depth 3: " + (end - start) + " ns")
+
+		start = System.nanoTime
 		assert(startPerft(fen, 4) == (43238, 3348, 1680))
+		end = System.nanoTime
+		println("Depth 4: " + (end - start) + " ns")
 	}
 }
