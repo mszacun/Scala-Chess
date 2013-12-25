@@ -257,6 +257,10 @@ class Board()
 		if (castlingRights(1)) builder.append('Q')
 		if (castlingRights(2)) builder.append('k')
 		if (castlingRights(3)) builder.append('q')
+		// no castle rights ?
+		if (!castlingRights(0) && !castlingRights(1) && 
+			!castlingRights(2) && !castlingRights(3))
+			builder.append("-")
 
 		// enPassant
 		builder.append(" ")
@@ -436,6 +440,7 @@ object Board
 				case 'Q' => castlingRights(1) = true
 				case 'k' => castlingRights(2) = true
 				case 'q' => castlingRights(3) = true
+				case '-' => castlingRights(4) = false // ommit '-'
 			}
 			stringIndex += 1
 		}

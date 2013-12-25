@@ -15,8 +15,9 @@ class FenParsingTest extends Test("FenParsingTest")
 {
 	def doAllTests = 
 	{
-	//	StartingPositionFenParseTest
+		StartingPositionFenParseTest
 		FenWithEmptySquaresBetweenPiecesTest
+		DfficultFenParsingTest
 	}
 
 	def StartingPositionFenParseTest =
@@ -90,9 +91,6 @@ class FenParsingTest extends Test("FenParsingTest")
 		assert(board.board(Cord.fromString("G1")) == Board.WHITE_KNIGHT_2)
 		assert(board.board(Cord.fromString("H1")) == Board.WHITE_ROOK_2)
 
-		/* TODO: Write functions for each kind of piece
-		 * that will be albe to answer by given piece key, is that this kind of piece 
-		 */
 		assert(Board.isPawn(board.board(Cord.fromString("A2"))))
 		assert(Board.isPawn(board.board(Cord.fromString("B2"))))
 		assert(Board.isPawn(board.board(Cord.fromString("C2"))))
@@ -130,6 +128,27 @@ class FenParsingTest extends Test("FenParsingTest")
 		assert(board.whoseMove == Piece.BLACK)
 
 		val expectedFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq E3"
+		assert(board.toFen == expectedFen)
+	}
+
+	def DfficultFenParsingTest = 
+	{
+		val fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"
+		val board = Board(fen)
+
+		assert(Board.isPawn(board.board(Cord.fromString("G2"))))
+		assert(Board.isPawn(board.board(Cord.fromString("E2"))))
+		assert(Board.isPawn(board.board(Cord.fromString("F4"))))
+		assert(Board.isPawn(board.board(Cord.fromString("D6"))))
+		assert(Board.isPawn(board.board(Cord.fromString("C7"))))
+
+		assert(Board.isKing(board.board(Cord.fromString("H4"))))
+		assert(Board.isKing(board.board(Cord.fromString("A5"))))
+
+		assert(Board.isRook(board.board(Cord.fromString("H5"))))
+		assert(Board.isRook(board.board(Cord.fromString("B4"))))
+		
+		val expectedFen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -"
 		assert(board.toFen == expectedFen)
 	}
 }
