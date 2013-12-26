@@ -50,37 +50,43 @@ class Board()
 		// check if castles are possible
 		if (whoseMove == Piece.WHITE)
 		{
-			val castleRightsAfter = Array(false, false, castlingRights(2),
-				castlingRights(3), false)
+			if (!isAttacked(piecesList(Board.WHITE_KING).position, whoseMove))
+			{
+				val castleRightsAfter = Array(false, false, castlingRights(2),
+					castlingRights(3), false)
 
-			// castle king side
-			if (Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(0))
-				result += new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
-					Board.whiteKingStartPos, Board.whiteKingKSEndPos, castleRightsAfter)
+				// castle king side
+				if (Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
+					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(0))
+					result += new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
+						Board.whiteKingStartPos, Board.whiteKingKSEndPos, castleRightsAfter)
 
-			// castle queen side
-			if (Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1) &&
-				isEmpty(Board.additionalFreeSquareWhiteCastleQS))
-				result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
-					Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
+				// castle queen side
+				if (Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
+					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1) &&
+					isEmpty(Board.additionalFreeSquareWhiteCastleQS))
+					result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
+						Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
+			}
 		}
 		else
 		{
-			val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
-				false, false, false)
-			// castle king side
-			if (Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(2))
-				result += new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
-					Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
-			// castle queen side
-			if (Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3) &&
-				isEmpty(Board.additionalFreeSquareBlackCastleQS))
-				result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
-					Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
+			if (!isAttacked(piecesList(Board.BLACK_KING).position, whoseMove))
+			{
+				val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
+					false, false, false)
+				// castle king side
+				if (Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
+					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(2))
+					result += new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
+						Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
+				// castle queen side
+				if (Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
+					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3) &&
+					isEmpty(Board.additionalFreeSquareBlackCastleQS))
+						result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
+							Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
+			}
 		}
 
 		// check if en passant is possible

@@ -154,7 +154,11 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 
 		board.addPiece(pawn)
 
-		val desiredMove = pawn.generateMoves(board).head
+		val desiredMove = pawn.generateMoves(board).filter((m : Move) =>
+		{
+			val promotion = m.asInstanceOf[PromotionMove]
+			promotion != null && promotion.promotion == Piece.QUEEN
+		}).head
 
 		board.makeMove(desiredMove)
 
@@ -210,10 +214,14 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 	{
 		val targetWhitePawn = new Pawn("H2", Piece.WHITE, Board.WHITE_PAWN_1)
 		val attackingBlackPawn = new Pawn("G4", Piece.BLACK, Board.BLACK_PAWN_1)
+		val blackKing = new King("E8", Piece.BLACK, Board.BLACK_KING)
+		val whiteKing = new King("E1", Piece.WHITE, Board.WHITE_KING)
 		val board = new Board()
 
 		board.addPiece(targetWhitePawn)
 		board.addPiece(attackingBlackPawn)
+		board.addPiece(blackKing)
+		board.addPiece(whiteKing)
 
 		// double move pawn
 		var desiredMove = board.generateMovesForNextPlayer.filter(
