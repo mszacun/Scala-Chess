@@ -19,6 +19,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	var leafNodes = 0
 	var captures = 0
 	var checks = 0
+	var checkMates = 0
 	val max_indent = 10
 
 	def doAllTests = 
@@ -54,16 +55,17 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	}
 
 
-	def startPerft(fen : String, depth : Int) : (Int, Int, Int) =
+	def startPerft(fen : String, depth : Int) : (Int, Int, Int, Int) =
 	{
 		val board = Board(fen)
 
 		leafNodes = 0
 		captures = 0
 		checks = 0
+		checkMates = 0
 
 		perft(board, depth - 1)
-		(leafNodes, captures, checks)
+		(leafNodes, captures, checks, checkMates)
 	}
 
 	def perft(board : Board, depth : Int) : Unit = 
@@ -84,7 +86,14 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 				{
 					board.makeMove(m)
 					if (board.isAttacked(board.piecesList(kingToCheckID).position, board.whoseMove))
+					{
 						checks += 1
+						if (generateOnlyValidMoves(board).size == 0)
+						{
+//							println("CheckMate: " + board.toFen)
+							checkMates += 1
+						}
+					}
 					board.undoMove
 				})
 				leafNodes += moves.size
@@ -112,27 +121,27 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 		println("Starting position: ")
 		var start = System.nanoTime
-		assert(startPerft(startFEN, 1) == (20, 0, 0))
+		assert(startPerft(startFEN, 1) == (20, 0, 0, 0))
 		var end = System.nanoTime
 		println("Depth 1: " + (end - start) + "ns")
 
 		start = System.nanoTime
-		assert(startPerft(startFEN, 2) == (400, 0, 0))
+		assert(startPerft(startFEN, 2) == (400, 0, 0, 0))
 		end = System.nanoTime
 		println("Depth 2: " + (end - start) + "ns")
 
 		start = System.nanoTime
-		assert(startPerft(startFEN, 3) == (8902, 34, 12))
+		assert(startPerft(startFEN, 3) == (8902, 34, 12, 0))
 		end = System.nanoTime
 		println("Depth 3: " + (end - start) + "ns")	
 
 		start = System.nanoTime
-		assert(startPerft(startFEN, 4) == (197281, 1576, 469))
+		assert(startPerft(startFEN, 4) == (197281, 1576, 469, 8))
 		end = System.nanoTime
 		println("Depth 4: " + (end - start) + "ns")
 
 		start = System.nanoTime
-		assert(startPerft(startFEN, 5) == (4865609, 82719, 27351))
+		assert(startPerft(startFEN, 5) == (4865609, 82719, 27351, 347))
 		end = System.nanoTime
 		println("Depth 5: " + (end - start) + "ns")
 	}
@@ -143,22 +152,22 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 		println("Dfficult position: ")
 		var start = System.nanoTime
-		assert(startPerft(fen, 1) == (14, 1, 2))
+		assert(startPerft(fen, 1) == (14, 1, 2, 0))
 		var end = System.nanoTime
 		println("Depth 1: " + (end - start) + " ns")
 
 		start = System.nanoTime
-		assert(startPerft(fen, 2) == (191, 14, 10))
+		assert(startPerft(fen, 2) == (191, 14, 10, 0))
 		end = System.nanoTime
 		println("Depth 2: " + (end - start) + " ns")
 
 		start = System.nanoTime
-		assert(startPerft(fen, 3) == (2812, 209, 267))
+		assert(startPerft(fen, 3) == (2812, 209, 267, 0))
 		end = System.nanoTime
 		println("Depth 3: " + (end - start) + " ns")
 
 		start = System.nanoTime
-		assert(startPerft(fen, 4) == (43238, 3348, 1680))
+		assert(startPerft(fen, 4) == (43238, 3348, 1680, 17))
 		end = System.nanoTime
 		println("Depth 4: " + (end - start) + " ns")
 	}
