@@ -1,6 +1,6 @@
 package src;
 
-class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolean], promotion : Int) 
+class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolean], val promotion : Int) 
 	extends Move(Move.PROMOTION_MOVE, start, end, 0, castlingRightsAfterMove)
 {
 	// pawn that was promoted, will be set during applying to board
@@ -19,12 +19,18 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 		Board.isPawn(pieceID) = false
 		
 		// promote it
-		Board.isQueen(pieceID) = true
+		
 		val newPiece = promotion match
-			{
-				case Piece.QUEEN => new Queen(end, pawnPromoted.color, pieceID)
-				case _ => throw new NotImplementedError
-			}
+		{
+			case Piece.QUEEN => 
+				{ Board.isQueen(pieceID) = true; new Queen(end, pawnPromoted.color, pieceID) }
+			case Piece.KNIGHT => 
+				{ Board.isKnight(pieceID) = true; new Knight(end, pawnPromoted.color, pieceID) }
+			case Piece.BISHOP => 
+				{ Board.isBishop(pieceID) = true; new Bishop(end, pawnPromoted.color, pieceID) }
+			case Piece.ROOK => 
+				{ Board.isRook(pieceID) = true; new Rook(end, pawnPromoted.color, pieceID) }
+		}
 		b.piecesList(pieceID) = newPiece
 
 		b.castlingRights = castlingRightsAfter
@@ -40,6 +46,13 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 		b.piecesList(pieceID) = pawnPromoted
 
 		Board.isPawn(pieceID) = true
-		Board.isQueen(pieceID) = false
+		
+		promotion match
+		{
+			case Piece.QUEEN => Board.isQueen(pieceID) = false
+			case Piece.KNIGHT => Board.isKnight(pieceID) = false
+			case Piece.BISHOP => Board.isBishop(pieceID) = false
+			case Piece.ROOK => Board.isRook(pieceID) = false
+		}
 	}
 }

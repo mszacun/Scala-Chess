@@ -24,8 +24,9 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
 				if (Cord.getRow(move) == 7)
-					result += new PromotionMove(position, move, b.castlingRights,
-						Piece.QUEEN) // FIXME: AI always will promote to queen!
+					Pawn.possiblePromotions.foreach((pieceType : Int) =>
+						result += new PromotionMove(position, move,
+							b.castlingRights, pieceType))
 				else
 				{
 					result += new QuietMove(position, move, 0, b.castlingRights)
@@ -49,8 +50,9 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 			if (b.isEmpty(move) && !b.isOffBoard(move))
 			{
 				if (Cord.getRow(move) == 0)
-					result += new PromotionMove(position, move, b.castlingRights,
-						Piece.QUEEN)
+					Pawn.possiblePromotions.foreach((pieceType : Int) =>
+						result += new PromotionMove(position, move,
+							b.castlingRights, pieceType))
 				else
 				{
 					result += new QuietMove(position, move, 0, b.castlingRights)
@@ -99,4 +101,10 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 	/* TODO: Implement */
 	def rank = 0
 
+}
+
+object Pawn
+{
+	val possiblePromotions = Piece.KNIGHT :: Piece.BISHOP :: Piece.QUEEN ::
+		Piece.ROOK :: Nil
 }
