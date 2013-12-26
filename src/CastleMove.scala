@@ -37,4 +37,6 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 		b.piecesList(rookID).position = rookStartPos
 		b.piecesList(kingID).position = kingStartPos
 	}
+
+	override def toString = Cord.toString(kingStartPos) + Cord.toString(kingEndPos)
 }

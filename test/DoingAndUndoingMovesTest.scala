@@ -340,6 +340,9 @@ class DoingAndUndoingMovesTest extends Test("DoingAndUndoingMovesTest")
 
 		assert(board.castlingRights(0))
 		assert(board.castlingRights(1))
+
+		board.makeMove(castle1)
+		board.makeMove(castle2)
 	}
 }
 

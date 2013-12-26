@@ -20,6 +20,8 @@ abstract class Move(val moveType : Int, val start : Int, val end : Int,
 	// because it has required informations
 	def undo(b : Board) : Unit
 
+	override def toString = Cord.toString(start) + Cord.toString(end)
+
 }
 
 object Move
