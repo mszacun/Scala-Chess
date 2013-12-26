@@ -47,6 +47,40 @@ class Board()
 	{
 		val result = new MutableList[Move]
 
+		// check if castles are possible
+		if (whoseMove == Piece.WHITE)
+		{
+			val castleRightsAfter = Array(false, false, castlingRights(2),
+				castlingRights(3), false)
+
+			// castle king side
+			if (Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(0))
+				result += new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
+					Board.whiteKingStartPos, Board.whiteKingKSEndPos, castleRightsAfter)
+
+			// castle queen side
+			if (Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1))
+				result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
+					Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
+		}
+		else
+		{
+			val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
+				false, false, false)
+			// castle king side
+			if (Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(2))
+				result += new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
+					Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
+			// castle queen side
+			if (Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3))
+				result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
+					Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
+		}
+
 		// check if en passant is possible
 		if (!isOffBoard(enPassant))
 		{
@@ -354,6 +388,34 @@ object Board
 		BLACK_ROOK_1 -> 'r', BLACK_ROOK_2 -> 'r', BLACK_KNIGHT_1 -> 'n',
 		BLACK_KNIGHT_2 -> 'n', BLACK_BISHOP_1 -> 'b', BLACK_BISHOP_2 -> 'b',
 		BLACK_QUEEN -> 'q', BLACK_KING -> 'k')
+
+	// constants connected with castling
+	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"),
+		Cord.fromString("B1"))
+	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("C1"))
+
+	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"),
+		Cord.fromString("B8"))
+	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("C8"))
+
+	val whiteRookQSStartPos = Cord.fromString("A1")
+	val whiteRookQSEndPos = Cord.fromString("D1")
+	val whiteRookKSStartPos = Cord.fromString("H1")
+	val whiteRookKSEndPos = Cord.fromString("F1")
+
+	val whiteKingStartPos = Cord.fromString("E1")
+	val whiteKingQSEndPos = Cord.fromString("C1")
+	val whiteKingKSEndPos = Cord.fromString("G1")
+
+	val blackRookQSStartPos = Cord.fromString("A8")
+	val blackRookQSEndPos = Cord.fromString("D8")
+	val blackRookKSStartPos = Cord.fromString("H8")
+	val blackRookKSEndPos = Cord.fromString("F8")
+
+	val blackKingStartPos = Cord.fromString("E8")
+	val blackKingQSEndPos = Cord.fromString("C8")
+	val blackKingKSEndPos = Cord.fromString("G8")
+
 
 
 	def apply(fen : String) =
