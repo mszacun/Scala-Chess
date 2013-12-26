@@ -61,7 +61,8 @@ class Board()
 
 			// castle queen side
 			if (Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1))
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1) &&
+				isEmpty(Board.additionalFreeSquareWhiteCastleQS))
 				result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
 					Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
 		}
@@ -76,7 +77,8 @@ class Board()
 					Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
 			// castle queen side
 			if (Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
-				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3))
+				isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3) &&
+				isEmpty(Board.additionalFreeSquareBlackCastleQS))
 				result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
 					Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
 		}
@@ -391,9 +393,12 @@ object Board
 
 	// constants connected with castling
 	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
+	// for white to castle queenside also B1 must be empty, but may be attacked
+	val additionalFreeSquareWhiteCastleQS = Cord.fromString("B1")
 	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
 
 	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
+	val additionalFreeSquareBlackCastleQS = Cord.fromString("B8")
 	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
 
 	val whiteRookQSStartPos = Cord.fromString("A1")
