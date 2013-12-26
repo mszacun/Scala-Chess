@@ -13,7 +13,13 @@ class King(pos : Int, col : Int, identifier : Int)
 	{
 		var result : MutableList[Move] = new MutableList[Move]
 		// if you move king, you loose all castling rights
-		val castlingRightsAfter = Array(false, false, false, false, false)
+		var castlingRightsAfter : Seq[Boolean] = null
+		if (color == Piece.WHITE)
+			castlingRightsAfter = Array(false, false, b.castlingRights(2),
+				 b.castlingRights(3), false)
+		else
+			castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
+				false, false, false)
 		King.possibleDirections.foreach((dir : Int) => 
 		{
 			val tmpPos = position + dir
