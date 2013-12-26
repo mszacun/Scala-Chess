@@ -390,13 +390,11 @@ object Board
 		BLACK_QUEEN -> 'q', BLACK_KING -> 'k')
 
 	// constants connected with castling
-	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"),
-		Cord.fromString("B1"))
-	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("C1"))
+	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
+	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
 
-	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"),
-		Cord.fromString("B8"))
-	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("C8"))
+	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
+	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
 
 	val whiteRookQSStartPos = Cord.fromString("A1")
 	val whiteRookQSEndPos = Cord.fromString("D1")
