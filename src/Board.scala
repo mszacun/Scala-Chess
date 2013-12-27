@@ -45,6 +45,7 @@ class Board()
 
 	def generateMovesForNextPlayer =
 	{
+		val start = System.nanoTime
 		val result = new MutableList[Move]
 
 		// check if castles are possible
@@ -127,13 +128,16 @@ class Board()
 		}
 
 		// generate quiet moves, captures and promotions
-		piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
+		val fresult =piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
 			{
 				if (piece != null && piece.color == whoseMove)
 					acc ++ piece.generateMoves(this)
 				else
 					acc
 			})
+		val end = System.nanoTime
+		println("GeneratingMoves: " + (end - start)+ " ns")
+		fresult
 	}
 
 	def addPiece(piece : Piece) = 
