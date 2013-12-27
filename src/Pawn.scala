@@ -79,7 +79,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 		var lastRow : Int = 0 // row on which pawn of given color will be promoted
 		if (color == Piece.WHITE)
 		{
-			lastRow = 8
+			lastRow = 7
 			possibleAttacks = Cord.moveSE(position, 1) :: 
 				Cord.moveSW(position, 1) :: Nil
 		}
