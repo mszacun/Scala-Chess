@@ -16,12 +16,12 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		// calculate castlingRights after this rook move
 		// index of castling in board.castilngRights array, that will be impossible
 		// after move of this rook
-		val castleDeniedAfterMove = Cord.toString(position) match
+		val castleDeniedAfterMove = position match
 		{
-			case "H1" => 0
-			case "A1" => 1
-			case "H8" => 2
-			case "A8" => 3
+			case 28 => 0 // H1
+			case 21 => 1 // A1
+			case 98 => 2 // H8
+			case 91 => 3 // H1
 			case _ => 4
 		}
 
