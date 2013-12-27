@@ -1,0 +1,56 @@
+/*      Before    */
+Starting position: 
+Depth 1: 7230007ns
+Depth 2: 46918041ns
+Depth 3: 187106390ns
+Depth 4: 564526255ns
+Depth 5: 8180005249ns
+Dfficult position: 
+Depth 1: 403256 ns
+Depth 2: 691785 ns
+Depth 3: 6264255 ns
+Depth 4: 76461510 ns
+Most difficult position ever: 
+Depth 1: 810094 ns
+Depth 2: 4377365 ns
+Depth 3: 197918240 ns
+Depth 4: 6664796288 ns
+(193690690,35043416,73365,4993637,8392,3309887,30171)
+Depth 3: 339104803079 ns
+Promotion position:
+Depth 1: 645043 ns
+Depth 2: 1148541 ns
+Depth 3: 14652716 ns
+Depth 4: 878045616 ns
+Depth 5: 26632911176 ns
+Done: MoveGenerationTest
+Done: CastleDetectionTest
+
+
+
+/*      After:    */
+Starting position: 
+Depth 1: 34373834ns
+Depth 2: 68036834ns
+Depth 3: 224719605ns
+Depth 4: 438970956ns
+Depth 5: 5099251873ns
+Dfficult position: 
+Depth 1: 402040 ns
+Depth 2: 652841 ns
+Depth 3: 5070654 ns
+Depth 4: 58599824 ns
+Most difficult position ever: 
+Depth 1: 1473705 ns
+Depth 2: 3403407 ns
+Depth 3: 141961838 ns
+Depth 4: 4315713812 ns
+(193690690,35043416,73365,4993637,8392,3309887,30171)
+Depth 5: 218523893805 ns
+Promotion position:
+Depth 1: 694882 ns
+Depth 2: 971521 ns
+Depth 3: 9801231 ns
+Depth 4: 528476912 ns
+Depth 5: 16962683409 ns
+Done: MoveGenerationTest
