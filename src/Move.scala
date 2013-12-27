@@ -1,6 +1,6 @@
 package src;
 
-abstract class Move(val moveType : Int, val start : Int, val end : Int,
+abstract class Move(var moveType : Int, val start : Int, val end : Int,
 	val enPassant : Int, val castlingRightsAfter : Seq[Boolean])
 {
 	// * start -> position from move started (if more than one piece takes part
@@ -31,4 +31,5 @@ object Move
 	val CASTLE_MOVE = 2
 	val PROMOTION_MOVE = 3
 	val ENPASSANT_MOVE = 4
+	val CAPTURE_PROMOTION_MOVE = 5
 }

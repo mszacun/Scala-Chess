@@ -75,26 +75,33 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 	def generateAttacks(b : Board) : MutableList[Move] =
 	{
 		var result : MutableList[Move] = new MutableList
+		var possibleAttacks : List[Int] = Nil
+		var lastRow : Int = 0 // row on which pawn of given color will be promoted
 		if (color == Piece.WHITE)
 		{
-			if (b.isOccupiedByOpponent(Cord.moveSE(position, 1), color))
-				result += new CaptureMove(position, Cord.moveSE(position, 1),
-					b.castlingRights)
-			if (b.isOccupiedByOpponent(Cord.moveSW(position, 1), color))
-				result += new CaptureMove(position, Cord.moveSW(position, 1),
-					b.castlingRights)
+			lastRow = 8
+			possibleAttacks = Cord.moveSE(position, 1) :: 
+				Cord.moveSW(position, 1) :: Nil
 		}
 		else
 		{
-			if (b.isOccupiedByOpponent(Cord.moveNE(position, 1), color))
-				result += new CaptureMove(position, Cord.moveNE(position, 1),
-					b.castlingRights)
-			if (b.isOccupiedByOpponent(Cord.moveNW(position, 1), color))
-				result += new CaptureMove(position, Cord.moveNW(position, 1),
-					b.castlingRights)
+			lastRow = 0
+			possibleAttacks = Cord.moveNE(position, 1) :: 
+				Cord.moveNW(position, 1) :: Nil
 		}
-		result 
+		possibleAttacks.foreach((pos : Int) =>
+		{
+			if (b.isOccupiedByOpponent(pos, color))
+				if (Cord.getRow(pos) == lastRow)
+					Pawn.possiblePromotions.foreach((pieceType : Int) =>
+						result += new CapturePromotionMove(position, pos,
+							b.castlingRights, pieceType))
+				else
+					result += new CaptureMove(position, pos, b.castlingRights)
+		})
+		result
 	}
+
 	override def generateMoves(b : Board) : MutableList[Move] =
 		generateAttacks(b) ++ generateQuietMoves(b)
 
