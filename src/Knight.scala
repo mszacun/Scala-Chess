@@ -17,21 +17,23 @@ class Knight(pos : Int, col : Int, identifire : Int)
 	def generateMoves(b : Board, moveList : Array[Move], index : Int) = 
 	{
 		var ind = index
-		Knight.possibleMovesDirection.foreach((dir : Int) => 
+		var i = 0
+
+		while (i < Knight.possibleMovesDirection.size)
 		{
-			val tmpPos = position + dir
-			if (b.isOccupiedByOpponent(tmpPos, color))
+			val tmpPos = position + Knight.possibleMovesDirection(i)
+			if (b.isEmpty(tmpPos))
+			{
+				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
+				ind += 1
+			}
+			else if (b.isOccupiedByOpponent(tmpPos, color))
 			{
 				moveList(ind) = new CaptureMove(position, tmpPos, b.castlingRights)
 				ind += 1
 			}
-			else
-				if (b.isEmpty(tmpPos))
-				{
-					moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
-					ind += 1
-				}
-		})
+			i += 1
+		}
 		ind
 	}
 
