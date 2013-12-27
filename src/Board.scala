@@ -56,15 +56,17 @@ class Board()
 					castlingRights(3), false)
 
 				// castle king side
-				if (Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
-					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(0))
+				if (castlingRights(0) && Board.isRook(board(Board.whiteRookKSStartPos)) &&
+					Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
+						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 					result += new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
 						Board.whiteKingStartPos, Board.whiteKingKSEndPos, castleRightsAfter)
 
 				// castle queen side
-				if (Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
-					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(1) &&
-					isEmpty(Board.additionalFreeSquareWhiteCastleQS))
+				if (castlingRights(1) && Board.isRook(board(Board.whiteRookQSStartPos)) &&
+					isEmpty(Board.additionalFreeSquareWhiteCastleQS) &&
+					Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
+						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 					result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
 						Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
 			}
@@ -76,14 +78,16 @@ class Board()
 				val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
 					false, false, false)
 				// castle king side
-				if (Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
-					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(2))
+				if (castlingRights(2) && Board.isRook(board(Board.blackRookKSStartPos)) &&
+					Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
+						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 					result += new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
 						Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
 				// castle queen side
-				if (Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
-					isEmpty(sq) && !isAttacked(sq, whoseMove)) && castlingRights(3) &&
-					isEmpty(Board.additionalFreeSquareBlackCastleQS))
+				if (castlingRights(3) && Board.isRook(board(Board.blackRookQSStartPos)) &&
+					isEmpty(Board.additionalFreeSquareBlackCastleQS) &&
+					Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
+						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 						result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
 							Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
 			}
@@ -122,7 +126,7 @@ class Board()
 			}
 		}
 
-		// generate quiet moves, captures an promotions
+		// generate quiet moves, captures and promotions
 		piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
 			{
 				if (piece != null && piece.color == whoseMove)
@@ -249,7 +253,7 @@ class Board()
 
 	def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
 
-	def isOccupied(position : Int) = board(position) >= 0
+	def isOccupied(position : Int) = board(position) < 32
 
 	// quickly checks color of piece
 	def isOccupiedByOpponent(position : Int, myColor : Int) = 
@@ -317,8 +321,8 @@ class Board()
 
 object Board
 {
-	val AUXILIARY_SQUARE = -1
-	val EMPTY_SQUARE = -2
+	val AUXILIARY_SQUARE = 33
+	val EMPTY_SQUARE = 32
 	// keys in piece list
 
 	// white's are even
@@ -363,27 +367,27 @@ object Board
 	val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
 						true, true, true, true, true, true, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
-						false, false)
+						false, false, false, false)
 	val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true, true, true, false, false, false, false, false, false,
-						false, false)
+						false, false, false, false)
 	val isRook = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, true, true, true, true,
 						false, false, false, false, false, false, false, false, false, false,
-						false, false)
+						false, false, false, false)
 	val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, true, true, true, true, false, false,
-						false, false)
+						false, false, false, false)
 	val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, true, true,
-						false, false)
+						false, false, false, false)
 	val isKing = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
-						true, true)
+						true, true, false, false)
 	val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
 		WHITE_PAWN_3 -> 'P', WHITE_PAWN_4 -> 'P', WHITE_PAWN_5 -> 'P',
 		WHITE_PAWN_6 -> 'P', WHITE_PAWN_7 -> 'P', WHITE_PAWN_8 -> 'P',
