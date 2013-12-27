@@ -29,9 +29,30 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 	def doAllTests = 
 	{
-		StartingMovesGenerationTest
-		DifficultPositionMoveGenerationTest
-		MostDifficultPositionEverTest
+//		StartingMovesGenerationTest
+//		DifficultPositionMoveGenerationTest
+//		MostDifficultPositionEverTest
+		PromotionPositionTest
+
+/*		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
+		val board = Board(fen)
+
+		var desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
+			Cord.toString(m.start) == "B4" && Cord.toString(m.end) == "C5").head
+		board.makeMove(desiredMove)
+		println(board.toFen)
+
+		desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
+			Cord.toString(m.start) == "A8" && Cord.toString(m.end) == "B8").head
+		board.makeMove(desiredMove)
+		println(board.toFen)
+
+		desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
+			Cord.toString(m.start) == "F7" && Cord.toString(m.end) == "H8").head
+		board.makeMove(desiredMove)
+		println(board.toFen)  
+
+		divide(board, 1)*/
 	}
 
 
@@ -64,7 +85,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 	def divide(board : Board, depth : Int)
 	{
-		board.generateMovesForNextPlayer.foreach((m : Move) =>
+		generateOnlyValidMoves(board).foreach((m : Move) =>
 			{
 				board.makeMove(m)
 				println(m + ": " + startPerft(board.toFen, depth - 1)._1)
@@ -121,11 +142,13 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 				})
 				leafNodes += moves.size
 				captures += moves.count((m : Move) => 
-					m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE)
+					m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE ||
+					m.moveType == Move.CAPTURE_PROMOTION_MOVE)
 				enPassants += moves.count((m : Move) => m.moveType == Move.ENPASSANT_MOVE)
 				val castles1 = moves.count((m : Move) => m.moveType == Move.CASTLE_MOVE)
 				castles += castles1
-				promotions += moves.count((m : Move) => m.moveType == Move.PROMOTION_MOVE)
+				promotions += moves.count((m : Move) => 
+					m.moveType == Move.CAPTURE_PROMOTION_MOVE || m.moveType == Move.PROMOTION_MOVE)
 			}
 			else
 			{
@@ -218,8 +241,50 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 		start = System.nanoTime
 		assert(startPerft(fen, 3) == (97862, 17102, 45, 3162, 0, 993, 1))
-		println(startPerft(fen, 3))
+		end = System.nanoTime
+		println("Depth 3: " + (end - start) + " ns") 
+
+		start = System.nanoTime
+		assert(startPerft(fen, 4) == (4085603, 757163, 1929, 128013, 15172, 25523, 43))
+		end = System.nanoTime
+		println("Depth 4: " + (end - start) + " ns") 
+
+/*      
+		long test:
+		start = System.nanoTime
+		println(startPerft(fen, 5))
+		end = System.nanoTime
+		println("Depth 3: " + (end - start) + " ns") */
+	}
+
+	def PromotionPositionTest =
+	{
+		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
+		println("Promotion position:")
+
+		var start = System.nanoTime
+		assert(startPerft(fen, 1) == (6, 0, 0, 0, 0, 0, 0))
+		var end = System.nanoTime
+		println("Depth 1: " + (end - start) + " ns")
+
+		start = System.nanoTime
+		assert(startPerft(fen, 2) == (264, 87, 0, 6, 48, 10, 0))
 		end = System.nanoTime
 		println("Depth 2: " + (end - start) + " ns") 
+
+		start = System.nanoTime
+		assert(startPerft(fen, 3) == (9467, 1021, 4, 0, 120, 38, 22))
+		end = System.nanoTime
+		println("Depth 3: " + (end - start) + " ns") 
+
+		start = System.nanoTime
+		assert(startPerft(fen, 4) == (422333, 131393, 0, 7795, 60032, 15492, 5))
+		end = System.nanoTime
+		println("Depth 4: " + (end - start) + " ns") 
+
+		start = System.nanoTime
+		assert(startPerft(fen, 5) == (15833292, 2046173, 6512, 0, 329464, 200568, 50562))
+		end = System.nanoTime
+		println("Depth 5: " + (end - start) + " ns")
 	}
 }
