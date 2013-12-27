@@ -30,14 +30,14 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	def doAllTests = 
 	{
 		StartingMovesGenerationTest
-//		DifficultPositionMoveGenerationTest
-//		MostDifficultPositionEverTest
-//		PromotionPositionTest
+		DifficultPositionMoveGenerationTest
+		MostDifficultPositionEverTest
+		PromotionPositionTest
 
-/*		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
-		val board = Board(fen)
+//		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
+//		val board = Board(fen)
 
-		var desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
+		/*var desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
 			Cord.toString(m.start) == "B4" && Cord.toString(m.end) == "C5").head
 		board.makeMove(desiredMove)
 		println(board.toFen)
@@ -50,9 +50,9 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
 			Cord.toString(m.start) == "F7" && Cord.toString(m.end) == "H8").head
 		board.makeMove(desiredMove)
-		println(board.toFen)  
+		println(board.toFen)  */
 
-		divide(board, 1)*/
+//		divide(board, 1)
 	}
 
 
@@ -73,7 +73,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	def generateOnlyValidMoves(b : Board) = 
 	{
 		val allMoves = b.generateMovesForNextPlayer
-		allMoves.filter((m : Move) => !doesCausesCheckForMe(m, b))
+		allMoves._1.filter((m : Move) => m != null && !doesCausesCheckForMe(m, b))
 	}
 
 	def print_indent(str : String, indent : Int) = 
@@ -153,13 +153,16 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 			else
 			{
 			
-				board.generateMovesForNextPlayer.foreach((m : Move) =>
+				board.generateMovesForNextPlayer._1.foreach((m : Move) =>
 					{
 //				print_indent("Taking move: " + Cord.toString(m.start) + " => " +Cord.toString(m.end),
 //							max_indent - depth)
-						board.makeMove(m)
-						perft(board, depth - 1, m)
-						board.undoMove
+						if (m != null)
+						{
+							board.makeMove(m)
+							perft(board, depth - 1, m)
+							board.undoMove
+						}
 					})
 			}
 		}
@@ -171,7 +174,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 	{
 		val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-/*		println("Starting position: ")
+		println("Starting position: ")
 		var start = System.nanoTime
 		assert(startPerft(startFEN, 1) == (20, 0, 0, 0, 0, 0, 0))
 		var end = System.nanoTime
@@ -190,12 +193,12 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		start = System.nanoTime
 		assert(startPerft(startFEN, 4) == (197281, 1576, 0, 0, 0, 469, 8))
 		end = System.nanoTime
-		println("Depth 4: " + (end - start) + "ns") */
+		println("Depth 4: " + (end - start) + "ns")
 
-		//start = System.nanoTime
+		start = System.nanoTime
 		assert(startPerft(startFEN, 5) == (4865609, 82719, 258, 0, 0, 27351, 347))
-		//end = System.nanoTime
-		//println("Depth 5: " + (end - start) + "ns")
+		end = System.nanoTime
+		println("Depth 5: " + (end - start) + "ns")
 	}
 
 	def DifficultPositionMoveGenerationTest = 
@@ -249,12 +252,11 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		end = System.nanoTime
 		println("Depth 4: " + (end - start) + " ns") 
 
-/*      
-		long test:
+      
 		start = System.nanoTime
 		println(startPerft(fen, 5))
 		end = System.nanoTime
-		println("Depth 3: " + (end - start) + " ns") */
+		println("Depth 5: " + (end - start) + " ns") 
 	}
 
 	def PromotionPositionTest =

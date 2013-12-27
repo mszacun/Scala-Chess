@@ -46,7 +46,8 @@ class Board()
 	def generateMovesForNextPlayer =
 	{
 		val start = System.nanoTime
-		val result = new MutableList[Move]
+		val result = new Array[Move](256)
+		var i = 0 // index in result array
 
 		// check if castles are possible
 		if (whoseMove == Piece.WHITE)
@@ -60,16 +61,22 @@ class Board()
 				if (castlingRights(0) && Board.isRook(board(Board.whiteRookKSStartPos)) &&
 					Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
-					result += new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
+				{
+					result(i) = new CastleMove(Board.whiteRookKSStartPos, Board.whiteRookKSEndPos,
 						Board.whiteKingStartPos, Board.whiteKingKSEndPos, castleRightsAfter)
+					i += 1
+				}
 
 				// castle queen side
 				if (castlingRights(1) && Board.isRook(board(Board.whiteRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareWhiteCastleQS) &&
 					Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
-					result += new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
+				{
+					result(i) = new CastleMove(Board.whiteRookQSStartPos, Board.whiteRookQSEndPos,
 						Board.whiteKingStartPos, Board.whiteKingQSEndPos, castleRightsAfter)
+					i += 1
+				}
 			}
 		}
 		else
@@ -82,15 +89,21 @@ class Board()
 				if (castlingRights(2) && Board.isRook(board(Board.blackRookKSStartPos)) &&
 					Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
-					result += new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
+				{
+					result(i) = new CastleMove(Board.blackRookKSStartPos, Board.blackRookKSEndPos,
 						Board.blackKingStartPos, Board.blackKingKSEndPos, castleRightsAfter)
+					i += 1
+				}
 				// castle queen side
 				if (castlingRights(3) && Board.isRook(board(Board.blackRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareBlackCastleQS) &&
 					Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
-						result += new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
-							Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
+				{
+					result(i) = new CastleMove(Board.blackRookQSStartPos, Board.blackRookQSEndPos,
+						Board.blackKingStartPos, Board.blackKingQSEndPos, castleRightsAfter)
+					i += 1
+				}
 			}
 		}
 
@@ -103,41 +116,52 @@ class Board()
 				var pawnSquare = enPassant - 9
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
 						castlingRights)
+					i += 1
+				}
 				pawnSquare = enPassant - 11
 				// on the right
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
 						castlingRights)
+					i += 1
+				}
 			}
 			else
 			{
 				var pawnSquare = enPassant + 9
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
 						castlingRights)
+					i += 1
+				}
+
 				pawnSquare = enPassant + 11
 				if (isOccupiedByMe(pawnSquare, whoseMove) && 
 					Board.isPawn(board(pawnSquare)))
-					result += new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
 						castlingRights)
+					i += 1
+				}
 			}
 		}
 
 		// generate quiet moves, captures and promotions
-		val fresult =piecesList.foldLeft (result) ((acc : MutableList[Move], piece : Piece) =>
-			{
-				if (piece != null && piece.color == whoseMove)
-					acc ++ piece.generateMoves(this)
-				else
-					acc
-			})
+		piecesList.foreach((piece : Piece) =>
+		{
+			if (piece != null && piece.color == whoseMove)
+				i = piece.generateMoves(this, result, i)
+		})
 		val end = System.nanoTime
-		println("GeneratingMoves: " + (end - start)+ " ns")
-		fresult
+		//println("GeneratingMoves: " + (end - start)+ " ns")
+		(result, i)
 	}
 
 	def addPiece(piece : Piece) = 

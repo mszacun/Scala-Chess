@@ -13,10 +13,9 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 		this(Cord.fromString(position), color, id)
 
 	// see in Piece
-	def generateQuietMoves(b : Board) : MutableList[Move] =
+	def generateQuietMoves(b : Board, moveList : Array[Move], ind : Int) : Int =
 	{
-		var result : MutableList[Move]= new MutableList[Move]
-
+		var index = ind
 		if (color == Piece.WHITE)
 		{
 			// default move
@@ -25,20 +24,27 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 			{
 				if (Cord.getRow(move) == 7)
 					Pawn.possiblePromotions.foreach((pieceType : Int) =>
-						result += new PromotionMove(position, move,
-							b.castlingRights, pieceType))
+					{
+						moveList(index) = new PromotionMove(position, move,
+							b.castlingRights, pieceType)
+						index += 1
+					})
 				else
 				{
-					result += new QuietMove(position, move, 0, b.castlingRights)
+					moveList(index) = new QuietMove(position, move, 0, b.castlingRights)
+					index += 1
 
 					// double move if on starting position
 					if (Cord.getRow(position) == whitePawnsStartingRow)
 					{
 						move = Cord.moveS(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
-							result += new QuietMove(position, 
+						{
+							moveList(index) = new QuietMove(position, 
 								move, Cord.moveS(position, 1), // enPasant is possible
 								b.castlingRights)
+							index += 1
+						}
 					}
 				}
 			}
@@ -51,30 +57,37 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 			{
 				if (Cord.getRow(move) == 0)
 					Pawn.possiblePromotions.foreach((pieceType : Int) =>
-						result += new PromotionMove(position, move,
-							b.castlingRights, pieceType))
+					{
+						moveList(index) = new PromotionMove(position, move,
+							b.castlingRights, pieceType)
+						index += 1
+					})
 				else
 				{
-					result += new QuietMove(position, move, 0, b.castlingRights)
+					moveList(index) = new QuietMove(position, move, 0, b.castlingRights)
+					index += 1
 
 					// double move if on starting position
 					if (Cord.getRow(position) == blackPawnsStartingRow)
 					{
 						move = Cord.moveN(position, 2)
 						if (b.isEmpty(move) && !b.isOffBoard(move))
-							result += new QuietMove(position, 
+						{
+							moveList(index) = new QuietMove(position, 
 								move, Cord.moveN(position, 1),
 								b.castlingRights)
+							index += 1
+						}
 					}
 				}
 			}
 		}
-		result
+		index
 	}
 
-	def generateAttacks(b : Board) : MutableList[Move] =
+	def generateAttacks(b : Board, moveList : Array[Move], ind : Int) :Int =
 	{
-		var result : MutableList[Move] = new MutableList
+		var index = ind
 		var possibleAttacks : List[Int] = Nil
 		var lastRow : Int = 0 // row on which pawn of given color will be promoted
 		if (color == Piece.WHITE)
@@ -94,16 +107,25 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 			if (b.isOccupiedByOpponent(pos, color))
 				if (Cord.getRow(pos) == lastRow)
 					Pawn.possiblePromotions.foreach((pieceType : Int) =>
-						result += new CapturePromotionMove(position, pos,
-							b.castlingRights, pieceType))
+					{
+						moveList(index) = new CapturePromotionMove(position, pos,
+							b.castlingRights, pieceType)
+						index += 1
+					})
 				else
-					result += new CaptureMove(position, pos, b.castlingRights)
+				{
+					moveList(index) = new CaptureMove(position, pos, b.castlingRights)
+					index += 1
+				}
 		})
-		result
+		index
 	}
 
-	override def generateMoves(b : Board) : MutableList[Move] =
-		generateAttacks(b) ++ generateQuietMoves(b)
+	override def generateMoves(b : Board, moveList:Array[Move], index : Int) : Int =
+	{
+		val ind = generateAttacks(b, moveList, index)
+		generateQuietMoves(b, moveList, ind)
+	}
 
 	/* TODO: Implement */
 	def rank = 0

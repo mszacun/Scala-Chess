@@ -9,31 +9,37 @@ class Bishop(pos : Int, col : Int, identifier : Int)
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
 
-	def generateDirectionMoves(b : Board, acc : MutableList[Move], dir : Int) : MutableList[Move] = 
+	def generateDirectionMoves(b : Board, moveList : Array[Move], index : Int, dir : Int) : Int = 
 	{
 		var tmpPos = position
-		var result = acc
+		var ind = index
 		while (true)
 		{
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
-				result += new QuietMove(position, tmpPos, 0, b.castlingRights)
+			{
+				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
+				ind += 1
+			}
 			else
 			{
 				if (b.isOccupiedByOpponent(tmpPos, color))
-					result += new CaptureMove(position, tmpPos,	b.castlingRights)
-				return result
+				{
+					moveList(ind) = new CaptureMove(position, tmpPos, b.castlingRights)
+					ind += 1
+				}
+				return ind
 			}
 		}
 		// never reaches here
-		result
+		ind
 	}
 
-	override def generateMoves(b : Board) = 
+	override def generateMoves(b : Board, moveList : Array[Move], index : Int) = 
 	{
-		var result : MutableList[Move] = new MutableList[Move]()
+		var result = index
 		Bishop.possibleDirections.foreach((dir : Int) => 
-			result = generateDirectionMoves(b, result, dir))
+			result = generateDirectionMoves(b, moveList, result, dir))
 
 		result
 	}

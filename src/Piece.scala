@@ -20,7 +20,7 @@ abstract class Piece(var position : Int, val color : Int, val id : Int,
 	// take care of it
 
 	// quiteMoves + attacks
-	def generateMoves(b : Board) : MutableList[Move]
+	def generateMoves(b : Board, list:Array[Move], index : Int) : Int
 
 	// rank value of this piece in actual position
 	// takes under consideration material value of piece and

@@ -14,19 +14,25 @@ class Knight(pos : Int, col : Int, identifire : Int)
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)
 
-	def generateMoves(b : Board) = 
+	def generateMoves(b : Board, moveList : Array[Move], index : Int) = 
 	{
-		var result : MutableList[Move] = new MutableList[Move]
+		var ind = index
 		Knight.possibleMovesDirection.foreach((dir : Int) => 
 		{
 			val tmpPos = position + dir
 			if (b.isOccupiedByOpponent(tmpPos, color))
-				result += new CaptureMove(position, tmpPos, b.castlingRights)
+			{
+				moveList(ind) = new CaptureMove(position, tmpPos, b.castlingRights)
+				ind += 1
+			}
 			else
 				if (b.isEmpty(tmpPos))
-					result += new QuietMove(position, tmpPos, 0, b.castlingRights)
+				{
+					moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
+					ind += 1
+				}
 		})
-		result
+		ind
 	}
 
 	/* TODO: Implement */
