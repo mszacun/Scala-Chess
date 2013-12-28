@@ -25,7 +25,10 @@ class Board()
 	var enPassant : Int = 0 // target en passant square
 
 	// history of moves on board in stack form
-	var movesStack : List[Move] = Nil
+	var movesStack : List[Move] = new QuietMove(0, 0, 0, Array(true, true, true,
+		true, false)) :: Nil // no need to check if stack is empty
+	// number of moves in history
+	var halfMoveCounter = 0
 	var whoseMove = Piece.WHITE
 
 	clearBoard
@@ -45,7 +48,7 @@ class Board()
 
 	def generateMovesForNextPlayer =
 	{
-		val start = System.nanoTime
+		var start = System.nanoTime
 		val result = new Array[Move](256)
 		var i = 0 // index in result array
 
@@ -157,7 +160,9 @@ class Board()
 		piecesList.foreach((piece : Piece) =>
 		{
 			if (piece != null && piece.color == whoseMove)
+			{
 				i = piece.generateMoves(this, result, i)
+			}
 		})
 		val end = System.nanoTime
 		//println("GeneratingMoves: " + (end - start)+ " ns")
@@ -173,6 +178,7 @@ class Board()
 	// this method should be called instead of Move.apply!
 	def makeMove(m : Move) = 
 	{
+		halfMoveCounter += 1
 		movesStack = m :: movesStack
 		m.apply(this)
 		whoseMove ^= 1 // hacker style to switch player :)
@@ -181,18 +187,13 @@ class Board()
 	// reverts last move, may throw an exception if moves stack is empty
 	def undoMove() = 
 	{
+		halfMoveCounter -= 1
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
 
 		// revert enPassants and castlingRights
-		val previousMove : Move = movesStack match
-			{
-				case h :: t => h
-				// at the beginning everyone can castle
-				case Nil => new QuietMove(0, 0, 0, Array(true, true, true,
-					true, false))
-			}
+		val previousMove : Move = movesStack.head
 		castlingRights = previousMove.castlingRightsAfter
 		enPassant = previousMove.enPassant
 
