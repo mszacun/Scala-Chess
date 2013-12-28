@@ -123,6 +123,8 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		val pos = board.piecesList(kingToCheckID).position
 		if (!board.isAttacked(pos, whoseKing))
 		{
+//			println("Borad: " + board.toFen + " whiteRank " + board.scores(Piece.WHITE) + ", black score: " + 
+//				board.scores(Piece.BLACK))
 			if (depth == 0) 
 			{
 				val kingToCheckID = if (board.whoseMove == Piece.WHITE) Board.BLACK_KING
@@ -264,7 +266,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
 		println("Promotion position:")
 
-		var start = System.nanoTime
+		/*var start = System.nanoTime
 		assert(startPerft(fen, 1) == (6, 0, 0, 0, 0, 0, 0))
 		var end = System.nanoTime
 		println("Depth 1: " + (end - start) + " ns")
@@ -272,21 +274,21 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		start = System.nanoTime
 		assert(startPerft(fen, 2) == (264, 87, 0, 6, 48, 10, 0))
 		end = System.nanoTime
-		println("Depth 2: " + (end - start) + " ns") 
+		println("Depth 2: " + (end - start) + " ns")  */
 
-		start = System.nanoTime
+//		start = System.nanoTime
 		assert(startPerft(fen, 3) == (9467, 1021, 4, 0, 120, 38, 22))
-		end = System.nanoTime
-		println("Depth 3: " + (end - start) + " ns") 
+//		end = System.nanoTime
+//		println("Depth 3: " + (end - start) + " ns") 
 
-		start = System.nanoTime
-		assert(startPerft(fen, 4) == (422333, 131393, 0, 7795, 60032, 15492, 5))
-		end = System.nanoTime
-		println("Depth 4: " + (end - start) + " ns") 
+//		start = System.nanoTime
+//		assert(startPerft(fen, 4) == (422333, 131393, 0, 7795, 60032, 15492, 5))
+//		end = System.nanoTime
+//		println("Depth 4: " + (end - start) + " ns") 
 
-		start = System.nanoTime
+/*		start = System.nanoTime
 		assert(startPerft(fen, 5) == (15833292, 2046173, 6512, 0, 329464, 200568, 50562))
 		end = System.nanoTime
-		println("Depth 5: " + (end - start) + " ns")
+		println("Depth 5: " + (end - start) + " ns") */
 	}
 }

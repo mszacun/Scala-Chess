@@ -22,6 +22,7 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 
 			b.castlingRights = castlingRightsAfter
 			b.enPassant = 0
+			b.numberOfPiecesAlive -= 1
 		}
 
 		override def undo(b : Board) = 
@@ -34,6 +35,7 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 
 			b.piecesList(pieceID).position = start
 			b.piecesList(capturedPieceID) = capturedPiece
+			b.numberOfPiecesAlive += 1
 		}
 
 }

@@ -31,6 +31,12 @@ class Board()
 	var halfMoveCounter = 0
 	var whoseMove = Piece.WHITE
 
+	// number of alive pieces
+	var numberOfPiecesAlive = 0
+
+	// score for players
+	val scores = Array[Int](0, 0)
+
 	clearBoard
 
 	/* empty board */
@@ -44,6 +50,7 @@ class Board()
 				board(i) = Board.EMPTY_SQUARE
 		}
 		for (i <- 1 until 32) piecesList(i) = null
+		numberOfPiecesAlive = 0
 	}
 
 	def generateMovesForNextPlayer =
@@ -182,6 +189,7 @@ class Board()
 		movesStack = m :: movesStack
 		m.apply(this)
 		whoseMove ^= 1 // hacker style to switch player :)
+		updateScores
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
@@ -198,7 +206,19 @@ class Board()
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
+		updateScores
 	}
+
+	def updateScores = 
+	{
+		scores(0) = 0
+		scores(1) = 0
+		for (piece <- piecesList)
+			if (piece != null)
+				scores(piece.color) += piece.rank(this)
+	}
+
+	def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
 
 	// checks wheter opponent can attack this field, used in looking for check
 	def isAttacked(position : Int, myColor : Int) : Boolean =
@@ -525,6 +545,7 @@ object Board
 					case 'P' => new Pawn(arrayPos, Piece.WHITE, pieceID)
 				}
 				board.addPiece(newPiece)
+				board.numberOfPiecesAlive += 1
 				arrayPos += 1
 			}
 			stringIndex += 1
@@ -562,6 +583,8 @@ object Board
 
 		// TODO: Halfmove and Fullmove clocks not supported
 
+		// count scores for players
+		board.updateScores	
 		board
 	} 
 }

@@ -44,11 +44,34 @@ class Bishop(pos : Int, col : Int, identifier : Int)
 		result
 	}
 
-	/* TODO: Implement */
-	override def rank : Int = 0
+	def rank(b : Board) = Bishop.pieceValue + 
+		Bishop.positionValue(color)(Cord.from120to64(position))
 }
 
 object Bishop
 {
 	val possibleDirections = Array(9, 11, -9, -11)
+
+	val pieceValue = 325
+
+	val positionValue = Array(
+		Array(
+			-20,-10,-10,-10,-10,-10,-10,-20,
+			-10,  0,  0,  0,  0,  0,  0,-10,
+			-10,  0,  5, 10, 10,  5,  0,-10,
+			-10,  5,  5, 10, 10,  5,  5,-10,
+			-10,  0, 10, 10, 10, 10,  0,-10,
+			-10, 10, 10, 10, 10, 10, 10,-10,
+			-10,  5,  0,  0,  0,  0,  5,-10,
+			-20,-10,-40,-10,-10,-40,-10,-20),
+		Array(
+			-20,-10,-40,-10,-10,-40,-10,-20,
+			-10,  5,  0,  0,  0,  0,  5,-10,
+			-10, 10, 10, 10, 10, 10, 10,-10,
+			-10,  0, 10, 10, 10, 10,  0,-10,
+			-10,  5,  5, 10, 10,  5,  5,-10,
+			-10,  0,  5, 10, 10,  5,  0,-10,
+			-10,  0,  0,  0,  0,  0,  0,-10,
+			-20,-10,-10,-10,-10,-10,-10,-20)
+		)
 }

@@ -127,8 +127,8 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 		generateQuietMoves(b, moveList, ind)
 	}
 
-	/* TODO: Implement */
-	def rank = 0
+	def rank(b : Board) = Pawn.pieceValue + 
+		Pawn.positionValue(color)(Cord.from120to64(position))
 
 }
 
@@ -136,4 +136,29 @@ object Pawn
 {
 	val possiblePromotions = Piece.KNIGHT :: Piece.BISHOP :: Piece.QUEEN ::
 		Piece.ROOK :: Nil
+
+	val pieceValue = 100
+
+	val positionValue = Array(
+		// black pawns
+		Array(
+			0,  0,  0,  0,  0,  0,  0,  0,
+			50, 50, 50, 50, 50, 50, 50, 50,
+			10, 10, 20, 30, 30, 20, 10, 10,
+			5,  5, 10, 27, 27, 10,  5,  5,
+			0,  0,  0, 25, 25,  0,  0,  0,
+			5, -5,-10,  0,  0,-10, -5,  5,
+			5, 10, 10,-25,-25, 10, 10,  5,
+			0,  0,  0,  0,  0,  0,  0,  0),
+		// white pawns
+		Array(
+			0,  0,  0,  0,  0,  0,  0,  0,
+			5, 10, 10,-25,-25, 10, 10,  5,
+			5, -5,-10,  0,  0,-10, -5,  5,
+			0,  0,  0, 25, 25,  0,  0,  0,
+			5,  5, 10, 27, 27, 10,  5,  5,
+			10, 10, 20, 30, 30, 20, 10, 10,
+			50, 50, 50, 50, 50, 50, 50, 50,
+			0,  0,  0,  0,  0,  0,  0,  0)
+		)
 }

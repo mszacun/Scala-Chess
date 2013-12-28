@@ -22,6 +22,7 @@ class CaptureMove(start : Int, end : Int,
 
 			b.castlingRights = castlingRightsAfter
 			b.enPassant = 0
+			b.numberOfPiecesAlive -= 1
 		}
 
 		override def undo(b : Board) = 
@@ -33,5 +34,6 @@ class CaptureMove(start : Int, end : Int,
 
 			b.piecesList(pieceID).position = start
 			b.piecesList(capturedPieceID) = capturedPiece
+			b.numberOfPiecesAlive += 1
 		}
 	}

@@ -46,6 +46,5 @@ class Queen(pos : Int, col : Int, identifier : Int)
 		result
 	}
 
-	/* TODO: Implement */
-	override def rank : Int = 0
+	override def rank(b : Board)  = 975
 }

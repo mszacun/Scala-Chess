@@ -60,12 +60,35 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		result
 	}
 
-	/* TODO: Implement */
-	override def rank : Int = 0
+	def rank(b : Board) = Rook.pieceValue + 
+		Rook.positionValue(color)(Cord.from120to64(position))
 }
 
 object Rook
 {
 	// posible move direction for rook
 	val possibleDirections = Array(1, -1, 10, -10)
+
+	val pieceValue = 500
+
+	val positionValue = Array(
+		Array(
+			0, 0, 5, 10, 10, 5, 0, 0,
+			25,	25,	25,	25,	25,	25,	25,	25,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			0, 0, 5, 10, 10, 5,	0, 0,
+			0, 0, 5, 10, 10, 5,	0, 0,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			0, 0, 5, 10, 10, 5,	0, 0),
+		Array(
+			0, 0, 5, 10, 10, 5,	0, 0,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			0, 0, 5, 10, 10, 5,	0, 0,
+			0, 0, 5, 10, 10, 5,	0, 0,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			0, 0, 5, 10, 10, 5, 0, 0,
+			25,	25,	25,	25,	25,	25,	25,	25,
+			0, 0, 5, 10, 10, 5, 0, 0)
+		)
 }
