@@ -2,7 +2,7 @@ package src
 
 class AI
 {
-	val max_depth = 4
+	val max_depth = 7
 
 	def findNextMove(b : Board, opponent : Int) = 
 		alphabeta(b, false, max_depth, Integer.MIN_VALUE,

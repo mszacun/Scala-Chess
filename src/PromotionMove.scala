@@ -10,6 +10,7 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 	{
 		val pieceID = b.board(start)
 		pawnPromoted = b.piecesList(pieceID)
+		b.scores(pawnPromoted.color) -= pawnPromoted.rank(b)
 
 		// move it
 		b.board(start) = Board.EMPTY_SQUARE
@@ -35,11 +36,16 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 
 		b.castlingRights = castlingRightsAfter
 		b.enPassant = enPassant
+
+		b.scores(newPiece.color) += newPiece.rank(b)
 	}
 
 	override def undo(b : Board) = 
 	{
 		val pieceID = pawnPromoted.id
+		val newPiece = b.piecesList(pieceID)
+
+		b.scores(newPiece.color) -= newPiece.rank(b)
 		
 		b.board(end) = Board.EMPTY_SQUARE
 		b.board(start) = pieceID
@@ -54,5 +60,7 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 			case Piece.BISHOP => Board.isBishop(pieceID) = false
 			case Piece.ROOK => Board.isRook(pieceID) = false
 		}
+
+		b.scores(pawnPromoted.color) += pawnPromoted.rank(b)
 	}
 }

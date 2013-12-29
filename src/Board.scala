@@ -189,7 +189,6 @@ class Board()
 		movesStack = m :: movesStack
 		m.apply(this)
 		whoseMove ^= 1 // hacker style to switch player :)
-		updateScores
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
@@ -206,7 +205,6 @@ class Board()
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
-		updateScores
 	}
 
 	def updateScores = 

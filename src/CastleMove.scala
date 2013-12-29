@@ -12,6 +12,8 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 	{
 		rookID = b.board(rookStartPos)
 		kingID = b.board(kingStartPos)
+		val rook = b.piecesList(rookID)
+		val king = b.piecesList(kingID)
 
 		b.board(rookStartPos) = Board.EMPTY_SQUARE
 		b.board(kingStartPos) = Board.EMPTY_SQUARE
@@ -19,8 +21,14 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 		b.board(rookEndPos) = rookID
 		b.board(kingEndPos) = kingID
 
-		b.piecesList(rookID).position = rookEndPos
-		b.piecesList(kingID).position = kingEndPos
+		b.scores(rook.color) -= rook.rank(b)
+		b.scores(king.color) -= king.rank(b)
+
+		rook.position = rookEndPos
+		king.position = kingEndPos
+
+		b.scores(rook.color) += rook.rank(b)
+		b.scores(king.color) += king.rank(b)
 
 		b.enPassant = 0
 		b.castlingRights = castleRightsAfterMove
@@ -28,14 +36,23 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 
 	override def undo(b : Board) = 
 	{
+		val rook = b.piecesList(rookID)
+		val king = b.piecesList(kingID)
+
 		b.board(rookEndPos) = Board.EMPTY_SQUARE
 		b.board(kingEndPos) = Board.EMPTY_SQUARE
+
+		b.scores(rook.color) -= rook.rank(b)
+		b.scores(king.color) -= king.rank(b)
 
 		b.board(rookStartPos) = rookID
 		b.board(kingStartPos) = kingID
 
-		b.piecesList(rookID).position = rookStartPos
-		b.piecesList(kingID).position = kingStartPos
+		rook.position = rookStartPos
+		king.position = kingStartPos
+
+		b.scores(rook.color) += rook.rank(b)
+		b.scores(king.color) += king.rank(b)
 	}
 
 	override def toString = Cord.toString(kingStartPos) + Cord.toString(kingEndPos)

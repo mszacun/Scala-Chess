@@ -14,6 +14,8 @@ class CapturePromotionMove(startPos : Int, endPos : Int,
 		capturedPiece = b.piecesList(capturedPieceID)
 		b.piecesList(capturedPieceID) = null // capture
 
+		b.scores(capturedPiece.color) -= capturedPiece.rank(b)
+
 		// promote pawn
 		super.apply(b)
 	}
@@ -26,5 +28,7 @@ class CapturePromotionMove(startPos : Int, endPos : Int,
 		// restore captured piece
 		b.piecesList(capturedPiece.id) = capturedPiece
 		b.board(endPos) = capturedPiece.id
+
+		b.scores(capturedPiece.color) += capturedPiece.rank(b)
 	}
 }

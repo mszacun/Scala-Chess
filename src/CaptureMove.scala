@@ -13,12 +13,18 @@ class CaptureMove(start : Int, end : Int,
 			val pieceID = b.board(start)
 			capturedPieceID = b.board(end)
 			capturedPiece = b.piecesList(capturedPieceID)
+			val capturingPiece = b.piecesList(pieceID)
+
+			b.scores(capturedPiece.color) -= capturedPiece.rank(b)
+			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
 
 			b.board(end) = pieceID
 			b.board(start) = Board.EMPTY_SQUARE
 			
-			b.piecesList(pieceID).position = end
+			capturingPiece.position = end
 			b.piecesList(capturedPieceID) = null
+
+			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 
 			b.castlingRights = castlingRightsAfter
 			b.enPassant = 0
@@ -28,12 +34,19 @@ class CaptureMove(start : Int, end : Int,
 		override def undo(b : Board) = 
 		{
 			val pieceID = b.board(end)
+			val capturingPiece = b.piecesList(pieceID)
+
+			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
 
 			b.board(start) = pieceID
 			b.board(end) = capturedPieceID
 
-			b.piecesList(pieceID).position = start
+			capturingPiece.position = start
 			b.piecesList(capturedPieceID) = capturedPiece
 			b.numberOfPiecesAlive += 1
+
+
+			b.scores(capturedPiece.color) += capturedPiece.rank(b)
+			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 		}
 	}

@@ -33,6 +33,7 @@ object Game extends App
 		val start = System.currentTimeMillis()
 		val (score, move) = ai.findNextMove(board, opp)
 		val end = System.currentTimeMillis()
+		opp ^= 1
 		
 //		move.foreach((m : Move) =>
 //		println("" + m + " score: " + score))
@@ -41,7 +42,7 @@ object Game extends App
 		println
 		board.makeMove(move.head)
 		
-		flag = false
+/*		flag = false
 		
 		val (moves, size) = board.generateMovesForNextPlayer
 		while (!flag)
@@ -62,7 +63,7 @@ object Game extends App
 			flag = desiredMove.size > 0
 		}
 		    
-	    board.makeMove(desiredMove.head)
+	    board.makeMove(desiredMove.head) */
 	}
 }
  
