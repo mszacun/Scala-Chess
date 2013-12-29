@@ -134,7 +134,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 
 object Pawn
 {
-	val possiblePromotions = Piece.KNIGHT :: Piece.BISHOP :: Piece.QUEEN ::
+	val possiblePromotions = Piece.QUEEN :: Piece.BISHOP :: Piece.KNIGHT ::
 		Piece.ROOK :: Nil
 
 	val pieceValue = 100

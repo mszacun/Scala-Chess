@@ -6,11 +6,13 @@ object Game extends App
 	val board = Board(startFEN)
 	var flag = false
 	var desiredMove : Array[Move] = null
+	var opp = Piece.BLACK
 	
 	val if_we_start = readLine
 	if (if_we_start == "t")
 	{
-	  while (!flag)
+	  	opp = Piece.WHITE
+	  	while (!flag)
 		{
 			print("Start: ")
 			val a = readLine
@@ -29,12 +31,15 @@ object Game extends App
 	{
 	    println; println
 		val start = System.currentTimeMillis()
-		val (score, move) = ai.findNextMove(board)
+		val (score, move) = ai.findNextMove(board, opp)
 		val end = System.currentTimeMillis()
 		
-		println("" + move + " score: " + score + " time: " + (end - start) + " ms")
+//		move.foreach((m : Move) =>
+//		println("" + m + " score: " + score))
+		println("" + move.head + " score: " + score)
+		println("Time: " + (end - start) + " ms")
 		println
-		board.makeMove(move)
+		board.makeMove(move.head)
 		
 		flag = false
 		
@@ -46,6 +51,11 @@ object Game extends App
 			val a = readLine
 			println("End: ")
 			val b = readLine
+			if (a == "back")
+			{
+				board.undoMove
+				board.undoMove
+			}
 		
 			desiredMove  = board.generateMovesForNextPlayer._1.filter(
 					(m : Move) => m != null && Cord.toString(m.start) == a && Cord.toString(m.end) == b)
