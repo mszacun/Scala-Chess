@@ -67,11 +67,11 @@ class Rook(pos : Int, col : Int, identifier : Int)
 object Rook
 {
 	// posible move direction for rook
-	val possibleDirections = Array(1, -1, 10, -10)
+	final val possibleDirections = Array(1, -1, 10, -10)
 
-	val pieceValue = 500
+	final val pieceValue = 500
 
-	val positionValue = Array(
+	final val positionValue = Array(
 		Array(
 			0, 0, 5, 10, 10, 5, 0, 0,
 			25,	25,	25,	25,	25,	25,	25,	25,

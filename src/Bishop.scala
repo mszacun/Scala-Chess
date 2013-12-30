@@ -50,11 +50,11 @@ class Bishop(pos : Int, col : Int, identifier : Int)
 
 object Bishop
 {
-	val possibleDirections = Array(9, 11, -9, -11)
+	final val possibleDirections = Array(9, 11, -9, -11)
 
-	val pieceValue = 325
+	final val pieceValue = 325
 
-	val positionValue = Array(
+	final val positionValue = Array(
 		Array(
 			-20,-10,-10,-10,-10,-10,-10,-20,
 			-10,  0,  0,  0,  0,  0,  0,-10,

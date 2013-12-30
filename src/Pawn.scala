@@ -134,12 +134,12 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 
 object Pawn
 {
-	val possiblePromotions = Piece.QUEEN :: Piece.BISHOP :: Piece.KNIGHT ::
-		Piece.ROOK :: Nil
+	final val possiblePromotions = Array(Piece.QUEEN, Piece.BISHOP, Piece.KNIGHT,
+		Piece.ROOK)
 
-	val pieceValue = 100
+	final val pieceValue = 100
 
-	val positionValue = Array(
+	final val positionValue = Array(
 		// black pawns
 		Array(
 			0,  0,  0,  0,  0,  0,  0,  0,

@@ -368,74 +368,74 @@ class Board()
 
 object Board
 {
-	val AUXILIARY_SQUARE = 33
-	val EMPTY_SQUARE = 32
+	final val AUXILIARY_SQUARE = 33
+	final val EMPTY_SQUARE = 32
 	// keys in piece list
 
 	// white's are even
-	val WHITE_PAWN_1 = 1
-	val WHITE_PAWN_2 = 3
-	val WHITE_PAWN_3 = 5
-	val WHITE_PAWN_4 = 7
-	val WHITE_PAWN_5 = 9
-	val WHITE_PAWN_6 = 11
-	val WHITE_PAWN_7 = 13
-	val WHITE_PAWN_8 = 15
+	final val WHITE_PAWN_1 = 1
+	final val WHITE_PAWN_2 = 3
+	final val WHITE_PAWN_3 = 5
+	final val WHITE_PAWN_4 = 7
+	final val WHITE_PAWN_5 = 9
+	final val WHITE_PAWN_6 = 11
+	final val WHITE_PAWN_7 = 13
+	final val WHITE_PAWN_8 = 15
 	
-	val WHITE_ROOK_1 = 17
-	val WHITE_ROOK_2 = 19
-	val WHITE_KNIGHT_1 = 21
-	val WHITE_KNIGHT_2 = 23
-	val WHITE_BISHOP_1 = 25
-	val WHITE_BISHOP_2 = 27
-	val WHITE_QUEEN = 29
-	val WHITE_KING = 31
+	final val WHITE_ROOK_1 = 17
+	final val WHITE_ROOK_2 = 19
+	final val WHITE_KNIGHT_1 = 21
+	final val WHITE_KNIGHT_2 = 23
+	final val WHITE_BISHOP_1 = 25
+	final val WHITE_BISHOP_2 = 27
+	final val WHITE_QUEEN = 29
+	final val WHITE_KING = 31
 
 	// blacks are odd, this is used in fast check of piece color on certain square
-	val BLACK_PAWN_1 = 0
-	val BLACK_PAWN_2 = 2
-	val BLACK_PAWN_3 = 4
-	val BLACK_PAWN_4 = 6
-	val BLACK_PAWN_5 = 8
-	val BLACK_PAWN_6 = 10
-	val BLACK_PAWN_7 = 12
-	val BLACK_PAWN_8 = 14
+	final val BLACK_PAWN_1 = 0
+	final val BLACK_PAWN_2 = 2
+	final val BLACK_PAWN_3 = 4
+	final val BLACK_PAWN_4 = 6
+	final val BLACK_PAWN_5 = 8
+	final val BLACK_PAWN_6 = 10
+	final val BLACK_PAWN_7 = 12
+	final val BLACK_PAWN_8 = 14
 	
-	val BLACK_ROOK_1 = 16
-	val BLACK_ROOK_2 = 18
-	val BLACK_KNIGHT_1 = 20
-	val BLACK_KNIGHT_2 = 22
-	val BLACK_BISHOP_1 = 24
-	val BLACK_BISHOP_2 = 26
-	val BLACK_QUEEN = 28
-	val BLACK_KING = 30
+	final val BLACK_ROOK_1 = 16
+	final val BLACK_ROOK_2 = 18
+	final val BLACK_KNIGHT_1 = 20
+	final val BLACK_KNIGHT_2 = 22
+	final val BLACK_BISHOP_1 = 24
+	final val BLACK_BISHOP_2 = 26
+	final val BLACK_QUEEN = 28
+	final val BLACK_KING = 30
 
 	// array indexed by piece key, telling if given piece is pawn
-	val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
+	final val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
 						true, true, true, true, true, true, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false)
-	val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true, true, true, false, false, false, false, false, false,
 						false, false, false, false)
-	val isRook = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isRook = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, true, true, true, true,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false)
-	val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, true, true, true, true, false, false,
 						false, false, false, false)
-	val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, true, true,
 						false, false, false, false)
-	val isKing = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isKing = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true, false, false)
-	val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
+	final val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
 		WHITE_PAWN_3 -> 'P', WHITE_PAWN_4 -> 'P', WHITE_PAWN_5 -> 'P',
 		WHITE_PAWN_6 -> 'P', WHITE_PAWN_7 -> 'P', WHITE_PAWN_8 -> 'P',
 		WHITE_ROOK_1 -> 'R', WHITE_ROOK_2 -> 'R', WHITE_KNIGHT_1 -> 'N',
@@ -449,36 +449,36 @@ object Board
 		BLACK_QUEEN -> 'q', BLACK_KING -> 'k')
 
 	// constants connected with castling
-	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
+	final val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
 	// for white to castle queenside also B1 must be empty, but may be attacked
-	val additionalFreeSquareWhiteCastleQS = Cord.fromString("B1")
-	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
+	final val additionalFreeSquareWhiteCastleQS = Cord.fromString("B1")
+	final val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
 
-	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
-	val additionalFreeSquareBlackCastleQS = Cord.fromString("B8")
-	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
+	final val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
+	final val additionalFreeSquareBlackCastleQS = Cord.fromString("B8")
+	final val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
 
-	val whiteRookQSStartPos = Cord.fromString("A1")
-	val whiteRookQSEndPos = Cord.fromString("D1")
-	val whiteRookKSStartPos = Cord.fromString("H1")
-	val whiteRookKSEndPos = Cord.fromString("F1")
+	final val whiteRookQSStartPos = Cord.fromString("A1")
+	final val whiteRookQSEndPos = Cord.fromString("D1")
+	final val whiteRookKSStartPos = Cord.fromString("H1")
+	final val whiteRookKSEndPos = Cord.fromString("F1")
 
-	val whiteKingStartPos = Cord.fromString("E1")
-	val whiteKingQSEndPos = Cord.fromString("C1")
-	val whiteKingKSEndPos = Cord.fromString("G1")
+	final val whiteKingStartPos = Cord.fromString("E1")
+	final val whiteKingQSEndPos = Cord.fromString("C1")
+	final val whiteKingKSEndPos = Cord.fromString("G1")
 
-	val blackRookQSStartPos = Cord.fromString("A8")
-	val blackRookQSEndPos = Cord.fromString("D8")
-	val blackRookKSStartPos = Cord.fromString("H8")
-	val blackRookKSEndPos = Cord.fromString("F8")
+	final val blackRookQSStartPos = Cord.fromString("A8")
+	final val blackRookQSEndPos = Cord.fromString("D8")
+	final val blackRookKSStartPos = Cord.fromString("H8")
+	final val blackRookKSEndPos = Cord.fromString("F8")
 
-	val blackKingStartPos = Cord.fromString("E8")
-	val blackKingQSEndPos = Cord.fromString("C8")
-	val blackKingKSEndPos = Cord.fromString("G8")
+	final val blackKingStartPos = Cord.fromString("E8")
+	final val blackKingQSEndPos = Cord.fromString("C8")
+	final val blackKingKSEndPos = Cord.fromString("G8")
 
 
 
-	def apply(fen : String) =
+	final def apply(fen : String) =
 	{
 		val board = new Board()
 		var stringIndex = 0

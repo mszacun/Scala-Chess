@@ -49,11 +49,11 @@ class King(pos : Int, col : Int, identifier : Int)
 
 object King
 {
-	val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
+	final val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
 
-	val pieceValue = 32767
+	final val pieceValue = 32767
 
-	val positionValueStartGame = Array[Array[Int]](
+	final val positionValueStartGame = Array[Array[Int]](
 		Array[Int](
 			-30, -40, -40, -50, -50, -40, -40, -30,
 			-30, -40, -40, -50, -50, -40, -40, -30,
@@ -74,7 +74,7 @@ object King
 			-30, -40, -40, -50, -50, -40, -40, -30)
 	)
 
-	val positionValueEndGame = Array(
+	final val positionValueEndGame = Array(
 		Array(
 			-50,-40,-30,-20,-20,-30,-40,-50,
 			-30,-20,-10,  0,  0,-10,-20,-30,

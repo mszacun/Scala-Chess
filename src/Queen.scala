@@ -5,7 +5,7 @@ import scala.collection.mutable.MutableList
 class Queen(pos : Int, col : Int, identifier : Int)
 	extends Piece(pos, col, identifier, Piece.QUEEN)
 {
-	val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
+	final val possibleDirections = Array(9, 11, -9, -11, 1, -1, 10, -10)
 
 	def this(position : String, color : Int, id : Int)= 
 		this(Cord.fromString(position), color, id)

@@ -4,11 +4,11 @@ import scala.collection.mutable.MutableList
 
 object Knight
 {
-	val possibleMovesDirection = Array(-19, -21, -12, -8, 19, 21, 8, 12)
+	final val possibleMovesDirection = Array(-19, -21, -12, -8, 19, 21, 8, 12)
 
-	val pieceValue = 320
+	final val pieceValue = 320
 
-	val positionValue = Array(
+	final val positionValue = Array(
 		Array(
 			-50,-40,-30,-30,-30,-30,-40,-50,
 			-40,-20,  0,  0,  0,  0,-20,-40,
@@ -43,8 +43,9 @@ class Knight(pos : Int, col : Int, identifire : Int)
 		var ind = index
 		var i = 0
 		var tmpPos = 0
+		val len = Knight.possibleMovesDirection.size
 
-		while (i < Knight.possibleMovesDirection.size)
+		while (i < len)
 		{
 			tmpPos = position + Knight.possibleMovesDirection(i)
 			if (b.isEmpty(tmpPos))
