@@ -40,7 +40,7 @@ class Board()
 	clearBoard
 
 	/* empty board */
-	def clearBoard =
+	final def clearBoard =
 	{
 		for	(i <- 0 to 119)
 		{
@@ -53,7 +53,7 @@ class Board()
 		numberOfPiecesAlive = 0
 	}
 
-	def generateMovesForNextPlayer =
+	final def generateMovesForNextPlayer =
 	{
 		var start = System.nanoTime
 		val result = new Array[Move](256)
@@ -176,14 +176,14 @@ class Board()
 		(result, i)
 	}
 
-	def addPiece(piece : Piece) = 
+	final def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id
 		piecesList(piece.id) = piece
 	}
 
 	// this method should be called instead of Move.apply!
-	def makeMove(m : Move) = 
+	final def makeMove(m : Move) = 
 	{
 		halfMoveCounter += 1
 		movesStack = m :: movesStack
@@ -192,7 +192,7 @@ class Board()
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
-	def undoMove() = 
+	final def undoMove() = 
 	{
 		halfMoveCounter -= 1
 		val moveToUndo = movesStack.head
@@ -207,7 +207,7 @@ class Board()
 		whoseMove ^= 1 // hacker style to switch player :)
 	}
 
-	def updateScores = 
+	final def updateScores = 
 	{
 		scores(0) = 0
 		scores(1) = 0
@@ -216,10 +216,10 @@ class Board()
 				scores(piece.color) += piece.rank(this)
 	}
 
-	def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
+	final def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
 
 	// checks wheter opponent can attack this field, used in looking for check
-	def isAttacked(position : Int, myColor : Int) : Boolean =
+	final def isAttacked(position : Int, myColor : Int) : Boolean =
 	{
 		// check for rook and queen moving straight
 		var tmpPos = position
@@ -288,7 +288,7 @@ class Board()
 	}
 
 	// check if color king is in check
-	def isCheck(color : Int) = 
+	final def isCheck(color : Int) = 
 	{
 		val king = piecesList(if (color == Piece.WHITE) Board.WHITE_KING else Board.BLACK_KING)
 		isAttacked(king.position, color)
@@ -298,18 +298,18 @@ class Board()
 	// right one, becasue there are no 2 like in boolean, but 3(empty, occupied, 
 	// off the board)!!
 
-	def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
+	final def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
 
-	def isOccupied(position : Int) = board(position) < 32
+	final def isOccupied(position : Int) = board(position) < 32
 
 	// quickly checks color of piece
-	def isOccupiedByOpponent(position : Int, myColor : Int) = 
+	final def isOccupiedByOpponent(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) != myColor
 
-	def isOccupiedByMe(position : Int, myColor : Int) = 
+	final def isOccupiedByMe(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) == myColor
 
-	def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
+	final def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 
 	def toFen =
 	{

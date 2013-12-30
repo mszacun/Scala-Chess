@@ -3,7 +3,7 @@ package src;
 object Cord
 {
 	// translates array index into human-readable field name
-	def toString(arrayIndex : Int) = 
+	final def toString(arrayIndex : Int) = 
 	{
 		val row = getRow(arrayIndex)
 		val column = getColumn(arrayIndex)
@@ -12,7 +12,7 @@ object Cord
 	}
 
 	 // Translates position on board into array index used in board representation
-	def fromString(position : String) = 
+	final def fromString(position : String) = 
 	{
 		val columnChar = Character.toUpperCase(position.charAt(0))
 		val column = columnChar - 'A'.toInt
@@ -22,10 +22,10 @@ object Cord
 	}
 
 	// Extracts row number from position in array index form
-	def getRow(position : Int) = (position - 21) / 10
+	final def getRow(position : Int) = (position - 21) / 10
 
 	// Extracts column number from position in array index form
-	def getColumn(position : Int) = (position - 21) % 10
+	final def getColumn(position : Int) = (position - 21) % 10
 
 	// converts index from 120 board repesentation to 64 board representation
 	val from120to64 = Array(
@@ -45,19 +45,19 @@ object Cord
 
 	// Auxiliary functions to move index array in specifed direction
 	// N -> north, S -> south, E -> east, W -> west
-	def moveN(position : Int, count : Int) = position - 10 * count
+	final def moveN(position : Int, count : Int) = position - 10 * count
 
-	def moveS(position : Int, count : Int) = position + 10 * count
+	final def moveS(position : Int, count : Int) = position + 10 * count
 
-	def moveE(position : Int, count : Int) = position + count
+	final def moveE(position : Int, count : Int) = position + count
 
-	def moveW(position : Int, count : Int) = position - count
+	final def moveW(position : Int, count : Int) = position - count
 
-	def moveNE(position : Int, count : Int) = position - 10 * count + count
+	final def moveNE(position : Int, count : Int) = position - 10 * count + count
 
-	def moveNW(position : Int, count : Int) = position - 10 * count - count
+	final def moveNW(position : Int, count : Int) = position - 10 * count - count
 
-	def moveSE(position : Int, count : Int) = position + 10 * count + count
+	final def moveSE(position : Int, count : Int) = position + 10 * count + count
 
-	def moveSW(position : Int, count : Int) = position + 10 * count - count
+	final def moveSW(position : Int, count : Int) = position + 10 * count - count
 }
