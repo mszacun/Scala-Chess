@@ -176,6 +176,68 @@ class Board()
 		(result, i)
 	}
 
+	final def generateAttacksForNextPlayer =
+	{
+		val result = new Array[Move](256)
+		var i = 0 // index in result array
+
+		// check if en passant is possible
+		if (!isOffBoard(enPassant))
+		{
+			if (whoseMove == Piece.WHITE)
+			{
+				// on the left
+				var pawnSquare = enPassant - 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+					i += 1
+				}
+				pawnSquare = enPassant - 11
+				// on the right
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+					i += 1
+				}
+			}
+			else
+			{
+				var pawnSquare = enPassant + 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+					i += 1
+				}
+
+				pawnSquare = enPassant + 11
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+					i += 1
+				}
+			}
+		}
+
+		// generate quiet moves, captures and promotions
+		piecesList.foreach((piece : Piece) =>
+		{
+			if (piece != null && piece.color == whoseMove)
+			{
+				i = piece.generateAttacks(this, result, i)
+			}
+		})
+		(result, i)
+	}
+
 	final def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id

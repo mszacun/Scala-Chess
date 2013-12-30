@@ -41,6 +41,32 @@ class King(pos : Int, col : Int, identifier : Int)
 		ind
 	}
 
+	override def generateAttacks(b : Board, moveList : Array[Move], index : Int) = 
+	{
+		var ind = index
+
+		// if you move king, you loose all castling rights
+		var castlingRightsAfter : Seq[Boolean] = null
+		if (color == Piece.WHITE)
+			castlingRightsAfter = Array(false, false, b.castlingRights(2),
+				 b.castlingRights(3), false)
+		else
+			castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
+				false, false, false)
+
+		King.possibleDirections.foreach((dir : Int) => 
+		{
+			val tmpPos = position + dir
+			if (b.isOccupiedByOpponent(tmpPos, color))
+			{
+				moveList(ind) = new CaptureMove(position, tmpPos, castlingRightsAfter)
+				ind += 1
+			}
+		})
+
+		ind
+	}
+
 	override def rank(b : Board) : Int = King.pieceValue + (b.numberOfPiecesAlive / 32) * 
 		King.positionValueStartGame(color)(Cord.from120to64(position)) +
 		((32 - b.numberOfPiecesAlive) / 32) * 

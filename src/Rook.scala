@@ -51,6 +51,54 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		ind
 	}
 
+	def generateDirectionAttacks(b : Board, moveList : Array[Move], index : Int, dir : Int) : Int = 
+	{
+		var tmpPos = position
+		var ind = index
+
+		// calculate castlingRights after this rook move
+		// index of castling in board.castilngRights array, that will be impossible
+		// after move of this rook
+		val castleDeniedAfterMove = position match
+		{
+			case 28 => 0 // H1
+			case 21 => 1 // A1
+			case 98 => 2 // H8
+			case 91 => 3 // H1
+			case _ => 4
+		}
+
+		val castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
+			b.castlingRights(2), b.castlingRights(3), false)
+		castlingRightsAfter(castleDeniedAfterMove) = false
+
+		while (true)
+		{
+			tmpPos += dir
+			if (!b.isEmpty(tmpPos))
+			{
+				if (b.isOccupiedByOpponent(tmpPos, color))
+				{
+					moveList(ind) = new CaptureMove(position, tmpPos, castlingRightsAfter)
+					ind += 1
+				}
+				return ind
+			}
+		}
+		// never reaches here
+		ind
+	}
+
+
+	override def generateAttacks(b : Board, moveList : Array[Move], index : Int) = 
+	{
+		var result = index
+		Rook.possibleDirections.foreach((dir : Int) => 
+			result = generateDirectionAttacks(b, moveList, result, dir))
+
+		result
+	}
+
 	override def generateMoves(b : Board, moveList : Array[Move], index : Int) = 
 	{
 		var result = index

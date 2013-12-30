@@ -14,13 +14,15 @@ abstract class Piece(var position : Int, final val color : Int, final val id : I
 	def this(position : String, color : Int, id : Int, pieceType : Int) = 
 		this(Cord.fromString(position), color, id, pieceType)
 
-	// WARNING: All generating moves methods may return moves which destination is
-	// outside the board! Board class is responsible for checking this, also
-	// generated moves may case own king to be in check, Board class also has to
-	// take care of it
+
+	// WARNING: This functions returns also pseud-legal moves, for example
+	// moves after that own king is in check
 
 	// quiteMoves + attacks
 	def generateMoves(b : Board, list:Array[Move], index : Int) : Int
+
+	// attacks only, used in quiescence search
+	def generateAttacks(b : Board, list:Array[Move], index : Int) : Int
 
 	// rank value of this piece in actual position
 	// takes under consideration material value of piece and

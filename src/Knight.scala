@@ -63,6 +63,26 @@ class Knight(pos : Int, col : Int, identifire : Int)
 		ind
 	}
 
+	def generateAttacks(b : Board, moveList : Array[Move], index : Int) = 
+	{
+		var ind = index
+		var i = 0
+		var tmpPos = 0
+		val len = Knight.possibleMovesDirection.size
+
+		while (i < len)
+		{
+			tmpPos = position + Knight.possibleMovesDirection(i)
+			if (b.isOccupiedByOpponent(tmpPos, color))
+			{
+				moveList(ind) = new CaptureMove(position, tmpPos, b.castlingRights)
+				ind += 1
+			}
+			i += 1
+		}
+		ind
+	}
+
 	def rank(b : Board) = Knight.pieceValue + 
 		Knight.positionValue(color)(Cord.from120to64(position))
 }

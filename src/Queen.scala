@@ -37,11 +37,43 @@ class Queen(pos : Int, col : Int, identifier : Int)
 		ind
 	}
 
+	def generateDirectionAttacks(b : Board, moveList : Array[Move], index : Int, dir : Int) : Int = 
+	{
+		var tmpPos = position
+		var ind = index
+
+		while (true)
+		{
+			tmpPos += dir
+			if (!b.isEmpty(tmpPos))
+			{
+				if (b.isOccupiedByOpponent(tmpPos, color))
+				{
+					moveList(ind) = new CaptureMove(position, tmpPos, b.castlingRights)
+					ind += 1
+				}
+				return ind
+			}
+		}
+		// never reaches here
+		ind
+	}
+
+
 	override def generateMoves(b : Board, moveList:Array[Move], index : Int) = 
 	{
 		var result = index
 		possibleDirections.foreach((dir : Int) => 
 			result = generateDirectionMoves(b, moveList, result, dir))
+
+		result
+	}
+
+	override def generateAttacks(b : Board, moveList:Array[Move], index : Int) = 
+	{
+		var result = index
+		possibleDirections.foreach((dir : Int) => 
+			result = generateDirectionAttacks(b, moveList, result, dir))
 
 		result
 	}

@@ -2,7 +2,7 @@ package src
 
 class AI
 {
-	val max_depth = 7
+	val max_depth = 6
 
 	def findNextMove(b : Board, opponent : Int) = 
 		alphabeta(b, false, max_depth, Integer.MIN_VALUE,
@@ -72,6 +72,8 @@ class AI
 		}
 		else
 			(board.getPlayerScore(op), Nil)
+//			(quiescence(board, max, alp, bet, op)._1, Nil)
 	}
+
 }
  
