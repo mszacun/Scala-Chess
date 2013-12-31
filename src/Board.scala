@@ -231,7 +231,7 @@ class Board()
 		piecesList.foreach((piece : Piece) =>
 		{
 			if (piece != null && piece.color == whoseMove)
-			{
+			{	
 				i = piece.generateAttacks(this, result, i)
 			}
 		})
@@ -245,12 +245,16 @@ class Board()
 	}
 
 	// this method should be called instead of Move.apply!
-	final def makeMove(m : Move) = 
+	// returns if given move is legal
+	final def makeMove(m : Move) : Boolean = 
 	{
 		halfMoveCounter += 1
 		movesStack = m :: movesStack
 		m.apply(this)
+		
 		whoseMove ^= 1 // hacker style to switch player :)
+		
+		return !isCheck(whoseMove ^ 1)
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
@@ -391,7 +395,7 @@ class Board()
 						builder.append(spaceBetweenPieces)
 						spaceBetweenPieces = 0
 					}
-					builder.append(Board.pieceKeyToFEN(board(pos)))
+					builder.append(Board.pieceKeyToFEN(piecesList(board(pos)).id))
 				}
 			}
 			if (spaceBetweenPieces > 0)
