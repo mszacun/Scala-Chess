@@ -2,7 +2,7 @@ package src;
 
 class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos : Int,
 	val kingEndPos : Int, castleRightsAfterMove : Seq[Boolean])
-	extends Move(Move.CASTLE_MOVE, rookStartPos, rookEndPos, 0, castleRightsAfterMove)
+	extends Move(Move.CASTLE_MOVE, kingStartPos, kingEndPos, 0, castleRightsAfterMove)
 {
 	// id of rook taking part in castling
 	var rookID = 0
