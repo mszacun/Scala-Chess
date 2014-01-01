@@ -39,6 +39,7 @@ object Game extends App
 //		println("" + m + " score: " + score))
 		println("" + move.head + " score: " + score)
 		println("Time: " + (end - start) + " ms")
+		println("Nodes visited: " + ai.nodesVisited + " depth: " + move.size)
 		println
 		board.makeMove(move.head)
 		println("Board: " + board.toFen)

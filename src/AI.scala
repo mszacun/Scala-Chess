@@ -2,11 +2,18 @@ package src
 
 class AI
 {
-	val max_depth = 4
+	val maxDepth = 50
+
+	var actualDepth = 4
+	var nodesVisited : Long = 0
+	var pvMoves = new Array[Move](maxDepth)
 
 	def findNextMove(b : Board, opponent : Int) : (Int, List[Move]) = 
-		alphabeta(b, false, max_depth, Integer.MIN_VALUE,
+	{
+		nodesVisited = 0
+		alphabeta(b, false, 0, Integer.MIN_VALUE,
 			Integer.MAX_VALUE, opponent)
+	}
 
 	// returns move, and it's score
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
@@ -14,8 +21,9 @@ class AI
 	{
 		var alpha = alp
 		var beta = bet
-		if (depth > 0)
+		if (depth < actualDepth)
 		{
+			nodesVisited += 1
 			if (max)
 			{
 				var choosenPath : List[Move] = Nil
@@ -28,7 +36,7 @@ class AI
 					if (board.makeMove(move))
 					{
 						validMoves += 1
-						val childMove  = alphabeta(board, !max, depth - 1, alpha, beta, op)
+						val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
 						val moveScore = childMove._1
 						if (moveScore > alpha)
 						{
@@ -67,7 +75,7 @@ class AI
 					if (board.makeMove(move))
 					{
 						validMoves += 1
-						val childMove  = alphabeta(board, !max, depth - 1, alpha, beta, op)
+						val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
 						val moveScore = childMove._1
 						if (moveScore < beta)
 						{
@@ -98,13 +106,14 @@ class AI
 		else
 		{
 //			(board.getPlayerScore(op), Nil)
-			(quiescence(board, max, alp, bet, op)._1, Nil)
+			quiescence(board, max, alp, bet, op)
 		}
 	}
 	
 	def quiescence(board : Board, max : Boolean, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
+		nodesVisited += 1
 		var alpha = alp
 		var beta = bet
 		val score = board.getPlayerScore(op)
