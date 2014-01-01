@@ -26,6 +26,7 @@ object InteractiveTest extends App
 		println("Hashcode: " + board.boardHash.toHexString)
 		println("EnPassant: " + Cord.toString(board.enPassant))
 		println("Castling rights: " + board.castlingRights.toBinaryString)
+		println("Repetitions: " + board.countRepetitions)
 		print("> ")
 		input = readLine
 

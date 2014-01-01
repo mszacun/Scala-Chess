@@ -47,6 +47,8 @@ class AI
 		if (depth < actualDepth)
 		{
 			nodesVisited += 1
+			if (board.countRepetitions >= 3) // threefold repetition
+				return (0, Nil)
 			if (max)
 			{
 				var choosenPath : List[Move] = Nil
@@ -138,10 +140,13 @@ class AI
 	def quiescence(board : Board, max : Boolean, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
-		nodesVisited += 1
 		var alpha = alp
 		var beta = bet
+		nodesVisited += 1
+		if (board.countRepetitions >= 3) // threefold repetition
+			return (0, Nil)
 		val score = board.getPlayerScore(op)
+	//	println("Board: " + board.toFen + " score: " + score)
 		if (max)
 		{
 			if (score > alpha)

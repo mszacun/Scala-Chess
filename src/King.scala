@@ -66,7 +66,7 @@ class King(pos : Int, col : Int, identifier : Int)
 	override def rank(b : Board) : Int = King.pieceValue + (b.numberOfPiecesAlive / 32) * 
 		King.positionValueStartGame(color)(Cord.from120to64(position)) +
 		((32 - b.numberOfPiecesAlive) / 32) * 
-		King.positionValueEndGame(color)(Cord.from120to64(position))
+		King.positionValueEndGame(color)(Cord.from120to64(position)) 
 }
 
 object King

@@ -12,9 +12,9 @@ class CaptureMove(start : Int, end : Int,
 		override def apply(b : Board) =
 		{
 			val pieceID = b.board(start)
+			val capturingPiece = b.piecesList(pieceID)
 			capturedPieceID = b.board(end)
 			capturedPiece = b.piecesList(capturedPieceID)
-			val capturingPiece = b.piecesList(pieceID)
 
 			b.scores(capturedPiece.color) -= capturedPiece.rank(b)
 			b.scores(capturingPiece.color) -= capturingPiece.rank(b)

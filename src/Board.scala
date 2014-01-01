@@ -256,11 +256,14 @@ class Board()
 		halfMoveClock += 1
 		movesStack = m :: movesStack
 		m.apply(this)
+
 		
 		whoseMove ^= 1 // hacker style to switch player :)
 
 		// update and store hash
 		updateBoardHash
+		updateScores
+
 		boardHashHistory(halfMoveClock) = boardHash
 		
 		return !isCheck(whoseMove ^ 1)
@@ -269,9 +272,11 @@ class Board()
 	// reverts last move, may throw an exception if moves stack is empty
 	final def undoMove() = 
 	{
+		val before = getPlayerScore(Piece.BLACK)
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
+
 
 		// revert enPassants and castlingRights
 		val previousMove : Move = movesStack.head
@@ -281,6 +286,7 @@ class Board()
 		whoseMove ^= 1 // hacker style to switch player :)
 		halfMoveClock -= 1
 		updateBoardHash
+		updateScores
 	}
 
 	final def updateScores = 
@@ -305,6 +311,19 @@ class Board()
 
 		piecesList.foreach((p : Piece) =>
 			if (p != null) boardHash ^= p.hashKey)
+	}
+
+	final def countRepetitions = 
+	{
+		var i = 0
+		var repetition = 0
+		while (i <= halfMoveClock)
+		{
+			if (boardHashHistory(i) == boardHash)
+				repetition += 1
+			i += 1
+		}
+		repetition
 	}
 
 	final def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)

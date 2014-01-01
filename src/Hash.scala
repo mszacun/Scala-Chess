@@ -35,4 +35,4 @@ object Hash
 		for (i <- 0 until 65)
 			enPassantSquareHash(i) = r.nextLong
 	}
-}	
+}	 
