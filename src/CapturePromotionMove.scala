@@ -31,4 +31,8 @@ class CapturePromotionMove(startPos : Int, endPos : Int,
 
 		b.scores(capturedPiece.color) += capturedPiece.rank(b)
 	}
+
+	override def calculateScore(b : Board) =
+		score = Piece.VALUE(b.board(end)) - Piece.VALUE(b.board(start)) + 20000
+
 }

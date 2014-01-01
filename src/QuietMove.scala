@@ -40,4 +40,7 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 		b.scores(piece.color) += piece.rank(b)
 	}
 
+	override def calculateScore(b : Board) = 
+		score = 0 // default score for quiet move
+
 }

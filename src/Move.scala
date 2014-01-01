@@ -9,6 +9,7 @@ abstract class Move(var moveType : Int, val start : Int, val end : Int,
 	// * enPassant -> describes field from which en passant is possible, if
 	// pawn is present on this field, after this move was made
 	// * castlingRightsBefore -> describes who can castle, after move was made
+	var score = 0 // used to order moves in search function
 	
 	// applays move to board, doesn't check if it is possible, it should be 
  	// checked before calling this method
@@ -19,6 +20,9 @@ abstract class Move(var moveType : Int, val start : Int, val end : Int,
 	// that was before move was made, Board class is responsible for this,
 	// because it has required informations
 	def undo(b : Board) : Unit
+
+	// calculates score of this move and stores it in 'score' field	
+	def calculateScore(b : Board) : Unit
 
 	override def toString = Cord.toString(start) + Cord.toString(end)
 

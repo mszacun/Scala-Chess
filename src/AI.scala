@@ -1,18 +1,41 @@
 package src
 
+import scala.util.Sorting
+
 class AI
 {
 	val maxDepth = 50
 
-	var actualDepth = 4
+	var actualDepth = 5
 	var nodesVisited : Long = 0
 	var pvMoves = new Array[Move](maxDepth)
+
+	object MoveOrdering extends Ordering[Move]
+	{
+		def compare(a : Move, b : Move) = 
+		{
+			val score1 = if (a == null) Integer.MIN_VALUE else a.score
+			val score2 = if (b == null) Integer.MIN_VALUE else b.score
+			score2 compare score1
+		}
+	}
 
 	def findNextMove(b : Board, opponent : Int) : (Int, List[Move]) = 
 	{
 		nodesVisited = 0
 		alphabeta(b, false, 0, Integer.MIN_VALUE,
 			Integer.MAX_VALUE, opponent)
+	}
+
+	def orderMoves(moves : Array[Move], size : Int, b : Board)
+	{
+		var i = 0
+		while (i < size)
+		{
+			moves(i).calculateScore(b)
+			i += 1
+		}
+		Sorting.quickSort(moves)(MoveOrdering)
 	}
 
 	// returns move, and it's score
@@ -27,7 +50,8 @@ class AI
 			if (max)
 			{
 				var choosenPath : List[Move] = Nil
-				val (moves, size) = board.generateMovesForNextPlayer
+				var (moves, size) = board.generateMovesForNextPlayer
+				orderMoves(moves, size, board)
 				var i : Int = 0
 				var validMoves = 0 // counts how many valid moves are possible
 				while (i < size)
@@ -67,6 +91,7 @@ class AI
 			{
 				var choosenPath : List[Move] = Nil
 				val (moves, size) = board.generateMovesForNextPlayer
+				orderMoves(moves, size, board)
 				var i : Int = 0
 				var validMoves = 0
 				while (i < size)
@@ -127,6 +152,7 @@ class AI
 			}
 			var choosenPath : List[Move] = Nil
 			val (moves, size) = board.generateAttacksForNextPlayer
+			orderMoves(moves, size, board)
 			var i : Int = 0
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
@@ -172,6 +198,7 @@ class AI
 			}
 			var choosenPath : List[Move] = Nil
 			val (moves, size) = board.generateAttacksForNextPlayer
+			orderMoves(moves, size, board)
 			var i : Int = 0
 			var validMoves = 0
 			while (i < size)

@@ -38,4 +38,7 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			b.numberOfPiecesAlive += 1
 		}
 
+		override def calculateScore(b : Board) =
+			score = 0 + 10000
+
 }

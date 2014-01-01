@@ -49,4 +49,10 @@ class CaptureMove(start : Int, end : Int,
 			b.scores(capturedPiece.color) += capturedPiece.rank(b)
 			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 		}
+
+		override def calculateScore(b : Board) = 
+			score = Piece.VALUE(b.board(end)) - Piece.VALUE(b.board(start)) + 10000
+
+
 	}
+

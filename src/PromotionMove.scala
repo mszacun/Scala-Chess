@@ -63,4 +63,7 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 
 		b.scores(pawnPromoted.color) += pawnPromoted.rank(b)
 	}
+
+	override def calculateScore(b : Board) = 
+		score = 20000 // default promotion score
 }

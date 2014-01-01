@@ -56,4 +56,7 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 	}
 
 	override def toString = Cord.toString(kingStartPos) + Cord.toString(kingEndPos)
+
+	override def calculateScore(b : Board) =
+		score = 5000
 }
