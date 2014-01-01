@@ -13,21 +13,16 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		var tmpPos = position
 		var ind = index
 
-		// calculate castlingRights after this rook move
-		// index of castling in board.castilngRights array, that will be impossible
-		// after move of this rook
-		val castleDeniedAfterMove = position match
+		// calculates bit mask that should be anded with castlingRights to
+		// get castling rights after this move has been made
+		val castlingRightsAfter = position match
 		{
-			case 28 => 0 // H1
-			case 21 => 1 // A1
-			case 98 => 2 // H8
-			case 91 => 3 // H1
-			case _ => 4
+			case 28 => 14 // H1
+			case 21 => 13 // A1
+			case 98 => 11 // H8
+			case 91 => 7 // H1
+			case _ => 15 
 		}
-
-		val castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
-			b.castlingRights(2), b.castlingRights(3), false)
-		castlingRightsAfter(castleDeniedAfterMove) = false
 
 		while (true)
 		{
@@ -56,21 +51,16 @@ class Rook(pos : Int, col : Int, identifier : Int)
 		var tmpPos = position
 		var ind = index
 
-		// calculate castlingRights after this rook move
-		// index of castling in board.castilngRights array, that will be impossible
-		// after move of this rook
-		val castleDeniedAfterMove = position match
+		// calculates bit mask that should be anded with castlingRights to
+		// get castling rights after this move has been made
+		val castlingRightsAfter = position match
 		{
-			case 28 => 0 // H1
-			case 21 => 1 // A1
-			case 98 => 2 // H8
-			case 91 => 3 // H1
-			case _ => 4
+			case 28 => 14 // H1
+			case 21 => 13 // A1
+			case 98 => 11 // H8
+			case 91 => 7 // H1
+			case _ => 15 
 		}
-
-		val castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
-			b.castlingRights(2), b.castlingRights(3), false)
-		castlingRightsAfter(castleDeniedAfterMove) = false
 
 		while (true)
 		{

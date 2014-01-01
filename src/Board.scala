@@ -12,6 +12,7 @@ class Board()
 	val piecesList : Array[Piece] = new Array[Piece](32)
 
 	/* 
+	 * stored on bits of integer
 	 * castlingRights[0] -> white ability to castle kingside
 	 * castlingRights[1] -> white ability to castle queenside
 	 * castlingRights[2] -> black ability to castle kingside
@@ -19,14 +20,13 @@ class Board()
 	 * castlingRights[4] -> this is set by rook that during move isn't on starting
 	 *	position
 	 */
-	var castlingRights : Seq[Boolean] = Array(true, true, true, true, false)
+	var castlingRights : Int = 1 | 2 | 4 | 8
 
 	// fields from which enPassant capture is possible
 	var enPassant : Int = 0 // target en passant square
 
 	// history of moves on board in stack form
-	var movesStack : List[Move] = new QuietMove(0, 0, 0, Array(true, true, true,
-		true, false)) :: Nil // no need to check if stack is empty
+	var movesStack : List[Move] = new QuietMove(0, 0, 0, 15) :: Nil // no need to check if stack is empty
 	// number of moves in history
 	var halfMoveCounter = 0
 	var whoseMove = Piece.WHITE
@@ -64,11 +64,10 @@ class Board()
 		{
 			if (!isAttacked(piecesList(Board.WHITE_KING).position, whoseMove))
 			{
-				val castleRightsAfter = Array(false, false, castlingRights(2),
-					castlingRights(3), false)
+				val castleRightsAfter = 12 // white lose castling rights
 
 				// castle king side
-				if (castlingRights(0) && Board.isRook(board(Board.whiteRookKSStartPos)) &&
+				if ((castlingRights & 1) == 1 && Board.isRook(board(Board.whiteRookKSStartPos)) &&
 					Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 				{
@@ -78,7 +77,7 @@ class Board()
 				}
 
 				// castle queen side
-				if (castlingRights(1) && Board.isRook(board(Board.whiteRookQSStartPos)) &&
+				if ((castlingRights & 2) == 2 && Board.isRook(board(Board.whiteRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareWhiteCastleQS) &&
 					Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
@@ -93,10 +92,10 @@ class Board()
 		{
 			if (!isAttacked(piecesList(Board.BLACK_KING).position, whoseMove))
 			{
-				val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
-					false, false, false)
+				val castleRightsAfter = 3 // black lose castling rights
+
 				// castle king side
-				if (castlingRights(2) && Board.isRook(board(Board.blackRookKSStartPos)) &&
+				if ((castlingRights & 4) == 4 && Board.isRook(board(Board.blackRookKSStartPos)) &&
 					Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 				{
@@ -105,7 +104,7 @@ class Board()
 					i += 1
 				}
 				// castle queen side
-				if (castlingRights(3) && Board.isRook(board(Board.blackRookQSStartPos)) &&
+				if ((castlingRights & 8) == 8 && Board.isRook(board(Board.blackRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareBlackCastleQS) &&
 					Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
@@ -411,13 +410,12 @@ class Board()
 		builder.append(" " + playerChar + " ")
 
 		// castlingRights
-		if (castlingRights(0)) builder.append('K')
-		if (castlingRights(1)) builder.append('Q')
-		if (castlingRights(2)) builder.append('k')
-		if (castlingRights(3)) builder.append('q')
+		if ((castlingRights & 1) == 1) builder.append('K')
+		if ((castlingRights & 2) == 2) builder.append('Q')
+		if ((castlingRights & 4) == 4) builder.append('k')
+		if ((castlingRights & 8) == 8) builder.append('q')
 		// no castle rights ?
-		if (!castlingRights(0) && !castlingRights(1) && 
-			!castlingRights(2) && !castlingRights(3))
+		if ((castlingRights & 15) == 0)
 			builder.append("-")
 
 		// enPassant
@@ -619,20 +617,21 @@ object Board
 						  else 								  Piece.BLACK
 
 		stringIndex += 2 
-		val castlingRights = Array(false, false, false, false, false)
+		var castlingRights = 0
 		while (fen.charAt(stringIndex) != ' ')
 		{
 			fen.charAt(stringIndex) match
 			{
-				case 'K' => castlingRights(0) = true
-				case 'Q' => castlingRights(1) = true
-				case 'k' => castlingRights(2) = true
-				case 'q' => castlingRights(3) = true
-				case '-' => castlingRights(4) = false // ommit '-'
+				case 'K' => castlingRights |= 1
+				case 'Q' => castlingRights |= 2
+				case 'k' => castlingRights |= 4
+				case 'q' => castlingRights |= 8
+				case '-' => castlingRights  = 0 // ommit '-'
 			}
 			stringIndex += 1
 		}
 		board.castlingRights = castlingRights
+		board.movesStack.head.castlingRightsAfter = castlingRights
 		stringIndex += 1 // move to next field
 
 		// en passant field

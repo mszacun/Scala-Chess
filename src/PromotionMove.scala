@@ -1,6 +1,6 @@
 package src;
 
-class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolean], val promotion : Int) 
+class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val promotion : Int) 
 	extends Move(Move.PROMOTION_MOVE, start, end, 0, castlingRightsAfterMove)
 {
 	// pawn that was promoted, will be set during applying to board
@@ -34,7 +34,8 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 		}
 		b.piecesList(pieceID) = newPiece
 
-		b.castlingRights = castlingRightsAfter
+		b.castlingRights &= castlingRightsMask
+		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
 
 		b.scores(newPiece.color) += newPiece.rank(b)

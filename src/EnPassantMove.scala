@@ -1,7 +1,7 @@
 package src;
 
 class EnPassantMove(start : Int, end : Int, val captureField : Integer, 
-	castlingRightsAfterMove : Seq[Boolean]) extends Move(Move.ENPASSANT_MOVE,
+	castlingRightsAfterMove : Int) extends Move(Move.ENPASSANT_MOVE,
 	start, end, 0, castlingRightsAfterMove)
 {
 		var capturedPiece : Piece = null 
@@ -20,7 +20,8 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			b.piecesList(pieceID).position = end
 			b.piecesList(capturedPieceID) = null
 
-			b.castlingRights = castlingRightsAfter
+			b.castlingRights &= castlingRightsMask
+			castlingRightsAfter = b.castlingRights
 			b.enPassant = 0
 			b.numberOfPiecesAlive -= 1
 		}

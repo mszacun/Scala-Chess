@@ -1,7 +1,7 @@
 package src;
 
 class QuietMove(start : Int, end: Int, enPass : Int,
-	castlingRightsAfterMove : Seq[Boolean]) 
+	castlingRightsAfterMove : Int) 
 	extends Move(Move.QUIET_MOVE, start, end, enPass,
 	castlingRightsAfterMove)
 {
@@ -21,7 +21,8 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 
 		b.scores(piece.color) += piece.rank(b)
 
-		b.castlingRights = castlingRightsAfter
+		b.castlingRights &= castlingRightsMask
+		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
 	}
 

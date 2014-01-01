@@ -30,7 +30,27 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		StartingMovesGenerationTest
 		DifficultPositionMoveGenerationTest
 		MostDifficultPositionEverTest
-		PromotionPositionTest
+		PromotionPositionTest  
+
+/*		val fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - "
+		val board = Board(fen)
+
+		var desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "A1" && Cord.toString(m.end) == "B1").head
+
+		board.makeMove(desiredMove)
+
+		desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "A6" && Cord.toString(m.end) == "B5").head
+		board.makeMove(desiredMove) */
+
+/*		desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "B1" && Cord.toString(m.end) == "A1").head
+		board.makeMove(desiredMove) */
+
+//		println(board.toFen)
+
+//		divide(board, 2) 
 	}
 
 	def doesCausesCheckForMe(m : Move, b : Board) = 

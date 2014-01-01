@@ -1,7 +1,7 @@
 package src;
 
 class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos : Int,
-	val kingEndPos : Int, castleRightsAfterMove : Seq[Boolean])
+	val kingEndPos : Int, castleRightsAfterMove : Int)
 	extends Move(Move.CASTLE_MOVE, kingStartPos, kingEndPos, 0, castleRightsAfterMove)
 {
 	// id of rook taking part in castling
@@ -31,7 +31,8 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 		b.scores(king.color) += king.rank(b)
 
 		b.enPassant = 0
-		b.castlingRights = castleRightsAfterMove
+		b.castlingRights &= castleRightsAfterMove
+		castlingRightsAfter = b.castlingRights // store for restoring while undoin move
 	}
 
 	override def undo(b : Board) = 

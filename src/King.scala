@@ -14,13 +14,11 @@ class King(pos : Int, col : Int, identifier : Int)
 		var ind = index
 
 		// if you move king, you loose all castling rights
-		var castlingRightsAfter : Seq[Boolean] = null
+		var castlingRightsAfter : Int = 0
 		if (color == Piece.WHITE)
-			castlingRightsAfter = Array(false, false, b.castlingRights(2),
-				 b.castlingRights(3), false)
+			castlingRightsAfter = 12
 		else
-			castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
-				false, false, false)
+			castlingRightsAfter = 3 
 
 		King.possibleDirections.foreach((dir : Int) => 
 		{
@@ -46,13 +44,11 @@ class King(pos : Int, col : Int, identifier : Int)
 		var ind = index
 
 		// if you move king, you loose all castling rights
-		var castlingRightsAfter : Seq[Boolean] = null
+		var castlingRightsAfter : Int = 0
 		if (color == Piece.WHITE)
-			castlingRightsAfter = Array(false, false, b.castlingRights(2),
-				 b.castlingRights(3), false)
+			castlingRightsAfter = 12
 		else
-			castlingRightsAfter = Array(b.castlingRights(0), b.castlingRights(1),
-				false, false, false)
+			castlingRightsAfter = 3
 
 		King.possibleDirections.foreach((dir : Int) => 
 		{

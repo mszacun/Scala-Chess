@@ -1,15 +1,17 @@
 package src;
 
 abstract class Move(var moveType : Int, val start : Int, val end : Int,
-	val enPassant : Int, val castlingRightsAfter : Seq[Boolean])
+	val enPassant : Int, val castlingRightsMask : Int)
 {
 	// * start -> position from move started (if more than one piece takes part
 	// in move, primary piece start position is stored
 	// * end -> position where move ends
 	// * enPassant -> describes field from which en passant is possible, if
 	// pawn is present on this field, after this move was made
-	// * castlingRightsBefore -> describes who can castle, after move was made
+	// * castlingRightsMask -> mask that should be anded with current catling rights
+	// to get castling rights after this move
 	var score = 0 // used to order moves in search function
+	var castlingRightsAfter = 0 // castling rights after this move
 	
 	// applays move to board, doesn't check if it is possible, it should be 
  	// checked before calling this method

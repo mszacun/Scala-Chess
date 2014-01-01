@@ -1,7 +1,7 @@
 package src;
 
 class CapturePromotionMove(startPos : Int, endPos : Int, 
-	castlingRightsAfterMove : Seq[Boolean], prom : Int)
+	castlingRightsAfterMove : Int, prom : Int)
 	extends PromotionMove(startPos, endPos, castlingRightsAfterMove, prom)
 {
 	moveType = Move.CAPTURE_PROMOTION_MOVE

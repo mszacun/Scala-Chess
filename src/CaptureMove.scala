@@ -1,7 +1,7 @@
 package src;
 
 class CaptureMove(start : Int, end : Int, 
-	castlingRightsAfterMove : Seq[Boolean]) extends Move(Move.CAPTURE_MOVE,
+	castlingRightsAfterMove : Int) extends Move(Move.CAPTURE_MOVE,
 	start, end, 0, castlingRightsAfterMove)
 	{
 		// will be assigned during applaying to board
@@ -26,7 +26,8 @@ class CaptureMove(start : Int, end : Int,
 
 			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 
-			b.castlingRights = castlingRightsAfter
+			b.castlingRights &= castlingRightsMask
+			castlingRightsAfter = b.castlingRights // store for restoring while undoin move
 			b.enPassant = 0
 			b.numberOfPiecesAlive -= 1
 		}
