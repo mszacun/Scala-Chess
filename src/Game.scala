@@ -7,6 +7,8 @@ object Game extends App
 	var flag = false
 	var desiredMove : Array[Move] = null
 	var opp = Piece.BLACK
+
+	Hash.initHashTables
 	
 	val if_we_start = readLine
 	if (if_we_start == "t")

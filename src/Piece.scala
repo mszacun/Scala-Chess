@@ -29,6 +29,8 @@ abstract class Piece(var position : Int, final val color : Int, final val id : I
 	// actual position of piece on board
 	def rank(b : Board) : Int
 
+	def hashKey = Hash.piecesHash(id)(Cord.from120to64(position))
+
 }
 
 object Piece

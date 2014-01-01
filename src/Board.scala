@@ -37,6 +37,9 @@ class Board()
 	// score for players
 	val scores = Array[Int](0, 0)
 
+	// hash value of current state of board
+	var boardHash : Long = 0
+
 	clearBoard
 
 	/* empty board */
@@ -281,6 +284,21 @@ class Board()
 				scores(piece.color) += piece.rank(this)
 	}
 
+	final def updateBoardHash = 
+	{
+		boardHash = 0
+
+		if (whoseMove == Piece.WHITE)
+			boardHash ^= Hash.whiteMovesHash
+		
+		boardHash ^= Hash.enPassantSquareHash(Cord.from120to64(enPassant))
+
+		boardHash ^= Hash.castleRightsHash(castlingRights)
+
+		piecesList.foreach((p : Piece) =>
+			boardHash ^= p.hashKey)
+	}
+
 	final def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
 
 	// checks wheter opponent can attack this field, used in looking for check
@@ -432,6 +450,8 @@ class Board()
 
 object Board
 {
+	Hash.initHashTables
+
 	final val AUXILIARY_SQUARE = 33
 	final val EMPTY_SQUARE = 32
 	// keys in piece list
@@ -648,6 +668,8 @@ object Board
 
 		// count scores for players
 		board.updateScores	
+		// calculate hash
+		board.updateBoardHash
 		board
 	} 
 }
