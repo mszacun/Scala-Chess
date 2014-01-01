@@ -18,7 +18,7 @@ class Bishop(pos : Int, col : Int, identifier : Int)
 			tmpPos += dir
 			if (b.isEmpty(tmpPos))
 			{
-				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
+				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights, false)
 				ind += 1
 			}
 			else

@@ -40,7 +40,6 @@ object InteractiveTest extends App
 
 			board.makeMove(desiredMove.head)
 		}
-		board.updateBoardHash
 	}
 }
 

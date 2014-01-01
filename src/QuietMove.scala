@@ -1,10 +1,11 @@
 package src;
 
 class QuietMove(start : Int, end: Int, enPass : Int,
-	castlingRightsAfterMove : Int) 
+	castlingRightsAfterMove : Int, val resetClock : Boolean) 
 	extends Move(Move.QUIET_MOVE, start, end, enPass,
 	castlingRightsAfterMove)
 {
+	var previousClock : Int = 0 // state of half-move clock before move
 	// see in Move
 	override def apply(b : Board) =
 	{
@@ -24,6 +25,12 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 		b.castlingRights &= castlingRightsMask
 		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
+
+		if (resetClock)
+		{
+			previousClock = b.halfMoveClock
+			b.halfMoveClock = 0
+		}
 	}
 
 	// see in Move
@@ -39,6 +46,9 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 		piece.position = start
 
 		b.scores(piece.color) += piece.rank(b)
+
+		if (resetClock)
+			b.halfMoveClock = previousClock
 	}
 
 	override def calculateScore(b : Board) = 

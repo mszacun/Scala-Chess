@@ -50,7 +50,7 @@ class Knight(pos : Int, col : Int, identifire : Int)
 			tmpPos = position + Knight.possibleMovesDirection(i)
 			if (b.isEmpty(tmpPos))
 			{
-				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights)
+				moveList(ind) = new QuietMove(position, tmpPos, 0, b.castlingRights, false)
 				ind += 1
 			}
 			else if (b.isOccupiedByOpponent(tmpPos, color))

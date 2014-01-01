@@ -6,6 +6,7 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 {
 		var capturedPiece : Piece = null 
 		var capturedPieceID : Int = -1
+		var previousClock = 0
 
 		override def apply(b : Board) =
 		{
@@ -24,6 +25,9 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			castlingRightsAfter = b.castlingRights
 			b.enPassant = 0
 			b.numberOfPiecesAlive -= 1
+
+			previousClock = b.halfMoveClock
+			b.halfMoveClock = 0
 		}
 
 		override def undo(b : Board) = 
@@ -37,6 +41,8 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			b.piecesList(pieceID).position = start
 			b.piecesList(capturedPieceID) = capturedPiece
 			b.numberOfPiecesAlive += 1
+
+			b.halfMoveClock = previousClock
 		}
 
 		override def calculateScore(b : Board) =

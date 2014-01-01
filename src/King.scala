@@ -25,7 +25,7 @@ class King(pos : Int, col : Int, identifier : Int)
 			val tmpPos = position + dir
 			if (b.isEmpty(tmpPos))
 			{
-				moveList(ind) = new QuietMove(position, tmpPos, 0, castlingRightsAfter)
+				moveList(ind) = new QuietMove(position, tmpPos, 0, castlingRightsAfter, false)
 				ind += 1
 			}
 			else

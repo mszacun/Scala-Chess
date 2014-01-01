@@ -26,9 +26,11 @@ class Board()
 	var enPassant : Int = 0 // target en passant square
 
 	// history of moves on board in stack form
-	var movesStack : List[Move] = new QuietMove(0, 0, 0, 15) :: Nil // no need to check if stack is empty
+	var movesStack : List[Move] = new QuietMove(0, 0, 0, 15, false) :: Nil // no need to check if stack is empty
+	// board hash history since last 
+	val boardHashHistory = new Array[Long](128) 
 	// number of moves in history
-	var halfMoveCounter = 0
+	var halfMoveClock = 0
 	var whoseMove = Piece.WHITE
 
 	// number of alive pieces
@@ -246,15 +248,20 @@ class Board()
 		piecesList(piece.id) = piece
 	}
 
+
 	// this method should be called instead of Move.apply!
 	// returns if given move is legal
 	final def makeMove(m : Move) : Boolean = 
 	{
-		halfMoveCounter += 1
+		halfMoveClock += 1
 		movesStack = m :: movesStack
 		m.apply(this)
 		
 		whoseMove ^= 1 // hacker style to switch player :)
+
+		// update and store hash
+		updateBoardHash
+		boardHashHistory(halfMoveClock) = boardHash
 		
 		return !isCheck(whoseMove ^ 1)
 	}
@@ -262,7 +269,6 @@ class Board()
 	// reverts last move, may throw an exception if moves stack is empty
 	final def undoMove() = 
 	{
-		halfMoveCounter -= 1
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
@@ -273,6 +279,8 @@ class Board()
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
+		halfMoveClock -= 1
+		updateBoardHash
 	}
 
 	final def updateScores = 
@@ -296,7 +304,7 @@ class Board()
 		boardHash ^= Hash.castleRightsHash(castlingRights)
 
 		piecesList.foreach((p : Piece) =>
-			boardHash ^= p.hashKey)
+			if (p != null) boardHash ^= p.hashKey)
 	}
 
 	final def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
@@ -443,6 +451,9 @@ class Board()
 			builder.append(Cord.toString(enPassant))
 		else
 			builder.append("-")
+
+		// half-move clock
+		builder.append(" " + halfMoveClock)
 
 		builder.toString
 	}
@@ -664,7 +675,13 @@ object Board
 		else
 			board.enPassant = Cord.fromString(enPassantField)
 
-		// TODO: Halfmove and Fullmove clocks not supported
+		stringIndex += 1
+		val halfMoveClockStart = stringIndex
+		while (stringIndex < fen.size && fen.charAt(stringIndex) != ' ')
+			stringIndex += 1
+		board.halfMoveClock = fen.substring(halfMoveClockStart, stringIndex).toInt
+
+		// TODO: Fullmove clock not supported
 
 		// count scores for players
 		board.updateScores	

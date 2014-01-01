@@ -31,7 +31,8 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 					})
 				else
 				{
-					moveList(index) = new QuietMove(position, move, 0, b.castlingRights)
+					moveList(index) = new QuietMove(position, move, 0, 
+						b.castlingRights, true)
 					index += 1
 
 					// double move if on starting position
@@ -42,7 +43,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						{
 							moveList(index) = new QuietMove(position, 
 								move, Cord.moveS(position, 1), // enPasant is possible
-								b.castlingRights)
+								b.castlingRights, true)
 							index += 1
 						}
 					}
@@ -64,7 +65,8 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 					})
 				else
 				{
-					moveList(index) = new QuietMove(position, move, 0, b.castlingRights)
+					moveList(index) = new QuietMove(position, move, 0,
+						b.castlingRights, true)
 					index += 1
 
 					// double move if on starting position
@@ -75,7 +77,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 						{
 							moveList(index) = new QuietMove(position, 
 								move, Cord.moveN(position, 1),
-								b.castlingRights)
+								b.castlingRights, true)
 							index += 1
 						}
 					}
