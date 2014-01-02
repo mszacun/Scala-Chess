@@ -1,5 +1,5 @@
 SCALAC = scalac
-FLAGS = -g
+FLAGS = -optimise 
 SCALA = scala
 
 default: source
@@ -7,9 +7,9 @@ default: source
 all: source tests
 
 source: 
-	$(SCALAC) src/*.scala
+	$(SCALAC) $(FLAGS) src/*.scala
 tests:
-	$(SCALAC) test/*.scala
+	$(SCALAC) $(FLAGS) test/*.scala
 
 	$(SCALA) test.AllTests
 

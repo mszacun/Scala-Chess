@@ -1,7 +1,7 @@
 package src;
 
 class CapturePromotionMove(startPos : Int, endPos : Int, 
-	castlingRightsAfterMove : Seq[Boolean], prom : Int)
+	castlingRightsAfterMove : Int, prom : Int)
 	extends PromotionMove(startPos, endPos, castlingRightsAfterMove, prom)
 {
 	moveType = Move.CAPTURE_PROMOTION_MOVE
@@ -13,6 +13,8 @@ class CapturePromotionMove(startPos : Int, endPos : Int,
 		val capturedPieceID = b.board(endPos)
 		capturedPiece = b.piecesList(capturedPieceID)
 		b.piecesList(capturedPieceID) = null // capture
+
+		b.scores(capturedPiece.color) -= capturedPiece.rank(b)
 
 		// promote pawn
 		super.apply(b)
@@ -26,5 +28,11 @@ class CapturePromotionMove(startPos : Int, endPos : Int,
 		// restore captured piece
 		b.piecesList(capturedPiece.id) = capturedPiece
 		b.board(endPos) = capturedPiece.id
+
+		b.scores(capturedPiece.color) += capturedPiece.rank(b)
 	}
+
+	override def calculateScore(b : Board) =
+		score = Piece.VALUE(b.board(end)) - Piece.VALUE(b.board(start)) + 20000
+
 }

@@ -1,15 +1,17 @@
 package src;
 
-class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolean], val promotion : Int) 
+class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val promotion : Int) 
 	extends Move(Move.PROMOTION_MOVE, start, end, 0, castlingRightsAfterMove)
 {
 	// pawn that was promoted, will be set during applying to board
 	var pawnPromoted : Piece = null
+	var previousClock = 0
 
 	override def apply(b : Board) = 
 	{
 		val pieceID = b.board(start)
 		pawnPromoted = b.piecesList(pieceID)
+		b.scores(pawnPromoted.color) -= pawnPromoted.rank(b)
 
 		// move it
 		b.board(start) = Board.EMPTY_SQUARE
@@ -33,13 +35,22 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 		}
 		b.piecesList(pieceID) = newPiece
 
-		b.castlingRights = castlingRightsAfter
+		b.castlingRights &= castlingRightsMask
+		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
+
+		b.scores(newPiece.color) += newPiece.rank(b)
+
+		previousClock = b.halfMoveClock
+		b.halfMoveClock = 0
 	}
 
 	override def undo(b : Board) = 
 	{
 		val pieceID = pawnPromoted.id
+		val newPiece = b.piecesList(pieceID)
+
+		b.scores(newPiece.color) -= newPiece.rank(b)
 		
 		b.board(end) = Board.EMPTY_SQUARE
 		b.board(start) = pieceID
@@ -54,5 +65,12 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Seq[Boolea
 			case Piece.BISHOP => Board.isBishop(pieceID) = false
 			case Piece.ROOK => Board.isRook(pieceID) = false
 		}
+
+		b.scores(pawnPromoted.color) += pawnPromoted.rank(b)
+
+		b.halfMoveClock = previousClock
 	}
+
+	override def calculateScore(b : Board) = 
+		score = 20000 // default promotion score
 }

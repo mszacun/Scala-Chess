@@ -1,7 +1,5 @@
 package test;
 
-import scala.collection.mutable.Map
-
 import src.Cord
 import src.Pawn
 import src.Piece
@@ -32,36 +30,34 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		StartingMovesGenerationTest
 		DifficultPositionMoveGenerationTest
 		MostDifficultPositionEverTest
-		PromotionPositionTest
+		PromotionPositionTest  
 
-//		val fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
-//		val board = Board(fen)
+/*		val fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - "
+		val board = Board(fen)
 
-		/*var desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
-			Cord.toString(m.start) == "B4" && Cord.toString(m.end) == "C5").head
+		var desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "A1" && Cord.toString(m.end) == "B1").head
+
 		board.makeMove(desiredMove)
-		println(board.toFen)
 
-		desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
-			Cord.toString(m.start) == "A8" && Cord.toString(m.end) == "B8").head
-		board.makeMove(desiredMove)
-		println(board.toFen)
+		desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "A6" && Cord.toString(m.end) == "B5").head
+		board.makeMove(desiredMove) */
 
-		desiredMove = board.generateMovesForNextPlayer.filter((m : Move) =>
-			Cord.toString(m.start) == "F7" && Cord.toString(m.end) == "H8").head
-		board.makeMove(desiredMove)
-		println(board.toFen)  */
+/*		desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+			m != null && Cord.toString(m.start) == "B1" && Cord.toString(m.end) == "A1").head
+		board.makeMove(desiredMove) */
 
-//		divide(board, 1)
+//		println(board.toFen)
+
+//		divide(board, 2) 
 	}
-
-
 
 	def doesCausesCheckForMe(m : Move, b : Board) = 
 	{
 		val myColor = b.whoseMove
 		val myKingID = if (myColor == Piece.WHITE) Board.WHITE_KING
-		             else                        Board.BLACK_KING
+		               else                        Board.BLACK_KING
 
 		b.makeMove(m)
 		val king = b.piecesList(myKingID)
@@ -76,23 +72,21 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		allMoves._1.filter((m : Move) => m != null && !doesCausesCheckForMe(m, b))
 	}
 
-	def print_indent(str : String, indent : Int) = 
+	def generateOnlyValidAttacks(b : Board) = 
 	{
-		for (i <- 1 to indent)
-			print(" ")
-		println(str)
+		val allMoves = b.generateAttacksForNextPlayer
+		allMoves._1.filter((m : Move) => m != null && !doesCausesCheckForMe(m, b))
 	}
 
 	def divide(board : Board, depth : Int)
 	{
 		generateOnlyValidMoves(board).foreach((m : Move) =>
-			{
-				board.makeMove(m)
-				println(m + ": " + startPerft(board.toFen, depth - 1)._1)
-				board.undoMove
-			})
+		{
+			board.makeMove(m)
+			println(m + ": " + startPerft(board.toFen, depth - 1)._1)
+			board.undoMove
+		})
 	}
-
 
 	def startPerft(fen : String, depth : Int) : (Int, Int, Int, Int, Int, Int, Int) =
 	{
@@ -129,6 +123,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 									else                                Board.WHITE_KING
 				// check if we have check in this leaf node
 				val moves = generateOnlyValidMoves(board)
+				val attacks = generateOnlyValidAttacks(board)
 				moves.foreach((m: Move) => 
 				{
 					board.makeMove(m)
@@ -145,8 +140,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 					m.moveType == Move.CAPTURE_MOVE || m.moveType == Move.ENPASSANT_MOVE ||
 					m.moveType == Move.CAPTURE_PROMOTION_MOVE)
 				enPassants += moves.count((m : Move) => m.moveType == Move.ENPASSANT_MOVE)
-				val castles1 = moves.count((m : Move) => m.moveType == Move.CASTLE_MOVE)
-				castles += castles1
+				castles += moves.count((m : Move) => m.moveType == Move.CASTLE_MOVE)
 				promotions += moves.count((m : Move) => 
 					m.moveType == Move.CAPTURE_PROMOTION_MOVE || m.moveType == Move.PROMOTION_MOVE)
 			}
@@ -154,16 +148,14 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 			{
 			
 				board.generateMovesForNextPlayer._1.foreach((m : Move) =>
+				{
+					if (m != null)
 					{
-//				print_indent("Taking move: " + Cord.toString(m.start) + " => " +Cord.toString(m.end),
-//							max_indent - depth)
-						if (m != null)
-						{
-							board.makeMove(m)
-							perft(board, depth - 1, m)
-							board.undoMove
-						}
-					})
+						board.makeMove(m)
+						perft(board, depth - 1, m)
+						board.undoMove
+					}
+				})
 			}
 		}
 		// return value
@@ -203,7 +195,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 	def DifficultPositionMoveGenerationTest = 
 	{
-		val fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -"
+		val fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0"
 
 		println("Dfficult position: ")
 		var start = System.nanoTime
@@ -229,7 +221,7 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 
 	def MostDifficultPositionEverTest = 
 	{
-		val fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - "
+		val fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0"
 
 		println("Most difficult position ever: ")
 		var start = System.nanoTime
@@ -284,9 +276,10 @@ class MoveGenerationTest extends Test("MoveGenerationTest")
 		end = System.nanoTime
 		println("Depth 4: " + (end - start) + " ns") 
 
+/*		long test
 		start = System.nanoTime
 		assert(startPerft(fen, 5) == (15833292, 2046173, 6512, 0, 329464, 200568, 50562))
 		end = System.nanoTime
-		println("Depth 5: " + (end - start) + " ns")
+		println("Depth 5: " + (end - start) + " ns") */
 	}
 }

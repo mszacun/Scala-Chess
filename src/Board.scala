@@ -12,6 +12,7 @@ class Board()
 	val piecesList : Array[Piece] = new Array[Piece](32)
 
 	/* 
+	 * stored on bits of integer
 	 * castlingRights[0] -> white ability to castle kingside
 	 * castlingRights[1] -> white ability to castle queenside
 	 * castlingRights[2] -> black ability to castle kingside
@@ -19,19 +20,32 @@ class Board()
 	 * castlingRights[4] -> this is set by rook that during move isn't on starting
 	 *	position
 	 */
-	var castlingRights : Seq[Boolean] = Array(true, true, true, true, false)
+	var castlingRights : Int = 1 | 2 | 4 | 8
 
 	// fields from which enPassant capture is possible
 	var enPassant : Int = 0 // target en passant square
 
 	// history of moves on board in stack form
-	var movesStack : List[Move] = Nil
+	var movesStack : List[Move] = new QuietMove(0, 0, 0, 15, false) :: Nil // no need to check if stack is empty
+	// board hash history since last 
+	val boardHashHistory = new Array[Long](128) 
+	// number of moves in history
+	var halfMoveClock = 0
 	var whoseMove = Piece.WHITE
+
+	// number of alive pieces
+	var numberOfPiecesAlive = 0
+
+	// score for players
+	val scores = Array[Int](0, 0)
+
+	// hash value of current state of board
+	var boardHash : Long = 0
 
 	clearBoard
 
 	/* empty board */
-	def clearBoard =
+	final def clearBoard =
 	{
 		for	(i <- 0 to 119)
 		{
@@ -41,11 +55,12 @@ class Board()
 				board(i) = Board.EMPTY_SQUARE
 		}
 		for (i <- 1 until 32) piecesList(i) = null
+		numberOfPiecesAlive = 0
 	}
 
-	def generateMovesForNextPlayer =
+	final def generateMovesForNextPlayer =
 	{
-		val start = System.nanoTime
+		var start = System.nanoTime
 		val result = new Array[Move](256)
 		var i = 0 // index in result array
 
@@ -54,11 +69,10 @@ class Board()
 		{
 			if (!isAttacked(piecesList(Board.WHITE_KING).position, whoseMove))
 			{
-				val castleRightsAfter = Array(false, false, castlingRights(2),
-					castlingRights(3), false)
+				val castleRightsAfter = 12 // white lose castling rights
 
 				// castle king side
-				if (castlingRights(0) && Board.isRook(board(Board.whiteRookKSStartPos)) &&
+				if ((castlingRights & 1) == 1 && Board.isRook(board(Board.whiteRookKSStartPos)) &&
 					Board.freeSquaresRequiredWhiteCastleKS.forall((sq : Int) => 
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 				{
@@ -68,7 +82,7 @@ class Board()
 				}
 
 				// castle queen side
-				if (castlingRights(1) && Board.isRook(board(Board.whiteRookQSStartPos)) &&
+				if ((castlingRights & 2) == 2 && Board.isRook(board(Board.whiteRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareWhiteCastleQS) &&
 					Board.freeSquaresRequiredWhiteCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
@@ -83,10 +97,10 @@ class Board()
 		{
 			if (!isAttacked(piecesList(Board.BLACK_KING).position, whoseMove))
 			{
-				val castleRightsAfter = Array(castlingRights(0), castlingRights(1),
-					false, false, false)
+				val castleRightsAfter = 3 // black lose castling rights
+
 				// castle king side
-				if (castlingRights(2) && Board.isRook(board(Board.blackRookKSStartPos)) &&
+				if ((castlingRights & 4) == 4 && Board.isRook(board(Board.blackRookKSStartPos)) &&
 					Board.freeSquaresRequiredBlackCastleKS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
 				{
@@ -95,7 +109,7 @@ class Board()
 					i += 1
 				}
 				// castle queen side
-				if (castlingRights(3) && Board.isRook(board(Board.blackRookQSStartPos)) &&
+				if ((castlingRights & 8) == 8 && Board.isRook(board(Board.blackRookQSStartPos)) &&
 					isEmpty(Board.additionalFreeSquareBlackCastleQS) &&
 					Board.freeSquaresRequiredBlackCastleQS.forall((sq : Int) =>
 						isEmpty(sq) && !isAttacked(sq, whoseMove)))
@@ -157,50 +171,165 @@ class Board()
 		piecesList.foreach((piece : Piece) =>
 		{
 			if (piece != null && piece.color == whoseMove)
+			{
 				i = piece.generateMoves(this, result, i)
+			}
 		})
 		val end = System.nanoTime
 		//println("GeneratingMoves: " + (end - start)+ " ns")
 		(result, i)
 	}
 
-	def addPiece(piece : Piece) = 
+	final def generateAttacksForNextPlayer =
+	{
+		val result = new Array[Move](256)
+		var i = 0 // index in result array
+
+		// check if en passant is possible
+		if (!isOffBoard(enPassant))
+		{
+			if (whoseMove == Piece.WHITE)
+			{
+				// on the left
+				var pawnSquare = enPassant - 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+					i += 1
+				}
+				pawnSquare = enPassant - 11
+				// on the right
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+					i += 1
+				}
+			}
+			else
+			{
+				var pawnSquare = enPassant + 9
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare + 1,
+						castlingRights)
+					i += 1
+				}
+
+				pawnSquare = enPassant + 11
+				if (isOccupiedByMe(pawnSquare, whoseMove) && 
+					Board.isPawn(board(pawnSquare)))
+				{
+					result(i) = new EnPassantMove(pawnSquare, enPassant, pawnSquare - 1,
+						castlingRights)
+					i += 1
+				}
+			}
+		}
+
+		// generate quiet moves, captures and promotions
+		piecesList.foreach((piece : Piece) =>
+		{
+			if (piece != null && piece.color == whoseMove)
+			{	
+				i = piece.generateAttacks(this, result, i)
+			}
+		})
+		(result, i)
+	}
+
+	final def addPiece(piece : Piece) = 
 	{
 		board(piece.position) = piece.id
 		piecesList(piece.id) = piece
 	}
 
+
 	// this method should be called instead of Move.apply!
-	def makeMove(m : Move) = 
+	// returns if given move is legal
+	final def makeMove(m : Move) : Boolean = 
 	{
+		halfMoveClock += 1
 		movesStack = m :: movesStack
 		m.apply(this)
+
+		
 		whoseMove ^= 1 // hacker style to switch player :)
+
+		// update and store hash
+		updateBoardHash
+		updateScores
+
+		boardHashHistory(halfMoveClock) = boardHash
+		
+		return !isCheck(whoseMove ^ 1)
 	}
 
 	// reverts last move, may throw an exception if moves stack is empty
-	def undoMove() = 
+	final def undoMove() = 
 	{
+		val before = getPlayerScore(Piece.BLACK)
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
 
+
 		// revert enPassants and castlingRights
-		val previousMove : Move = movesStack match
-			{
-				case h :: t => h
-				// at the beginning everyone can castle
-				case Nil => new QuietMove(0, 0, 0, Array(true, true, true,
-					true, false))
-			}
+		val previousMove : Move = movesStack.head
 		castlingRights = previousMove.castlingRightsAfter
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
+		halfMoveClock -= 1
+		updateBoardHash
+		updateScores
 	}
 
+	final def updateScores = 
+	{
+		scores(0) = 0
+		scores(1) = 0
+		for (piece <- piecesList)
+			if (piece != null)
+				scores(piece.color) += piece.rank(this)
+	}
+
+	final def updateBoardHash = 
+	{
+		boardHash = 0
+
+		if (whoseMove == Piece.WHITE)
+			boardHash ^= Hash.whiteMovesHash
+		
+		boardHash ^= Hash.enPassantSquareHash(Cord.from120to64(enPassant))
+
+		boardHash ^= Hash.castleRightsHash(castlingRights)
+
+		piecesList.foreach((p : Piece) =>
+			if (p != null) boardHash ^= p.hashKey)
+	}
+
+	final def countRepetitions = 
+	{
+		var i = 0
+		var repetition = 0
+		while (i <= halfMoveClock)
+		{
+			if (boardHashHistory(i) == boardHash)
+				repetition += 1
+			i += 1
+		}
+		repetition
+	}
+
+	final def getPlayerScore(player : Int) = scores(player) - scores(player ^ 1)
+
 	// checks wheter opponent can attack this field, used in looking for check
-	def isAttacked(position : Int, myColor : Int) : Boolean =
+	final def isAttacked(position : Int, myColor : Int) : Boolean =
 	{
 		// check for rook and queen moving straight
 		var tmpPos = position
@@ -269,7 +398,7 @@ class Board()
 	}
 
 	// check if color king is in check
-	def isCheck(color : Int) = 
+	final def isCheck(color : Int) = 
 	{
 		val king = piecesList(if (color == Piece.WHITE) Board.WHITE_KING else Board.BLACK_KING)
 		isAttacked(king.position, color)
@@ -279,18 +408,18 @@ class Board()
 	// right one, becasue there are no 2 like in boolean, but 3(empty, occupied, 
 	// off the board)!!
 
-	def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
+	final def isEmpty(position : Int) = board(position) == Board.EMPTY_SQUARE
 
-	def isOccupied(position : Int) = board(position) < 32
+	final def isOccupied(position : Int) = board(position) < 32
 
 	// quickly checks color of piece
-	def isOccupiedByOpponent(position : Int, myColor : Int) = 
+	final def isOccupiedByOpponent(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) != myColor
 
-	def isOccupiedByMe(position : Int, myColor : Int) = 
+	final def isOccupiedByMe(position : Int, myColor : Int) = 
 		isOccupied(position) && (board(position) & 1) == myColor
 
-	def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
+	final def isOffBoard(position : Int) = board(position) == Board.AUXILIARY_SQUARE
 
 	def toFen =
 	{
@@ -310,7 +439,7 @@ class Board()
 						builder.append(spaceBetweenPieces)
 						spaceBetweenPieces = 0
 					}
-					builder.append(Board.pieceKeyToFEN(board(pos)))
+					builder.append(Board.pieceKeyToFEN(piecesList(board(pos)).id))
 				}
 			}
 			if (spaceBetweenPieces > 0)
@@ -326,13 +455,12 @@ class Board()
 		builder.append(" " + playerChar + " ")
 
 		// castlingRights
-		if (castlingRights(0)) builder.append('K')
-		if (castlingRights(1)) builder.append('Q')
-		if (castlingRights(2)) builder.append('k')
-		if (castlingRights(3)) builder.append('q')
+		if ((castlingRights & 1) == 1) builder.append('K')
+		if ((castlingRights & 2) == 2) builder.append('Q')
+		if ((castlingRights & 4) == 4) builder.append('k')
+		if ((castlingRights & 8) == 8) builder.append('q')
 		// no castle rights ?
-		if (!castlingRights(0) && !castlingRights(1) && 
-			!castlingRights(2) && !castlingRights(3))
+		if ((castlingRights & 15) == 0)
 			builder.append("-")
 
 		// enPassant
@@ -343,80 +471,85 @@ class Board()
 		else
 			builder.append("-")
 
+		// half-move clock
+		builder.append(" " + halfMoveClock)
+
 		builder.toString
 	}
 }	
 
 object Board
 {
-	val AUXILIARY_SQUARE = 33
-	val EMPTY_SQUARE = 32
+	Hash.initHashTables
+
+	final val AUXILIARY_SQUARE = 33
+	final val EMPTY_SQUARE = 32
 	// keys in piece list
 
 	// white's are even
-	val WHITE_PAWN_1 = 1
-	val WHITE_PAWN_2 = 3
-	val WHITE_PAWN_3 = 5
-	val WHITE_PAWN_4 = 7
-	val WHITE_PAWN_5 = 9
-	val WHITE_PAWN_6 = 11
-	val WHITE_PAWN_7 = 13
-	val WHITE_PAWN_8 = 15
+	final val WHITE_PAWN_1 = 1
+	final val WHITE_PAWN_2 = 3
+	final val WHITE_PAWN_3 = 5
+	final val WHITE_PAWN_4 = 7
+	final val WHITE_PAWN_5 = 9
+	final val WHITE_PAWN_6 = 11
+	final val WHITE_PAWN_7 = 13
+	final val WHITE_PAWN_8 = 15
 	
-	val WHITE_ROOK_1 = 17
-	val WHITE_ROOK_2 = 19
-	val WHITE_KNIGHT_1 = 21
-	val WHITE_KNIGHT_2 = 23
-	val WHITE_BISHOP_1 = 25
-	val WHITE_BISHOP_2 = 27
-	val WHITE_QUEEN = 29
-	val WHITE_KING = 31
+	final val WHITE_ROOK_1 = 17
+	final val WHITE_ROOK_2 = 19
+	final val WHITE_KNIGHT_1 = 21
+	final val WHITE_KNIGHT_2 = 23
+	final val WHITE_BISHOP_1 = 25
+	final val WHITE_BISHOP_2 = 27
+	final val WHITE_QUEEN = 29
+	final val WHITE_KING = 31
 
 	// blacks are odd, this is used in fast check of piece color on certain square
-	val BLACK_PAWN_1 = 0
-	val BLACK_PAWN_2 = 2
-	val BLACK_PAWN_3 = 4
-	val BLACK_PAWN_4 = 6
-	val BLACK_PAWN_5 = 8
-	val BLACK_PAWN_6 = 10
-	val BLACK_PAWN_7 = 12
-	val BLACK_PAWN_8 = 14
+	final val BLACK_PAWN_1 = 0
+	final val BLACK_PAWN_2 = 2
+	final val BLACK_PAWN_3 = 4
+	final val BLACK_PAWN_4 = 6
+	final val BLACK_PAWN_5 = 8
+	final val BLACK_PAWN_6 = 10
+	final val BLACK_PAWN_7 = 12
+	final val BLACK_PAWN_8 = 14
 	
-	val BLACK_ROOK_1 = 16
-	val BLACK_ROOK_2 = 18
-	val BLACK_KNIGHT_1 = 20
-	val BLACK_KNIGHT_2 = 22
-	val BLACK_BISHOP_1 = 24
-	val BLACK_BISHOP_2 = 26
-	val BLACK_QUEEN = 28
-	val BLACK_KING = 30
+	final val BLACK_ROOK_1 = 16
+	final val BLACK_ROOK_2 = 18
+	final val BLACK_KNIGHT_1 = 20
+	final val BLACK_KNIGHT_2 = 22
+	final val BLACK_BISHOP_1 = 24
+	final val BLACK_BISHOP_2 = 26
+	final val BLACK_QUEEN = 28
+	final val BLACK_KING = 30
 
 	// array indexed by piece key, telling if given piece is pawn
-	val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
+	final val isPawn = Array(true, true, true, true, true, true, true, true, true, true,
 						true, true, true, true, true, true, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false)
-	val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isKnight = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true, true, true, false, false, false, false, false, false,
 						false, false, false, false)
-	val isRook = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isRook = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, true, true, true, true,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false)
-	val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isBishop = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, true, true, true, true, false, false,
 						false, false, false, false)
-	val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isQueen = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, true, true,
 						false, false, false, false)
-	val isKing = Array(false, false, false, false, false, false, false, false, false, false,
+	final val isKing = Array(false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						false, false, false, false, false, false, false, false, false, false,
 						true, true, false, false)
-	val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
+	final val pieceKeyToFEN = Map(WHITE_PAWN_1 -> 'P', WHITE_PAWN_2 -> 'P',
 		WHITE_PAWN_3 -> 'P', WHITE_PAWN_4 -> 'P', WHITE_PAWN_5 -> 'P',
 		WHITE_PAWN_6 -> 'P', WHITE_PAWN_7 -> 'P', WHITE_PAWN_8 -> 'P',
 		WHITE_ROOK_1 -> 'R', WHITE_ROOK_2 -> 'R', WHITE_KNIGHT_1 -> 'N',
@@ -430,36 +563,36 @@ object Board
 		BLACK_QUEEN -> 'q', BLACK_KING -> 'k')
 
 	// constants connected with castling
-	val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
+	final val freeSquaresRequiredWhiteCastleQS = Array(Cord.fromString("D1"), Cord.fromString("C1"))
 	// for white to castle queenside also B1 must be empty, but may be attacked
-	val additionalFreeSquareWhiteCastleQS = Cord.fromString("B1")
-	val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
+	final val additionalFreeSquareWhiteCastleQS = Cord.fromString("B1")
+	final val freeSquaresRequiredWhiteCastleKS = Array(Cord.fromString("F1"), Cord.fromString("G1"))
 
-	val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
-	val additionalFreeSquareBlackCastleQS = Cord.fromString("B8")
-	val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
+	final val freeSquaresRequiredBlackCastleQS = Array(Cord.fromString("D8"), Cord.fromString("C8"))
+	final val additionalFreeSquareBlackCastleQS = Cord.fromString("B8")
+	final val freeSquaresRequiredBlackCastleKS = Array(Cord.fromString("F8"), Cord.fromString("G8"))
 
-	val whiteRookQSStartPos = Cord.fromString("A1")
-	val whiteRookQSEndPos = Cord.fromString("D1")
-	val whiteRookKSStartPos = Cord.fromString("H1")
-	val whiteRookKSEndPos = Cord.fromString("F1")
+	final val whiteRookQSStartPos = Cord.fromString("A1")
+	final val whiteRookQSEndPos = Cord.fromString("D1")
+	final val whiteRookKSStartPos = Cord.fromString("H1")
+	final val whiteRookKSEndPos = Cord.fromString("F1")
 
-	val whiteKingStartPos = Cord.fromString("E1")
-	val whiteKingQSEndPos = Cord.fromString("C1")
-	val whiteKingKSEndPos = Cord.fromString("G1")
+	final val whiteKingStartPos = Cord.fromString("E1")
+	final val whiteKingQSEndPos = Cord.fromString("C1")
+	final val whiteKingKSEndPos = Cord.fromString("G1")
 
-	val blackRookQSStartPos = Cord.fromString("A8")
-	val blackRookQSEndPos = Cord.fromString("D8")
-	val blackRookKSStartPos = Cord.fromString("H8")
-	val blackRookKSEndPos = Cord.fromString("F8")
+	final val blackRookQSStartPos = Cord.fromString("A8")
+	final val blackRookQSEndPos = Cord.fromString("D8")
+	final val blackRookKSStartPos = Cord.fromString("H8")
+	final val blackRookKSEndPos = Cord.fromString("F8")
 
-	val blackKingStartPos = Cord.fromString("E8")
-	val blackKingQSEndPos = Cord.fromString("C8")
-	val blackKingKSEndPos = Cord.fromString("G8")
+	final val blackKingStartPos = Cord.fromString("E8")
+	final val blackKingQSEndPos = Cord.fromString("C8")
+	final val blackKingKSEndPos = Cord.fromString("G8")
 
 
 
-	def apply(fen : String) =
+	final def apply(fen : String) =
 	{
 		val board = new Board()
 		var stringIndex = 0
@@ -524,6 +657,7 @@ object Board
 					case 'P' => new Pawn(arrayPos, Piece.WHITE, pieceID)
 				}
 				board.addPiece(newPiece)
+				board.numberOfPiecesAlive += 1
 				arrayPos += 1
 			}
 			stringIndex += 1
@@ -533,20 +667,21 @@ object Board
 						  else 								  Piece.BLACK
 
 		stringIndex += 2 
-		val castlingRights = Array(false, false, false, false, false)
+		var castlingRights = 0
 		while (fen.charAt(stringIndex) != ' ')
 		{
 			fen.charAt(stringIndex) match
 			{
-				case 'K' => castlingRights(0) = true
-				case 'Q' => castlingRights(1) = true
-				case 'k' => castlingRights(2) = true
-				case 'q' => castlingRights(3) = true
-				case '-' => castlingRights(4) = false // ommit '-'
+				case 'K' => castlingRights |= 1
+				case 'Q' => castlingRights |= 2
+				case 'k' => castlingRights |= 4
+				case 'q' => castlingRights |= 8
+				case '-' => castlingRights  = 0 // ommit '-'
 			}
 			stringIndex += 1
 		}
 		board.castlingRights = castlingRights
+		board.movesStack.head.castlingRightsAfter = castlingRights
 		stringIndex += 1 // move to next field
 
 		// en passant field
@@ -559,8 +694,18 @@ object Board
 		else
 			board.enPassant = Cord.fromString(enPassantField)
 
-		// TODO: Halfmove and Fullmove clocks not supported
+		stringIndex += 1
+		val halfMoveClockStart = stringIndex
+		while (stringIndex < fen.size && fen.charAt(stringIndex) != ' ')
+			stringIndex += 1
+		board.halfMoveClock = fen.substring(halfMoveClockStart, stringIndex).toInt
 
+		// TODO: Fullmove clock not supported
+
+		// count scores for players
+		board.updateScores	
+		// calculate hash
+		board.updateBoardHash
 		board
 	} 
 }

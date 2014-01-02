@@ -2,8 +2,8 @@ package src;
 
 import scala.collection.mutable.MutableList
 
-abstract class Piece(var position : Int, val color : Int, val id : Int,
-	val pieceType : Int)
+abstract class Piece(var position : Int, final val color : Int, final val id : Int,
+	final val pieceType : Int)
 {
 	// * position -> actual position on board as index in array
 	// representing board
@@ -14,30 +14,39 @@ abstract class Piece(var position : Int, val color : Int, val id : Int,
 	def this(position : String, color : Int, id : Int, pieceType : Int) = 
 		this(Cord.fromString(position), color, id, pieceType)
 
-	// WARNING: All generating moves methods may return moves which destination is
-	// outside the board! Board class is responsible for checking this, also
-	// generated moves may case own king to be in check, Board class also has to
-	// take care of it
+
+	// WARNING: This functions returns also pseud-legal moves, for example
+	// moves after that own king is in check
 
 	// quiteMoves + attacks
 	def generateMoves(b : Board, list:Array[Move], index : Int) : Int
 
+	// attacks only, used in quiescence search
+	def generateAttacks(b : Board, list:Array[Move], index : Int) : Int
+
 	// rank value of this piece in actual position
 	// takes under consideration material value of piece and
 	// actual position of piece on board
-	def rank : Int
+	def rank(b : Board) : Int
+
+	def hashKey = Hash.piecesHash(id)(Cord.from120to64(position))
 
 }
 
 object Piece
 {
-	val WHITE = 1
-	val BLACK = 0
+	final val WHITE = 1
+	final val BLACK = 0
 
-	val PAWN = 1
-	val KNIGHT = 2
-	val BISHOP = 3
-	val ROOK = 4
-	val QUEEN = 5
-	val KING = 6
+	final val PAWN = 1
+	final val KNIGHT = 2
+	final val BISHOP = 3
+	final val ROOK = 4
+	final val QUEEN = 5
+	final val KING = 6
+
+	final val VALUE = Array(100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+							100, 100, 100, 100, 100, 100, 500, 500, 500, 500,
+							320, 320, 320, 320, 325, 325, 325, 325, 975, 975,
+							32767, 32767)
 }
