@@ -5,11 +5,12 @@ import scala.util.Sorting
 class AI
 {
 	val maxDepth = 500
+	val transpositionTableSize = 1024 * 1024 * 5 // 5 Mb
 
 	var actualDepth = 5
 	var nodesVisited : Long = 0
 	var allNodesVisited : Long = 0
-	var pvMoves = new Array[Move](maxDepth)
+	var transpositionTable = new TranspositionTable(transpositionTableSize)
 	var stopTime : Long = 0 // time limit for next search
 
 	object MoveOrdering extends Ordering[Move]
@@ -29,9 +30,6 @@ class AI
 		stopTime = System.currentTimeMillis + time
 		var lastResult : (Int, List[Move]) = (0, Nil)
 
-		for (i <- 0 until maxDepth)
-			pvMoves(i) = null
-
 		for (i <- 1 to maxDepth)
 		{
 			actualDepth = i
@@ -49,13 +47,14 @@ class AI
 		return lastResult
 	}
 
-	def orderMoves(moves : Array[Move], size : Int, b : Board, depth : Int)
+	def orderMoves(moves : Array[Move], size : Int, b : Board, usePV : Boolean)
 	{
 		var i = 0
+		var pv = if (usePV) transpositionTable.get(b.boardHash) else null
 		while (i < size)
 		{
 			val move = moves(i)
-			if (move equals pvMoves(depth))
+			if (move equals pv)
 			{
 				move.score = Integer.MAX_VALUE
 			}
@@ -84,7 +83,7 @@ class AI
 				var i : Int = 0
 				var validMoves = 0 // counts how many valid moves are possible
 
-				orderMoves(moves, size, board, depth)
+				orderMoves(moves, size, board, true)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -113,7 +112,7 @@ class AI
 				if (validMoves > 0)
 				{
 					if (alpha > alp) // store new pv move
-						pvMoves(depth) = choosenPath.head
+						transpositionTable.set(board.boardHash, choosenPath.head)
 					return (alpha, choosenPath)
 				}
 				else 
@@ -132,7 +131,7 @@ class AI
 				var i : Int = 0
 				var validMoves = 0
 
-				orderMoves(moves, size, board, depth)
+				orderMoves(moves, size, board, true)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -161,7 +160,7 @@ class AI
 				if (validMoves > 0)
 				{
 					if (beta < bet)
-						pvMoves(depth) = choosenPath.head // store pv node
+						transpositionTable.set(board.boardHash, choosenPath.head) // store pv node
 					return (beta, choosenPath)
 				}
 				else 
@@ -199,7 +198,7 @@ class AI
 			val (moves, size) = board.generateAttacksForNextPlayer
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
-			orderMoves(moves, size, board, 0) 
+			orderMoves(moves, size, board, false) 
 			var i : Int = 0
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
@@ -252,7 +251,7 @@ class AI
 			var validMoves = 0
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
-			orderMoves(moves, size, board, 0)
+			orderMoves(moves, size, board, false)
 			while (i < size)
 			{
 				if (System.currentTimeMillis > stopTime) // time control

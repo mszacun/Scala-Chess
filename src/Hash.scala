@@ -2,6 +2,36 @@ package src
 
 import scala.util.Random
 
+// WARNING: Because of lack of unisgned number types iin JVM, we have to
+// shift hashcode left, to avoid negative numbers, so we effectively use only 
+// 63 bits of hashcode =[
+
+class TranspositionTable(val size : Int)
+{
+	class TranspositionTableEntry(val key : Long, val move : Move)
+	{
+	}
+
+	final val table = new Array[TranspositionTableEntry](size)
+
+	final def get(key : Long) : Move =
+	{
+		val index : Int = ((key >>> 1) % size).toInt
+		if (table(index) != null && table(index).key == key)
+			return table(index).move
+		else
+			return null
+	}
+
+	final def set(key : Long, value : Move) : Unit =
+	{
+		val index : Int = ((key >>> 1) % size).toInt
+		table(index) = new TranspositionTableEntry(key, value)
+	}
+}
+
+	
+
 object Hash
 {
 	// piecesHash[pieceID][position]

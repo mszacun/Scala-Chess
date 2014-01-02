@@ -19,7 +19,7 @@ object MoveSearchingTest extends App
 	val board = Board(startFEN)
 	val ai = new AI
 
-	val (score, move) = ai.findNextMove(board, board.whoseMove ^ 1, 6)
+	val (score, move) = ai.findNextMove(board, board.whoseMove ^ 1, 6 * 1000)
 	println("Move: " + move + ", Score: " + score)
 	println("Nodes: " + ai.allNodesVisited)
 }
