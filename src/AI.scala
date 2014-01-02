@@ -4,12 +4,13 @@ import scala.util.Sorting
 
 class AI
 {
-	val maxDepth = 50
+	val maxDepth = 500
 
 	var actualDepth = 5
 	var nodesVisited : Long = 0
 	var allNodesVisited : Long = 0
 	var pvMoves = new Array[Move](maxDepth)
+	var stopTime : Long = 0 // time limit for next search
 
 	object MoveOrdering extends Ordering[Move]
 	{
@@ -21,21 +22,28 @@ class AI
 		}
 	}
 
-	def findNextMove(b : Board, opponent : Int, desiredDepth : Int) : (Int, List[Move]) = 
+	// time -> time for searchin in miliseconds
+	def findNextMove(b : Board, opponent : Int, time : Int) : (Int, List[Move]) = 
 	{
 		nodesVisited = 0
+		stopTime = System.currentTimeMillis + time
 		var lastResult : (Int, List[Move]) = (0, Nil)
 
 		for (i <- 0 until maxDepth)
 			pvMoves(i) = null
 
-		for (i <- 1 to desiredDepth)
+		for (i <- 1 to maxDepth)
 		{
 			actualDepth = i
-			lastResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
+			val currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
 				Integer.MAX_VALUE, opponent)
-//			println("Depth: " + actualDepth + " result: " + lastResult + " nodes: " + nodesVisited)
 			allNodesVisited += nodesVisited
+
+			// if time is up, alphaBeta returns Nil path
+			if (currentResult._2 == Nil)
+				return lastResult
+			else
+				lastResult = currentResult
 			nodesVisited = 0
 		}
 		return lastResult
@@ -73,12 +81,15 @@ class AI
 			{
 				var choosenPath : List[Move] = Nil
 				var (moves, size) = board.generateMovesForNextPlayer
-				orderMoves(moves, size, board, depth)
-		//		println("First: " + moves(0) + "(score: " + moves(0).score + ") second: " + moves(1) + " (score: " + moves(1).score + ") board: " + board.toFen)
 				var i : Int = 0
 				var validMoves = 0 // counts how many valid moves are possible
+
+				orderMoves(moves, size, board, depth)
 				while (i < size)
 				{
+					if (System.currentTimeMillis > stopTime) // time control
+						return (0, Nil)
+
 					val move = moves(i)
 					if (board.makeMove(move))
 					{
@@ -118,11 +129,15 @@ class AI
 			{
 				var choosenPath : List[Move] = Nil
 				val (moves, size) = board.generateMovesForNextPlayer
-				orderMoves(moves, size, board, depth)
 				var i : Int = 0
 				var validMoves = 0
+
+				orderMoves(moves, size, board, depth)
 				while (i < size)
 				{
+					if (System.currentTimeMillis > stopTime) // time control
+						return (0, Nil)
+
 					val move = moves(i)
 					if (board.makeMove(move))
 					{
@@ -146,7 +161,7 @@ class AI
 				if (validMoves > 0)
 				{
 					if (beta < bet)
-						pvMoves(depth) = choosenPath.head
+						pvMoves(depth) = choosenPath.head // store pv node
 					return (beta, choosenPath)
 				}
 				else 
@@ -160,10 +175,7 @@ class AI
 			}
 		}
 		else
-		{
-//			(board.getPlayerScore(op), Nil)
 			quiescence(board, max, alp, bet, op)
-		}
 	}
 	
 	def quiescence(board : Board, max : Boolean, alp : Int,
@@ -175,7 +187,6 @@ class AI
 		if (board.countRepetitions >= 3) // threefold repetition
 			return (0, Nil)
 		val score = board.getPlayerScore(op)
-	//	println("Board: " + board.toFen + " score: " + score)
 		if (max)
 		{
 			if (score > alpha)
@@ -193,6 +204,9 @@ class AI
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
 			{
+				if (System.currentTimeMillis > stopTime) // time control
+					return (0, Nil)
+
 				val move = moves(i)
 				if (board.makeMove(move))
 				{
@@ -234,13 +248,16 @@ class AI
 			}
 			var choosenPath : List[Move] = Nil
 			val (moves, size) = board.generateAttacksForNextPlayer
+			var i : Int = 0
+			var validMoves = 0
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
 			orderMoves(moves, size, board, 0)
-			var i : Int = 0
-			var validMoves = 0
 			while (i < size)
 			{
+				if (System.currentTimeMillis > stopTime) // time control
+					return (0, Nil)
+
 				val move = moves(i)
 				if (board.makeMove(move))
 				{
