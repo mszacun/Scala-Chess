@@ -3,11 +3,11 @@ package src
 object Game extends App
 {
 	val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-//	val startFEN = "r1b1k3/ppp4p/4n1pB/3p4/8/r2K4/8/7R w - - 2"
 	val board = Board(startFEN)
 	var flag = false
 	var desiredMove : Array[Move] = null
 	var opp = Piece.BLACK
+	val desiredDepth = 6
 	
 	val if_we_start = readLine
 	if (if_we_start == "t")
@@ -32,7 +32,7 @@ object Game extends App
 	{
 	    println; println
 		val start = System.currentTimeMillis()
-		val (score, move) = ai.findNextMove(board, opp)
+		val (score, move) = ai.findNextMove(board, opp, desiredDepth)
 		val end = System.currentTimeMillis()
 //		opp ^= 1
 		
@@ -40,7 +40,7 @@ object Game extends App
 	//	println("" + m + " score: " + score))
 		println("" + move.head + " score: " + score)
 		println("Time: " + (end - start) + " ms")
-		println("Nodes visited: " + ai.nodesVisited + " depth: " + move.size)
+		println("Nodes visited: " + ai.allNodesVisited + " depth: " + move.size)
 		println("Opp: " + opp)
 		println
 		board.makeMove(move.head)

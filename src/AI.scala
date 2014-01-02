@@ -8,6 +8,7 @@ class AI
 
 	var actualDepth = 5
 	var nodesVisited : Long = 0
+	var allNodesVisited : Long = 0
 	var pvMoves = new Array[Move](maxDepth)
 
 	object MoveOrdering extends Ordering[Move]
@@ -20,19 +21,38 @@ class AI
 		}
 	}
 
-	def findNextMove(b : Board, opponent : Int) : (Int, List[Move]) = 
+	def findNextMove(b : Board, opponent : Int, desiredDepth : Int) : (Int, List[Move]) = 
 	{
 		nodesVisited = 0
-		alphabeta(b, false, 0, Integer.MIN_VALUE,
-			Integer.MAX_VALUE, opponent)
+		var lastResult : (Int, List[Move]) = (0, Nil)
+
+		for (i <- 0 until maxDepth)
+			pvMoves(i) = null
+
+		for (i <- 1 to desiredDepth)
+		{
+			actualDepth = i
+			lastResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
+				Integer.MAX_VALUE, opponent)
+//			println("Depth: " + actualDepth + " result: " + lastResult + " nodes: " + nodesVisited)
+			allNodesVisited += nodesVisited
+			nodesVisited = 0
+		}
+		return lastResult
 	}
 
-	def orderMoves(moves : Array[Move], size : Int, b : Board)
+	def orderMoves(moves : Array[Move], size : Int, b : Board, depth : Int)
 	{
 		var i = 0
 		while (i < size)
 		{
-			moves(i).calculateScore(b)
+			val move = moves(i)
+			if (move equals pvMoves(depth))
+			{
+				move.score = Integer.MAX_VALUE
+			}
+			else
+				move.calculateScore(b)
 			i += 1
 		}
 		Sorting.quickSort(moves)(MoveOrdering)
@@ -53,7 +73,8 @@ class AI
 			{
 				var choosenPath : List[Move] = Nil
 				var (moves, size) = board.generateMovesForNextPlayer
-				orderMoves(moves, size, board)
+				orderMoves(moves, size, board, depth)
+		//		println("First: " + moves(0) + "(score: " + moves(0).score + ") second: " + moves(1) + " (score: " + moves(1).score + ") board: " + board.toFen)
 				var i : Int = 0
 				var validMoves = 0 // counts how many valid moves are possible
 				while (i < size)
@@ -79,7 +100,11 @@ class AI
 					i += 1
 				}
 				if (validMoves > 0)
+				{
+					if (alpha > alp) // store new pv move
+						pvMoves(depth) = choosenPath.head
 					return (alpha, choosenPath)
+				}
 				else 
 					if (board.isCheck(board.whoseMove))
 					{
@@ -93,7 +118,7 @@ class AI
 			{
 				var choosenPath : List[Move] = Nil
 				val (moves, size) = board.generateMovesForNextPlayer
-				orderMoves(moves, size, board)
+				orderMoves(moves, size, board, depth)
 				var i : Int = 0
 				var validMoves = 0
 				while (i < size)
@@ -119,7 +144,11 @@ class AI
 					i += 1
 				}
 				if (validMoves > 0)
+				{
+					if (beta < bet)
+						pvMoves(depth) = choosenPath.head
 					return (beta, choosenPath)
+				}
 				else 
 					if (board.isCheck(board.whoseMove))
 					{
@@ -157,7 +186,9 @@ class AI
 			}
 			var choosenPath : List[Move] = Nil
 			val (moves, size) = board.generateAttacksForNextPlayer
-			orderMoves(moves, size, board)
+
+			// quiescence shouldnt use pvMoves, cause it searches only attacks
+			orderMoves(moves, size, board, 0) 
 			var i : Int = 0
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
@@ -203,7 +234,9 @@ class AI
 			}
 			var choosenPath : List[Move] = Nil
 			val (moves, size) = board.generateAttacksForNextPlayer
-			orderMoves(moves, size, board)
+
+			// quiescence shouldnt use pvMoves, cause it searches only attacks
+			orderMoves(moves, size, board, 0)
 			var i : Int = 0
 			var validMoves = 0
 			while (i < size)

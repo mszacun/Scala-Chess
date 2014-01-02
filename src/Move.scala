@@ -26,6 +26,12 @@ abstract class Move(var moveType : Int, val start : Int, val end : Int,
 	// calculates score of this move and stores it in 'score' field	
 	def calculateScore(b : Board) : Unit
 
+	override def equals(other : Any) = 
+	{
+		val o = other.asInstanceOf[Move]
+		o != null && o.moveType == moveType && o.start == start && o.end == end
+	}
+
 	override def toString = Cord.toString(start) + Cord.toString(end)
 
 }
