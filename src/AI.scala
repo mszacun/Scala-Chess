@@ -6,12 +6,18 @@ class AI
 {
 	val maxDepth = 500
 	val transpositionTableSize = 1024 * 1024 * 5 // 5 Mb
+	val killersTabSize = 3
 
-	var actualDepth = 5
-	var nodesVisited : Long = 0
-	var allNodesVisited : Long = 0
+	var actualDepth = 0
+	var nodesVisited : Long = 0 // nodes visted on current depth
+	var allNodesVisited : Long = 0 // nodes visited during whole search
 	var transpositionTable = new TranspositionTable(transpositionTableSize)
 	var stopTime : Long = 0 // time limit for next search
+	var killers = new Array[Array[Move]](maxDepth) // stores moves that caused cut-off
+
+	// initialize killers
+	for (i <- 0 until maxDepth)
+		killers(i) = new Array[Move](killersTabSize)
 
 	object MoveOrdering extends Ordering[Move]
 	{
@@ -36,6 +42,7 @@ class AI
 			val currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
 				Integer.MAX_VALUE, opponent)
 			allNodesVisited += nodesVisited
+			println("Depth: " + i + " nodes: " + nodesVisited)
 
 			// if time is up, alphaBeta returns Nil path
 			if (currentResult._2 == Nil)
@@ -47,7 +54,8 @@ class AI
 		return lastResult
 	}
 
-	def orderMoves(moves : Array[Move], size : Int, b : Board, usePV : Boolean)
+	def orderMoves(moves : Array[Move], size : Int, b : Board, usePV : Boolean,
+		depth : Int)
 	{
 		var i = 0
 		var pv = if (usePV) transpositionTable.get(b.boardHash) else null
@@ -58,11 +66,24 @@ class AI
 			{
 				move.score = Integer.MAX_VALUE
 			}
+			else if (move equals killers(depth)(0))
+				move.score = 8000
+			else if (move equals killers(depth)(1))
+				move.score = 7000
+			else if (move equals killers(depth)(2))
+				move.score = 6000
 			else
 				move.calculateScore(b)
 			i += 1
 		}
 		Sorting.quickSort(moves)(MoveOrdering)
+	}
+
+	def storeKiller(kiler : Move, depth : Int) = 
+	{
+		killers(depth)(2) = killers(depth)(2)
+		killers(depth)(1) = killers(depth)(0)
+		killers(depth)(0) = kiler
 	}
 
 	// returns move, and it's score
@@ -83,7 +104,7 @@ class AI
 				var i : Int = 0
 				var validMoves = 0 // counts how many valid moves are possible
 
-				orderMoves(moves, size, board, true)
+				orderMoves(moves, size, board, true, depth)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -102,6 +123,7 @@ class AI
 							if (beta <= alpha)
 							{
 								board.undoMove
+								storeKiller(choosenPath.head, depth)
 								return (alpha, choosenPath)
 							}
 						}
@@ -131,7 +153,7 @@ class AI
 				var i : Int = 0
 				var validMoves = 0
 
-				orderMoves(moves, size, board, true)
+				orderMoves(moves, size, board, true, depth)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -150,6 +172,7 @@ class AI
 							if (beta <= alpha)
 							{
 								board.undoMove
+								storeKiller(choosenPath.head, depth)
 								return (beta, choosenPath)
 							}
 						}
@@ -198,7 +221,7 @@ class AI
 			val (moves, size) = board.generateAttacksForNextPlayer
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
-			orderMoves(moves, size, board, false) 
+			orderMoves(moves, size, board, false, 0) 
 			var i : Int = 0
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
@@ -251,7 +274,7 @@ class AI
 			var validMoves = 0
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
-			orderMoves(moves, size, board, false)
+			orderMoves(moves, size, board, false, 0)
 			while (i < size)
 			{
 				if (System.currentTimeMillis > stopTime) // time control
