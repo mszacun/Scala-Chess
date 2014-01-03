@@ -42,7 +42,7 @@ class AI
 			val currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
 				Integer.MAX_VALUE, opponent)
 			allNodesVisited += nodesVisited
-			println("Depth: " + i + " nodes: " + nodesVisited)
+			//println("Depth: " + i + " nodes: " + nodesVisited)
 
 			// if time is up, alphaBeta returns Nil path
 			if (currentResult._2 == Nil)
@@ -54,6 +54,16 @@ class AI
 		return lastResult
 	}
 
+	/*    ORDERING RULES:
+		* PV-Move is scored best: Integer.MAX_VALUE
+		* Captures with promotions are next, scored based on LVA/MVV rule + 20 000
+		* Next ordinary captures, scored based on LVA/MVV + 10 000 (enPassant
+		*      captures comes here)
+		* Next comes killer moves: 1st is scored 8000, 2nd 7000, 3rd 6000
+		* Next we order castles: 5000
+		* Lastly ordinary quiet moves are scored 0 (planning using history heuristics here)
+		*
+	*/
 	def orderMoves(moves : Array[Move], size : Int, b : Board, usePV : Boolean,
 		depth : Int)
 	{
@@ -90,21 +100,22 @@ class AI
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
-		var alpha = alp
-		var beta = bet
 		if (depth < actualDepth)
 		{
 			nodesVisited += 1
 			if (board.countRepetitions >= 3) // threefold repetition
 				return (0, Nil)
+
+			var alpha = alp
+			var beta = bet
+			var choosenPath : List[Move] = Nil
+			var (moves, size) = board.generateMovesForNextPlayer
+			var i : Int = 0
+			var validMoves = 0 // counts how many valid moves are possible
+
+			orderMoves(moves, size, board, true, depth)
 			if (max)
 			{
-				var choosenPath : List[Move] = Nil
-				var (moves, size) = board.generateMovesForNextPlayer
-				var i : Int = 0
-				var validMoves = 0 // counts how many valid moves are possible
-
-				orderMoves(moves, size, board, true, depth)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -148,12 +159,6 @@ class AI
 			}
 			else
 			{
-				var choosenPath : List[Move] = Nil
-				val (moves, size) = board.generateMovesForNextPlayer
-				var i : Int = 0
-				var validMoves = 0
-
-				orderMoves(moves, size, board, true, depth)
 				while (i < size)
 				{
 					if (System.currentTimeMillis > stopTime) // time control
@@ -199,7 +204,7 @@ class AI
 		else
 			quiescence(board, max, alp, bet, op)
 	}
-	
+
 	def quiescence(board : Board, max : Boolean, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
