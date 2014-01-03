@@ -42,7 +42,7 @@ class AI
 			val currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
 				Integer.MAX_VALUE, opponent)
 			allNodesVisited += nodesVisited
-			//println("Depth: " + i + " nodes: " + nodesVisited)
+			println("Depth: " + i + " nodes: " + nodesVisited)
 
 			// if time is up, alphaBeta returns Nil path
 			if (currentResult._2 == Nil)
@@ -89,11 +89,14 @@ class AI
 		Sorting.quickSort(moves)(MoveOrdering)
 	}
 
-	def storeKiller(kiler : Move, depth : Int) = 
+	def storeKiller(killer : Move, depth : Int) = 
 	{
-		killers(depth)(2) = killers(depth)(2)
-		killers(depth)(1) = killers(depth)(0)
-		killers(depth)(0) = kiler
+		if (!killer.isCapture)
+		{
+			killers(depth)(2) = killers(depth)(2)
+			killers(depth)(1) = killers(depth)(0)
+			killers(depth)(0) = killer
+		}
 	}
 
 	// returns move, and it's score

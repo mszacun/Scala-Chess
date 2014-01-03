@@ -26,6 +26,10 @@ abstract class Move(var moveType : Int, val start : Int, val end : Int,
 	// calculates score of this move and stores it in 'score' field	
 	def calculateScore(b : Board) : Unit
 
+	// if move is capture move
+	def isCapture = moveType == Move.CAPTURE_MOVE || 
+		moveType == Move.CAPTURE_PROMOTION_MOVE || moveType == Move.ENPASSANT_MOVE
+
 	override def equals(other : Any) = 
 	{
 		val o = other.asInstanceOf[Move]
