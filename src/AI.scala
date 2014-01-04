@@ -7,6 +7,7 @@ class AI
 	val maxDepth = 500
 	val transpositionTableSize = 1024 * 1024 * 5 // 5 Mb
 	val killersTabSize = 3
+	val aspirationWindowWidth = 50 // calculated experimentally
 
 	var actualDepth = 0
 	var nodesVisited : Long = 0 // nodes visted on current depth
@@ -33,14 +34,29 @@ class AI
 	def findNextMove(b : Board, opponent : Int, time : Int) : (Int, List[Move]) = 
 	{
 		nodesVisited = 0
+		var alpha = Integer.MIN_VALUE
+		var beta = Integer.MAX_VALUE
 		stopTime = System.currentTimeMillis + time
 		var lastResult : (Int, List[Move]) = (0, Nil)
 
 		for (i <- 1 to maxDepth)
 		{
 			actualDepth = i
-			val currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
-				Integer.MAX_VALUE, opponent)
+			var currentResult = alphabeta(b, false, 0, alpha,
+				beta, opponent)
+
+			// check if we hit into aspiration window
+			if (currentResult._1 <= alpha)
+				currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
+					beta, opponent)
+			else if (currentResult._1 >= beta)
+				currentResult = alphabeta(b, false, 0, alpha,
+					Integer.MAX_VALUE, opponent)
+
+			// calculate next aspiration window
+			alpha = currentResult._1 - aspirationWindowWidth
+			beta = currentResult._1 + aspirationWindowWidth
+
 			allNodesVisited += nodesVisited
 			println("Depth: " + i + " nodes: " + nodesVisited)
 
@@ -114,6 +130,7 @@ class AI
 				remainingDepth, alp, bet)
 			if (tableScore != Hash.UNKNOW_VALUE)
 				return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
+
 			var alpha = alp
 			var beta = bet
 			var choosenPath : List[Move] = Nil
@@ -192,8 +209,8 @@ class AI
 							{
 								board.undoMove
 								storeKiller(choosenPath.head, depth)
-								//transpositionTable.set(board.boardHash, null,
-								//	beta, remainingDepth, Hash.FAIL_LOW_BETA)
+							//	transpositionTable.set(board.boardHash, null,
+							//		beta, remainingDepth, Hash.FAIL_LOW_BETA)
 								return (beta, choosenPath)
 							}
 						}
