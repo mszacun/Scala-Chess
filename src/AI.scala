@@ -68,7 +68,7 @@ class AI
 		depth : Int)
 	{
 		var i = 0
-		var pv = if (usePV) transpositionTable.get(b.boardHash) else null
+		var pv = if (usePV) transpositionTable.getMove(b.boardHash) else null
 		while (i < size)
 		{
 			val move = moves(i)
@@ -93,7 +93,7 @@ class AI
 	{
 		if (!killer.isCapture)
 		{
-			killers(depth)(2) = killers(depth)(2)
+			killers(depth)(2) = killers(depth)(1)
 			killers(depth)(1) = killers(depth)(0)
 			killers(depth)(0) = killer
 		}
@@ -109,6 +109,11 @@ class AI
 			if (board.countRepetitions >= 3) // threefold repetition
 				return (0, Nil)
 
+			val remainingDepth = actualDepth - depth
+			val tableScore = transpositionTable.getScore(board.boardHash, 
+				remainingDepth, alp, bet)
+			if (tableScore != Hash.UNKNOW_VALUE)
+				return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
 			var alpha = alp
 			var beta = bet
 			var choosenPath : List[Move] = Nil
@@ -138,6 +143,8 @@ class AI
 							{
 								board.undoMove
 								storeKiller(choosenPath.head, depth)
+								transpositionTable.set(board.boardHash, null,
+									alpha, remainingDepth, Hash.FAIL_HIGH_ALPHA)
 								return (alpha, choosenPath)
 							}
 						}
@@ -148,7 +155,11 @@ class AI
 				if (validMoves > 0)
 				{
 					if (alpha > alp) // store new pv move
-						transpositionTable.set(board.boardHash, choosenPath.head)
+						transpositionTable.set(board.boardHash, choosenPath.head,
+							alpha, remainingDepth, Hash.EXACT)
+					else
+						transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+							alpha, remainingDepth, Hash.FAIL_LOW_ALPHA)
 					return (alpha, choosenPath)
 				}
 				else 
@@ -181,6 +192,8 @@ class AI
 							{
 								board.undoMove
 								storeKiller(choosenPath.head, depth)
+								//transpositionTable.set(board.boardHash, null,
+								//	beta, remainingDepth, Hash.FAIL_LOW_BETA)
 								return (beta, choosenPath)
 							}
 						}
@@ -191,7 +204,11 @@ class AI
 				if (validMoves > 0)
 				{
 					if (beta < bet)
-						transpositionTable.set(board.boardHash, choosenPath.head) // store pv node
+						transpositionTable.set(board.boardHash, choosenPath.head,
+							beta, remainingDepth, Hash.EXACT)
+					else
+						transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+							beta, remainingDepth, Hash.FAIL_HIGH_BETA)
 					return (beta, choosenPath)
 				}
 				else 
