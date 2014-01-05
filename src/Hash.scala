@@ -8,7 +8,7 @@ import scala.util.Random
 
 class TranspositionTable(val size : Int)
 {
-	class TranspositionTableEntry(val key : Long, val move : Move, val score : Int,
+	class TranspositionTableEntry(val key : Long, val move : List[Move], val score : Int,
 		val depth : Int, val nodeType : Int)
 	{
 	}
@@ -18,8 +18,9 @@ class TranspositionTable(val size : Int)
 	final def getMove(key : Long) : Move =
 	{
 		val index : Int = ((key >>> 1) % size).toInt
-		if (table(index) != null && table(index).key == key)
-			return table(index).move
+		if (table(index) != null && table(index).key == key && 
+			table(index).move != Nil)
+			return table(index).move.head
 		else
 			return null
 	}
@@ -47,7 +48,7 @@ class TranspositionTable(val size : Int)
 		return Hash.UNKNOW_VALUE
 	}
 
-	final def set(key : Long, move : Move, score : Int, depth : Int,
+	final def set(key : Long, move : List[Move], score : Int, depth : Int,
 		nodeType : Int) : Unit =
 	{
 		val index : Int = ((key >>> 1) % size).toInt

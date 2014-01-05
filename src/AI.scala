@@ -161,7 +161,7 @@ class AI
 						{
 							board.undoMove
 							storeKiller(choosenPath.head, depth)
-							transpositionTable.set(board.boardHash, null,
+							transpositionTable.set(board.boardHash, Nil,
 								alpha, remainingDepth, Hash.FAIL_HIGH_ALPHA)
 							return (alpha, choosenPath)
 						}
@@ -173,10 +173,10 @@ class AI
 			if (validMoves > 0)
 			{
 				if (alpha > alp) // store new pv move
-					transpositionTable.set(board.boardHash, choosenPath.head,
+					transpositionTable.set(board.boardHash, choosenPath,
 						alpha, remainingDepth, Hash.EXACT)
 				else
-					transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+					transpositionTable.set(board.boardHash, choosenPath,
 						alpha, remainingDepth, Hash.FAIL_LOW_ALPHA)
 				return (alpha, choosenPath)
 			}
@@ -223,10 +223,10 @@ class AI
 			if (validMoves > 0)
 			{
 				if (beta < bet)
-					transpositionTable.set(board.boardHash, choosenPath.head,
+					transpositionTable.set(board.boardHash, choosenPath,
 						beta, remainingDepth, Hash.EXACT)
 				else
-					transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+					transpositionTable.set(board.boardHash, choosenPath,
 						beta, remainingDepth, Hash.FAIL_HIGH_BETA)
 				return (beta, choosenPath)
 			}
