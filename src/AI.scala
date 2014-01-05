@@ -2,7 +2,7 @@ package src
 
 import scala.util.Sorting
 
-class AI
+class AI(val opponent : Int)
 {
 	val maxDepth = 500
 	val transpositionTableSize = 1024 * 1024 * 5 // 5 Mb
@@ -31,7 +31,7 @@ class AI
 	}
 
 	// time -> time for searchin in miliseconds
-	def findNextMove(b : Board, opponent : Int, time : Int) : (Int, List[Move]) = 
+	def findNextMove(b : Board, time : Int) : (Int, List[Move]) = 
 	{
 		nodesVisited = 0
 		var alpha = Integer.MIN_VALUE
@@ -43,15 +43,15 @@ class AI
 		{
 			actualDepth = i
 			var currentResult = alphabeta(b, false, 0, alpha,
-				beta, opponent)
+				beta)
 
 			// check if we hit into aspiration window
 			if (currentResult._1 <= alpha)
 				currentResult = alphabeta(b, false, 0, Integer.MIN_VALUE,
-					beta, opponent)
+					beta)
 			else if (currentResult._1 >= beta)
 				currentResult = alphabeta(b, false, 0, alpha,
-					Integer.MAX_VALUE, opponent)
+					Integer.MAX_VALUE)
 
 			// calculate next aspiration window
 			alpha = currentResult._1 - aspirationWindowWidth
@@ -117,11 +117,11 @@ class AI
 
 	// returns move, and it's score
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
-		bet : Int, op : Int) : (Int, List[Move]) = 
+		bet : Int) : (Int, List[Move]) = 
 	{
 		// in check extension
 		if (depth >= actualDepth && !board.isCheck(board.whoseMove))
-			return quiescence(board, max, alp, bet, op, depth + 1)
+			return quiescence(board, max, alp, bet, depth + 1)
 
 		nodesVisited += 1
 		if (board.countRepetitions >= 3) // threefold repetition
@@ -152,7 +152,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
+					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta)
 					val moveScore = childMove._1
 					if (moveScore > alpha)
 					{
@@ -184,7 +184,7 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
 					   	else (AI.MATE + depth, Nil)
 				}
 				else
@@ -201,7 +201,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
+					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta)
 					val moveScore = childMove._1
 					if (moveScore < beta)
 					{
@@ -234,7 +234,7 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
 					   	else (AI.MATE + depth, Nil)
 				}
 				else
@@ -243,14 +243,14 @@ class AI
 	}
 
 	def quiescence(board : Board, max : Boolean, alp : Int,
-		bet : Int, op : Int, depth : Int) : (Int, List[Move]) = 
+		bet : Int, depth : Int) : (Int, List[Move]) = 
 	{
 		var alpha = alp
 		var beta = bet
 		nodesVisited += 1
 		if (board.countRepetitions >= 3) // threefold repetition
 			return (0, Nil)
-		val score = board.getPlayerScore(op)
+		val score = board.getPlayerScore(opponent)
 		if (max)
 		{
 			if (score > alpha)
@@ -275,7 +275,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = quiescence(board, !max, alpha, beta, op, depth + 1)
+					val childMove  = quiescence(board, !max, alpha, beta, depth + 1)
 					val moveScore = childMove._1
 					if (moveScore > alpha)
 					{
@@ -296,7 +296,7 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
 					   	else (AI.MATE + depth, Nil)
 				}
 				else
@@ -326,7 +326,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = quiescence(board, !max, alpha, beta, op, depth + 1)
+					val childMove  = quiescence(board, !max, alpha, beta, depth + 1)
 					val moveScore = childMove._1
 					if (moveScore < beta)
 					{
@@ -347,7 +347,7 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
 					   	else (AI.MATE + depth, Nil)
 				}
 				else

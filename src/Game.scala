@@ -27,21 +27,17 @@ object Game extends App
 	  board.makeMove(desiredMove.head)
 	}
 	
-	val ai = new AI
+	val ai = new AI(opp)
 	while (true)
 	{
 	    println; println
 		val start = System.currentTimeMillis()
-		val (score, move) = ai.findNextMove(board, opp, thinkingTime)
+		val (score, move) = ai.findNextMove(board, thinkingTime)
 		val end = System.currentTimeMillis()
-//		opp ^= 1
 		
-	//	move.foreach((m : Move) =>
-	//	println("" + m + " score: " + score))
 		println("" + move.head + " score: " + score)
 		println("Time: " + (end - start) + " ms")
 		println("Nodes visited: " + ai.allNodesVisited + " depth: " + move.size)
-		println("Opp: " + opp)
 		println
 		board.makeMove(move.head)
 		println("Board: " + board.toFen)
@@ -51,7 +47,6 @@ object Game extends App
 		val (moves, size) = board.generateMovesForNextPlayer
 		while (!flag)
 		{
-		//	moves.foreach((m : Move) => if (m != null) println(Cord.toString(m.start) + Cord.toString(m.end)))
 			print("Start: ")
 			val a = readLine
 			println("End: ")
