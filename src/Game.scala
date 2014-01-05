@@ -2,8 +2,7 @@ package src
 
 object Game extends App
 {
-//	val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-val startFEN = "2kr1q1r/p2p1p2/bp3P1p/2p1P1p1/2P1R3/3B1Q2/P1P3PP/2KR4 w - - 0 1"
+	val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	val board = Board(startFEN)
 	var flag = false
 	var desiredMove : Array[Move] = null

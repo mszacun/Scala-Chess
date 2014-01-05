@@ -119,8 +119,9 @@ class AI
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
-		if (depth >= actualDepth)
-			return quiescence(board, max, alp, bet, op)
+		// in check extension
+		if (depth >= actualDepth && !board.isCheck(board.whoseMove))
+			return quiescence(board, max, alp, bet, op, depth + 1)
 
 		nodesVisited += 1
 		if (board.countRepetitions >= 3) // threefold repetition
@@ -183,8 +184,8 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-					   	else (Integer.MAX_VALUE - 1, Nil)
+					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					   	else (AI.MATE + depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -233,8 +234,8 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-					   	else (Integer.MAX_VALUE - 1, Nil)
+					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					   	else (AI.MATE + depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -242,7 +243,7 @@ class AI
 	}
 
 	def quiescence(board : Board, max : Boolean, alp : Int,
-		bet : Int, op : Int) : (Int, List[Move]) = 
+		bet : Int, op : Int, depth : Int) : (Int, List[Move]) = 
 	{
 		var alpha = alp
 		var beta = bet
@@ -262,7 +263,7 @@ class AI
 			val (moves, size) = board.generateAttacksForNextPlayer
 
 			// quiescence shouldnt use pvMoves, cause it searches only attacks
-			orderMoves(moves, size, board, false, 0) 
+			orderMoves(moves, size, board, false, depth) 
 			var i : Int = 0
 			var validMoves = 0 // counts how many valid moves are possible
 			while (i < size)
@@ -274,7 +275,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = quiescence(board, !max, alpha, beta, op)
+					val childMove  = quiescence(board, !max, alpha, beta, op, depth + 1)
 					val moveScore = childMove._1
 					if (moveScore > alpha)
 					{
@@ -295,8 +296,8 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-					   	else (Integer.MAX_VALUE - 1, Nil)
+					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					   	else (AI.MATE + depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -325,7 +326,7 @@ class AI
 				if (board.makeMove(move))
 				{
 					validMoves += 1
-					val childMove  = quiescence(board, !max, alpha, beta, op)
+					val childMove  = quiescence(board, !max, alpha, beta, op, depth + 1)
 					val moveScore = childMove._1
 					if (moveScore < beta)
 					{
@@ -346,12 +347,17 @@ class AI
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-					   	else (Integer.MAX_VALUE - 1, Nil)
+					if (board.whoseMove == op) (-AI.MATE - depth, Nil) 
+					   	else (AI.MATE + depth, Nil)
 				}
 				else
 					(0, Nil)
 		}
 	}
 }
- 
+
+object AI
+{
+	final val MATE = 1000000
+ }
+
