@@ -119,127 +119,126 @@ class AI
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
 		bet : Int, op : Int) : (Int, List[Move]) = 
 	{
-		if (depth < actualDepth)
+		if (depth >= actualDepth)
+			return quiescence(board, max, alp, bet, op)
+
+		nodesVisited += 1
+		if (board.countRepetitions >= 3) // threefold repetition
+			return (0, Nil)
+
+		val remainingDepth = actualDepth - depth
+		val tableScore = transpositionTable.getScore(board.boardHash, 
+			remainingDepth, alp, bet)
+		if (tableScore != Hash.UNKNOW_VALUE)
+			return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
+
+		var alpha = alp
+		var beta = bet
+		var choosenPath : List[Move] = Nil
+		var (moves, size) = board.generateMovesForNextPlayer
+		var i : Int = 0
+		var validMoves = 0 // counts how many valid moves are possible
+
+		orderMoves(moves, size, board, true, depth)
+		if (max)
 		{
-			nodesVisited += 1
-			if (board.countRepetitions >= 3) // threefold repetition
-				return (0, Nil)
-
-			val remainingDepth = actualDepth - depth
-			val tableScore = transpositionTable.getScore(board.boardHash, 
-				remainingDepth, alp, bet)
-			if (tableScore != Hash.UNKNOW_VALUE)
-				return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
-
-			var alpha = alp
-			var beta = bet
-			var choosenPath : List[Move] = Nil
-			var (moves, size) = board.generateMovesForNextPlayer
-			var i : Int = 0
-			var validMoves = 0 // counts how many valid moves are possible
-
-			orderMoves(moves, size, board, true, depth)
-			if (max)
+			while (i < size)
 			{
-				while (i < size)
-				{
-					if (System.currentTimeMillis > stopTime) // time control
-						return (0, Nil)
+				if (System.currentTimeMillis > stopTime) // time control
+					return (0, Nil)
 
-					val move = moves(i)
-					if (board.makeMove(move))
+				val move = moves(i)
+				if (board.makeMove(move))
+				{
+					validMoves += 1
+					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
+					val moveScore = childMove._1
+					if (moveScore > alpha)
 					{
-						validMoves += 1
-						val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
-						val moveScore = childMove._1
-						if (moveScore > alpha)
+						alpha = moveScore
+						choosenPath = move :: childMove._2
+						if (beta <= alpha)
 						{
-							alpha = moveScore
-							choosenPath = move :: childMove._2
-							if (beta <= alpha)
-							{
-								board.undoMove
-								storeKiller(choosenPath.head, depth)
-								transpositionTable.set(board.boardHash, null,
-									alpha, remainingDepth, Hash.FAIL_HIGH_ALPHA)
-								return (alpha, choosenPath)
-							}
+							board.undoMove
+							storeKiller(choosenPath.head, depth)
+							transpositionTable.set(board.boardHash, null,
+								alpha, remainingDepth, Hash.FAIL_HIGH_ALPHA)
+							return (alpha, choosenPath)
 						}
 					}
-					board.undoMove
-					i += 1
 				}
-				if (validMoves > 0)
-				{
-					if (alpha > alp) // store new pv move
-						transpositionTable.set(board.boardHash, choosenPath.head,
-							alpha, remainingDepth, Hash.EXACT)
-					else
-						transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
-							alpha, remainingDepth, Hash.FAIL_LOW_ALPHA)
-					return (alpha, choosenPath)
-				}
-				else 
-					if (board.isCheck(board.whoseMove))
-					{
-						if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-						   	else (Integer.MAX_VALUE - 1, Nil)
-					}
-					else
-						(0, Nil)
+				board.undoMove
+				i += 1
 			}
-			else
+			if (validMoves > 0)
 			{
-				while (i < size)
-				{
-					if (System.currentTimeMillis > stopTime) // time control
-						return (0, Nil)
-
-					val move = moves(i)
-					if (board.makeMove(move))
-					{
-						validMoves += 1
-						val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
-						val moveScore = childMove._1
-						if (moveScore < beta)
-						{
-							beta = moveScore
-							choosenPath = move :: childMove._2
-							if (beta <= alpha)
-							{
-								board.undoMove
-								storeKiller(choosenPath.head, depth)
-							//	transpositionTable.set(board.boardHash, null,
-							//		beta, remainingDepth, Hash.FAIL_LOW_BETA)
-								return (beta, choosenPath)
-							}
-						}
-					}
-					board.undoMove
-					i += 1
-				}
-				if (validMoves > 0)
-				{
-					if (beta < bet)
-						transpositionTable.set(board.boardHash, choosenPath.head,
-							beta, remainingDepth, Hash.EXACT)
-					else
-						transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
-							beta, remainingDepth, Hash.FAIL_HIGH_BETA)
-					return (beta, choosenPath)
-				}
-				else 
-					if (board.isCheck(board.whoseMove))
-					{
-						if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
-						   	else (Integer.MAX_VALUE - 1, Nil)
-					}
-					else
-						(0, Nil)
+				if (alpha > alp) // store new pv move
+					transpositionTable.set(board.boardHash, choosenPath.head,
+						alpha, remainingDepth, Hash.EXACT)
+				else
+					transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+						alpha, remainingDepth, Hash.FAIL_LOW_ALPHA)
+				return (alpha, choosenPath)
 			}
+			else 
+				if (board.isCheck(board.whoseMove))
+				{
+					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
+					   	else (Integer.MAX_VALUE - 1, Nil)
+				}
+				else
+					(0, Nil)
 		}
 		else
-			quiescence(board, max, alp, bet, op)
+		{
+			while (i < size)
+			{
+				if (System.currentTimeMillis > stopTime) // time control
+					return (0, Nil)
+
+				val move = moves(i)
+				if (board.makeMove(move))
+				{
+					validMoves += 1
+					val childMove  = alphabeta(board, !max, depth + 1, alpha, beta, op)
+					val moveScore = childMove._1
+					if (moveScore < beta)
+					{
+						beta = moveScore
+						choosenPath = move :: childMove._2
+						if (beta <= alpha)
+						{
+							board.undoMove
+							storeKiller(choosenPath.head, depth)
+						// FIXME: Those lines causes engine to play weaker
+						//	transpositionTable.set(board.boardHash, null,
+						//		beta, remainingDepth, Hash.FAIL_LOW_BETA)
+							return (beta, choosenPath)
+						}
+					}
+				}
+				board.undoMove
+				i += 1
+			}
+			if (validMoves > 0)
+			{
+				if (beta < bet)
+					transpositionTable.set(board.boardHash, choosenPath.head,
+						beta, remainingDepth, Hash.EXACT)
+				else
+					transpositionTable.set(board.boardHash, if (choosenPath != Nil) choosenPath.head else null,
+						beta, remainingDepth, Hash.FAIL_HIGH_BETA)
+				return (beta, choosenPath)
+			}
+			else 
+				if (board.isCheck(board.whoseMove))
+				{
+					if (board.whoseMove == op) (Integer.MIN_VALUE + 1, Nil) 
+					   	else (Integer.MAX_VALUE - 1, Nil)
+				}
+				else
+					(0, Nil)
+		}
 	}
 
 	def quiescence(board : Board, max : Boolean, alp : Int,

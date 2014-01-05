@@ -7,7 +7,7 @@ object Game extends App
 	var flag = false
 	var desiredMove : Array[Move] = null
 	var opp = Piece.BLACK
-	val thinkingTime = 10 * 1000
+	val thinkingTime = 5 * 1000
 	
 	val if_we_start = readLine
 	if (if_we_start == "t")
