@@ -176,7 +176,6 @@ class Board()
 			}
 		})
 		val end = System.nanoTime
-		//println("GeneratingMoves: " + (end - start)+ " ns")
 		(result, i)
 	}
 

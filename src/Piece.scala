@@ -38,12 +38,12 @@ object Piece
 	final val WHITE = 1
 	final val BLACK = 0
 
-	final val PAWN = 1
-	final val KNIGHT = 2
-	final val BISHOP = 3
-	final val ROOK = 4
-	final val QUEEN = 5
-	final val KING = 6
+	final val PAWN = 0
+	final val KNIGHT = 1
+	final val BISHOP = 2
+	final val ROOK = 3
+	final val QUEEN = 4
+	final val KING = 5
 
 	final val VALUE = Array(100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 							100, 100, 100, 100, 100, 100, 500, 500, 500, 500,

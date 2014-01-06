@@ -8,6 +8,7 @@ all: source tests
 
 source: 
 	$(SCALAC) $(FLAGS) src/*.scala
+	$(SCALAC) $(FLAGS) src/gui/*.scala
 tests:
 	$(SCALAC) $(FLAGS) test/*.scala
 
@@ -15,4 +16,5 @@ tests:
 
 clean:
 	rm src/*.class
+	rm src/gui/*.class
 	rm test/*.class
