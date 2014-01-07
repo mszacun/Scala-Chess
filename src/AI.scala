@@ -84,7 +84,8 @@ class AI(val opponent : Int)
 		depth : Int)
 	{
 		var i = 0
-		var pv = if (usePV) transpositionTable.getMove(b.boardHash) else null
+		var path = if (usePV) transpositionTable.getMove(b.boardHash) else Nil
+		var pv = if (path != Nil) path.head else null
 		while (i < size)
 		{
 			val move = moves(i)
@@ -131,7 +132,7 @@ class AI(val opponent : Int)
 		val tableScore = transpositionTable.getScore(board.boardHash, 
 			remainingDepth, alp, bet)
 		if (tableScore != Hash.UNKNOW_VALUE)
-			return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
+			return (tableScore, transpositionTable.getMove(board.boardHash))
 
 		var alpha = alp
 		var beta = bet

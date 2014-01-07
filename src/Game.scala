@@ -35,6 +35,7 @@ object Game extends App
 		val (score, move) = ai.findNextMove(board, thinkingTime)
 		val end = System.currentTimeMillis()
 		
+		println(move)
 		println("" + move.head + " score: " + score)
 		println("Time: " + (end - start) + " ms")
 		println("Nodes visited: " + ai.allNodesVisited + " depth: " + move.size)

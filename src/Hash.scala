@@ -15,14 +15,13 @@ class TranspositionTable(val size : Int)
 
 	final val table = new Array[TranspositionTableEntry](size)
 
-	final def getMove(key : Long) : Move =
+	final def getMove(key : Long) : List[Move] =
 	{
 		val index : Int = ((key >>> 1) % size).toInt
-		if (table(index) != null && table(index).key == key && 
-			table(index).move != Nil)
-			return table(index).move.head
+		if (table(index) != null && table(index).key == key)			
+			return table(index).move
 		else
-			return null
+			return Nil
 	}
 
 	final def getScore(key : Long, depth : Int, alpha : Int, beta : Int) : Int =
