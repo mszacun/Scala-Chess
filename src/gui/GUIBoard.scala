@@ -9,20 +9,24 @@ import java.awt.Dimension
 import javax.swing.JComponent
 import java.awt.Font
 import java.awt.RenderingHints
+import java.awt.event.MouseListener
+import java.awt.event.MouseEvent
 
 import src.Cord
 
-class GUIBoard(val board : src.Board)  extends JComponent
+class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
 {
-	var squareLength = 0
+	var squareLength = 0 // length of one square of chessboard
+	var padding = 0 // space for column name and row number
+
+	addMouseListener(this)
 
 	override def paintComponent(graph : Graphics)
 	{
 		val g = graph.asInstanceOf[Graphics2D]
 		val size : Dimension = getSize
 		val smallerDimension = math.min(size.height, size.width)
-		// space for column name and row number
-		val padding = math.min(smallerDimension / 10, 100)
+		padding = math.min(smallerDimension / 10, 100)
 
 		// padding on both sides of the chessboard
 		squareLength = (smallerDimension -  2 * padding) / 8
@@ -90,6 +94,35 @@ class GUIBoard(val board : src.Board)  extends JComponent
 		}
 
 	}
+
+	override def mouseClicked(e : MouseEvent) = 
+	{
+		var x = e.getX - padding
+		var y = e.getY - padding
+
+		// if we click on chessboard, not on top and leftmargin
+		if (x > 0 && y > 0)
+		{
+			// remeber in our board A1 is index 0, and on the screen it is 
+			// painted on the bottom, on 7th row, so we have to adjust
+			val row = 7 - y / squareLength
+			val column = x / squareLength
+			if (row >= 0 && column < 8)
+			{
+				val sqrNumber64 = row * 8 + column
+				val sqr120Number = Cord.from64to120(sqrNumber64)
+				println("Row: " + row + ", column: " + column + " field: " + 
+					Cord.toString(sqr120Number))
+				println("On this field: " + board.board(sqr120Number))
+			}
+		}
+
+	}
+
+	override def mouseEntered(e : MouseEvent) = ()
+	override def mouseExited(e : MouseEvent) = ()
+	override def mousePressed(e : MouseEvent) = ()
+	override def mouseReleased(e : MouseEvent) = ()
 }
 
 object GUIBoard
