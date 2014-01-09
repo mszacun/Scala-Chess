@@ -14,7 +14,8 @@ import java.awt.event.MouseEvent
 
 import src.Cord
 
-class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
+class GUIBoard(var board : src.Board, val controler : GUIControler)  
+	extends JComponent with MouseListener
 {
 	var squareLength = 0 // length of one square of chessboard
 	var padding = 0 // space for column name and row number
@@ -40,7 +41,7 @@ class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
 		var y = padding
 		var x = 0
 		var sqr64Number = 0
-		for (row <- 1 to 8)
+		for (row <- 8 to 1 by -1) // blacks on top, so we start from 8 row
 		{
 			x = padding
 			for (column <- 'A' to 'H')
@@ -53,7 +54,7 @@ class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
 
 				g.fillRect(x, y, squareLength, squareLength)
 
-				val sqrNumber = Cord.from64to120(sqr64Number)
+				val sqrNumber = Cord.fromString(column.toString + row)
 				if (!board.isEmpty(sqrNumber))
 				{
 					val piece = board.piecesList(board.board(sqrNumber))
@@ -61,7 +62,6 @@ class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
 					g.drawImage(pieceImage, x, y, squareLength, squareLength, squareColor, null)
 				}
 				x += squareLength
-				sqr64Number += 1
 			}
 			y += squareLength
 			if (squareColor == GUIBoard.darkSquareColor)
@@ -111,9 +111,7 @@ class GUIBoard(val board : src.Board)  extends JComponent with MouseListener
 			{
 				val sqrNumber64 = row * 8 + column
 				val sqr120Number = Cord.from64to120(sqrNumber64)
-				println("Row: " + row + ", column: " + column + " field: " + 
-					Cord.toString(sqr120Number))
-				println("On this field: " + board.board(sqr120Number))
+				controler.fieldClickedEvent(sqr120Number)
 			}
 		}
 
@@ -134,13 +132,6 @@ object GUIBoard
 	// stores images of pieces
 	// piecesImages(color)(pieceType)
 	final val piecesImages = Array(
-		Array(kit.getImage("img/whitePawn.png"),
-			kit.getImage("img/whiteKnight.png"),
-			kit.getImage("img/whiteBishop.png"),
-			kit.getImage("img/whiteRook.png"),
-			kit.getImage("img/whiteQueen.png"),
-			kit.getImage("img/whiteKing.png")
-		),
 		Array(
 			kit.getImage("img/blackPawn.png"),
 			kit.getImage("img/blackKnight.png"),
@@ -148,6 +139,13 @@ object GUIBoard
 			kit.getImage("img/blackRook.png"),
 			kit.getImage("img/blackQueen.png"),
 			kit.getImage("img/blackKing.png")
+		),
+		Array(kit.getImage("img/whitePawn.png"),
+			kit.getImage("img/whiteKnight.png"),
+			kit.getImage("img/whiteBishop.png"),
+			kit.getImage("img/whiteRook.png"),
+			kit.getImage("img/whiteQueen.png"),
+			kit.getImage("img/whiteKing.png")
 		)
 	)
 
