@@ -119,13 +119,14 @@ class AI(val opponent : Int)
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
 		bet : Int) : (Int, List[Move]) = 
 	{
+		if (board.countRepetitions >= 3) // threefold repetition
+			return (0, Nil)
+
 		// in check extension
 		if (depth >= actualDepth && !board.isCheck(board.whoseMove))
 			return quiescence(board, max, alp, bet, depth + 1)
 
 		nodesVisited += 1
-		if (board.countRepetitions >= 3) // threefold repetition
-			return (0, Nil)
 
 		val remainingDepth = actualDepth - depth
 		val tableScore = transpositionTable.getScore(board.boardHash, 
