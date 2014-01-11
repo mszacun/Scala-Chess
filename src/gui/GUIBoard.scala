@@ -95,6 +95,12 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 
 	}
 
+	override def repaint = 
+	{
+		val dimension = getSize(null)
+		repaint(0, 0, dimension.width, dimension.height)
+	}
+
 	override def mouseClicked(e : MouseEvent) = 
 	{
 		var x = e.getX - padding
