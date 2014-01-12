@@ -15,14 +15,13 @@ class TranspositionTable(val size : Int)
 
 	final val table = new Array[TranspositionTableEntry](size)
 
-	final def getMove(key : Long) : Move =
+	final def getMove(key : Long) : List[Move] =
 	{
 		val index : Int = ((key >>> 1) % size).toInt
-		if (table(index) != null && table(index).key == key && 
-			table(index).move != Nil)
-			return table(index).move.head
+		if (table(index) != null && table(index).key == key)			
+			return table(index).move
 		else
-			return null
+			return Nil
 	}
 
 	final def getScore(key : Long, depth : Int, alpha : Int, beta : Int) : Int =
@@ -51,13 +50,18 @@ class TranspositionTable(val size : Int)
 	final def set(key : Long, move : List[Move], score : Int, depth : Int,
 		nodeType : Int) : Unit =
 	{
-		val index : Int = ((key >>> 1) % size).toInt
-		val previous = table(index)
+		// don't store draws in transposition table, they may be repetiotion
+		// draws in current board situation, that in other situation won't be draw
+		if (score != 0)
+		{
+			val index : Int = ((key >>> 1) % size).toInt
+			val previous = table(index)
 
-		// store only if at least the same depth
-		if (previous == null || previous.depth <= depth)
-			table(index) = new TranspositionTableEntry(key, move, score, depth,
-				nodeType)
+			// store only if at least the same depth
+			if (previous == null || previous.depth <= depth)
+				table(index) = new TranspositionTableEntry(key, move, score, depth,
+					nodeType)
+		}
 	}
 }
 

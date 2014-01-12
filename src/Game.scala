@@ -35,12 +35,22 @@ object Game extends App
 		val (score, move) = ai.findNextMove(board, thinkingTime)
 		val end = System.currentTimeMillis()
 		
+		println(move)
 		println("" + move.head + " score: " + score)
 		println("Time: " + (end - start) + " ms")
 		println("Nodes visited: " + ai.allNodesVisited + " depth: " + move.size)
 		println
 		board.makeMove(move.head)
 		println("Board: " + board.toFen)
+		board.piecesList.foreach(p => 
+		{
+			if (p != null && p.pieceType == 1)
+			{
+				val pawn = p.asInstanceOf[Pawn]
+				if (pawn.isPassedPawn(board))
+					println("Pawn on " + Cord.toString(p.position) + "is passed")
+			}
+		})
 		
 		flag = false
 		

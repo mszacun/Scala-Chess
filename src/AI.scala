@@ -84,7 +84,8 @@ class AI(val opponent : Int)
 		depth : Int)
 	{
 		var i = 0
-		var pv = if (usePV) transpositionTable.getMove(b.boardHash) else null
+		var path = if (usePV) transpositionTable.getMove(b.boardHash) else Nil
+		var pv = if (path != Nil) path.head else null
 		while (i < size)
 		{
 			val move = moves(i)
@@ -119,20 +120,22 @@ class AI(val opponent : Int)
 	def alphabeta(board : Board, max : Boolean, depth : Int, alp : Int,
 		bet : Int) : (Int, List[Move]) = 
 	{
-		if (board.countRepetitions >= 3) // threefold repetition
-			return (0, Nil)
-
 		// in check extension
 		if (depth >= actualDepth && !board.isCheck(board.whoseMove))
 			return quiescence(board, max, alp, bet, depth + 1)
 
 		nodesVisited += 1
 
+		// if we can force situation two times, we can probably force it 3th time
+		// this is necessary because of transposition table
+		if (board.countRepetitions >= 2) // threefold repetition
+			return (0, Nil)
+
 		val remainingDepth = actualDepth - depth
 		val tableScore = transpositionTable.getScore(board.boardHash, 
 			remainingDepth, alp, bet)
 		if (tableScore != Hash.UNKNOW_VALUE)
-			return (tableScore, transpositionTable.getMove(board.boardHash) :: Nil)
+			return (tableScore, transpositionTable.getMove(board.boardHash))
 
 		var alpha = alp
 		var beta = bet
@@ -185,8 +188,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -235,8 +238,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -249,7 +252,7 @@ class AI(val opponent : Int)
 		var alpha = alp
 		var beta = bet
 		nodesVisited += 1
-		if (board.countRepetitions >= 3) // threefold repetition
+		if (board.countRepetitions >= 2) // threefold repetition
 			return (0, Nil)
 		val score = board.getPlayerScore(opponent)
 		if (max)
@@ -297,8 +300,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -348,8 +351,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
