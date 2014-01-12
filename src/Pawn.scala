@@ -16,98 +16,48 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 	def generateQuietMoves(b : Board, moveList : Array[Move], ind : Int) : Int =
 	{
 		var index = ind
-		if (color == Piece.WHITE)
+		// default move
+		var move = position + Pawn.moveDirection(color)
+		if (b.isEmpty(move) && !b.isOffBoard(move))
 		{
-			// default move
-			var move = Cord.moveS(position, 1)
-			if (b.isEmpty(move) && !b.isOffBoard(move))
-			{
-				if (Cord.getRow(move) == 7)
-					Pawn.possiblePromotions.foreach((pieceType : Int) =>
-					{
-						moveList(index) = new PromotionMove(position, move,
-							b.castlingRights, pieceType)
-						index += 1
-					})
-				else
+			if (Cord.getRow(move) == Pawn.promotionRank(color))
+				Pawn.possiblePromotions.foreach((pieceType : Int) =>
 				{
-					moveList(index) = new QuietMove(position, move, 0, 
-						b.castlingRights, true)
+					moveList(index) = new PromotionMove(position, move,
+						b.castlingRights, pieceType)
 					index += 1
+				})
+			else
+			{
+				moveList(index) = new QuietMove(position, move, 0, 
+					b.castlingRights, true)
+				index += 1
 
-					// double move if on starting position
-					if (Cord.getRow(position) == whitePawnsStartingRow)
+				// double move if on starting position
+				if (Cord.getRow(position) == Pawn.startingRow(color))
+				{
+					move = position + 2 * Pawn.moveDirection(color)
+					if (b.isEmpty(move) && !b.isOffBoard(move))
 					{
-						move = Cord.moveS(position, 2)
-						if (b.isEmpty(move) && !b.isOffBoard(move))
-						{
-							moveList(index) = new QuietMove(position, 
-								move, Cord.moveS(position, 1), // enPasant is possible
-								b.castlingRights, true)
-							index += 1
-						}
+						moveList(index) = new QuietMove(position, 
+							move, position + Pawn.moveDirection(color), // enPasant is possible
+							b.castlingRights, true)
+						index += 1
 					}
 				}
 			}
 		}
-		else
-		{
-			// default move
-			var move = Cord.moveN(position, 1)
-			if (b.isEmpty(move) && !b.isOffBoard(move))
-			{
-				if (Cord.getRow(move) == 0)
-					Pawn.possiblePromotions.foreach((pieceType : Int) =>
-					{
-						moveList(index) = new PromotionMove(position, move,
-							b.castlingRights, pieceType)
-						index += 1
-					})
-				else
-				{
-					moveList(index) = new QuietMove(position, move, 0,
-						b.castlingRights, true)
-					index += 1
-
-					// double move if on starting position
-					if (Cord.getRow(position) == blackPawnsStartingRow)
-					{
-						move = Cord.moveN(position, 2)
-						if (b.isEmpty(move) && !b.isOffBoard(move))
-						{
-							moveList(index) = new QuietMove(position, 
-								move, Cord.moveN(position, 1),
-								b.castlingRights, true)
-							index += 1
-						}
-					}
-				}
-			}
-		}
-		index
+		return index
 	}
 
 	def generateAttacks(b : Board, moveList : Array[Move], ind : Int) :Int =
 	{
 		var index = ind
-		var possibleAttacks : List[Int] = Nil
-		var lastRow : Int = 0 // row on which pawn of given color will be promoted
-		if (color == Piece.WHITE)
+		Pawn.attackDirections(color).foreach((dir : Int) =>
 		{
-			lastRow = 7
-			possibleAttacks = Cord.moveSE(position, 1) :: 
-				Cord.moveSW(position, 1) :: Nil
-		}
-		else
-		{
-			lastRow = 0
-			possibleAttacks = Cord.moveNE(position, 1) :: 
-				Cord.moveNW(position, 1) :: Nil
-		}
-		possibleAttacks.foreach((pos : Int) =>
-		{
+			val pos = position + dir
 			if (b.isOccupiedByOpponent(pos, color))
-				if (Cord.getRow(pos) == lastRow)
+				if (Cord.getRow(pos) == Pawn.promotionRank(color))
 					Pawn.possiblePromotions.foreach((pieceType : Int) =>
 					{
 						moveList(index) = new CapturePromotionMove(position, pos,
@@ -120,7 +70,7 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 					index += 1
 				}
 		})
-		index
+		return index
 	}
 
 	override def generateMoves(b : Board, moveList:Array[Move], index : Int) : Int =
@@ -129,8 +79,40 @@ class Pawn(pos : Int, col : Int, identifier : Int)
 		generateQuietMoves(b, moveList, ind)
 	}
 
-	def rank(b : Board) = Pawn.pieceValue + 
-		Pawn.positionValue(color)(Cord.from120to64(position))
+	def rank(b : Board) : Int = 
+	{
+		if (!isPassedPawn(b))	
+			return Pawn.pieceValue + 
+				Pawn.positionValue(color)(Cord.from120to64(position))
+		else
+			return Pawn.pieceValue + 
+				Pawn.positionValue(color)(Cord.from120to64(position)) + 
+				Pawn.passedPawnBonus * math.abs(Cord.getRow(position) - Pawn.promotionRank(color))
+	}
+
+
+	def isPassedPawn(b : Board) : Boolean = 
+	{
+		var pos = position + Pawn.moveDirection(color)
+
+		while (!b.isOffBoard(pos))
+		{
+			// if the is a pawn in fron, no matter what color, this pawn is not passed
+			if (Board.isPawn(b.board(pos)))
+				return false
+
+			if (Board.isPawn(b.board(pos + 1)) && (b.board(pos + 1) & 1) != color)
+				return false
+
+			if (Board.isPawn(b.board(pos - 1)) && (b.board(pos - 1) & 1) != color)
+				return false
+
+			pos += Pawn.moveDirection(color)
+		}
+
+		// if we got to end of board, this pawn is passed
+		return true
+	}
 
 }
 
@@ -140,6 +122,8 @@ object Pawn
 		Piece.ROOK)
 
 	final val pieceValue = 100
+
+	final val passedPawnBonus = 50 / 7 // closer to promotin, bigger bonus
 
 	final val positionValue = Array(
 		// black pawns
@@ -163,4 +147,15 @@ object Pawn
 			50, 50, 50, 50, 50, 50, 50, 50,
 			0,  0,  0,  0,  0,  0,  0,  0)
 		)
+
+	// array containg pawn move direction, indexed by color
+	final val moveDirection = Array(-10, 10)
+	
+	// stores information on which rank pawn of given color gets promoted
+	final val promotionRank = Array(0, 7)
+
+	// on which row pawn on given color starts
+	final val startingRow = Array(6, 1)
+
+	final val attackDirections = Array(Array(-9, -11), Array(9, 11))
 }

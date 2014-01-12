@@ -42,6 +42,15 @@ object Game extends App
 		println
 		board.makeMove(move.head)
 		println("Board: " + board.toFen)
+		board.piecesList.foreach(p => 
+		{
+			if (p != null && p.pieceType == 1)
+			{
+				val pawn = p.asInstanceOf[Pawn]
+				if (pawn.isPassedPawn(board))
+					println("Pawn on " + Cord.toString(p.position) + "is passed")
+			}
+		})
 		
 		flag = false
 		
