@@ -5,6 +5,7 @@ import src.Pawn
 import src.Piece
 import src.King
 import src.Rook
+import src.AI
 import src.Bishop
 import src.Board
 import src.Queen
@@ -17,6 +18,7 @@ object InteractiveTest extends App
 
 	val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	val board = Board(startFEN)
+	val ai = new AI(Piece.WHITE)
 
 	var input = ""
 
@@ -32,7 +34,12 @@ object InteractiveTest extends App
 
 		if (input == "b")
 			board.undoMove
-		else if (input != 'q')
+		else if (input == "s")
+		{
+			val (score, move) = ai.findNextMove(board, 5 * 1000)
+			println(move + ": " + score)
+		}
+		else if (input != "q")
 		{
 			val start = input.substring(0, 2)
 			val end = input.substring(2,4)

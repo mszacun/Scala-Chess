@@ -125,7 +125,9 @@ class AI(val opponent : Int)
 			return quiescence(board, max, alp, bet, depth + 1)
 
 		nodesVisited += 1
-		if (board.countRepetitions >= 3) // threefold repetition
+		// if we can force situation two times, we can probably force it 3th time
+		// this is necessary because of transposition table
+		if (board.countRepetitions >= 2) // threefold repetition
 			return (0, Nil)
 
 		val remainingDepth = actualDepth - depth
