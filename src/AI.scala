@@ -187,8 +187,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -237,8 +237,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -299,8 +299,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
@@ -350,8 +350,8 @@ class AI(val opponent : Int)
 			else 
 				if (board.isCheck(board.whoseMove))
 				{
-					if (board.whoseMove == opponent) (-AI.MATE - depth, Nil) 
-					   	else (AI.MATE + depth, Nil)
+					if (board.whoseMove == opponent) (-AI.MATE + depth, Nil) 
+					   	else (AI.MATE - depth, Nil)
 				}
 				else
 					(0, Nil)
