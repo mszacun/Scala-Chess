@@ -21,14 +21,20 @@ class GUIControler
 	// square on board actived by previous click
 	var activeSqr120 : Int = 0
 
-	val ai = new AI(Piece.WHITE)
+	val blackAI = new AI(Piece.WHITE)
+	val whiteAI = new AI(Piece.BLACK)
 	val thinkingTime = 5 * 1000
 
 	// timer used to give time for repaint, before computer starts thinking
 	val computerThinkTimer = new Timer(100, Swing.ActionListener(e => 
 	{
 		val dimension = view.getSize(null)
-		val (score, bestPath) = ai.findNextMove(board, thinkingTime)
+		val (score, bestPath) = 
+			if (board.whoseMove == Piece.BLACK) 
+				blackAI.findNextMove(board, thinkingTime)
+			else
+				whiteAI.findNextMove(board, thinkingTime)
+
 		if (bestPath != Nil)
 		{
 			println(bestPath + " score: " + score)
@@ -37,9 +43,29 @@ class GUIControler
 		}
 		else
 			println("Game OVER: " + score)
+
+		checkForEndGame
 	}))
 	computerThinkTimer.setRepeats(false)
 
+	def checkForEndGame : Boolean = 
+	{
+		if (board.generateValidMovesForNextPlayer.size == 0)
+		{
+			if (board.isCheck(board.whoseMove))
+				view.showEndGame(false)
+			else
+				view.showEndGame(true)
+			return true
+		}
+		if (board.countRepetitions >= 3)
+		{
+			view.showEndGame(true)
+			return true
+		}
+		
+		return false
+	}
 
 	// function called on each click on square on chess board
 	def fieldClickedEvent(sqrNumber120 : Int) = 
@@ -81,6 +107,7 @@ class GUIControler
 			{
 				view.repaint
 				activeSqr120 = 0
+				checkForEndGame
 
 				// make computer move
 				computerThinkTimer.start()

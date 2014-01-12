@@ -95,6 +95,9 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 
 	}
 
+	def showEndGame(isDraw : Boolean) = 
+		println("GAME OVER")
+
 	override def repaint = 
 	{
 		val dimension = getSize(null)

@@ -179,6 +179,22 @@ class Board()
 		(result, i)
 	}
 
+	// this method is slow, shouldn't be use in search
+	final def generateValidMovesForNextPlayer : Array[Move] = 
+	{
+		generateMovesForNextPlayer._1.filter(m =>
+		{
+			var result = false
+
+			if (m != null)
+			{
+				result = makeMove(m)
+				undoMove
+			}
+			result
+		})
+	}
+
 	final def generateAttacksForNextPlayer =
 	{
 		val result = new Array[Move](256)
