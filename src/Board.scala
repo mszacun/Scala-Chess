@@ -291,6 +291,7 @@ class Board()
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
+		halfMoveClock -= 1
 
 
 		// revert enPassants and castlingRights
@@ -299,9 +300,10 @@ class Board()
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
-		halfMoveClock -= 1
 		updateBoardHash
 		updateScores
+
+		boardHashHistory(halfMoveClock) = boardHash
 	}
 
 	final def updateScores = 
@@ -721,6 +723,7 @@ object Board
 		board.updateScores	
 		// calculate hash
 		board.updateBoardHash
+		board.boardHashHistory(board.halfMoveClock) = board.boardHash
 		board
 	} 
 }

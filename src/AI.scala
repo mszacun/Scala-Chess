@@ -128,13 +128,15 @@ class AI(val opponent : Int)
 
 		// if we can force situation two times, we can probably force it 3th time
 		// this is necessary because of transposition table
-		if (board.countRepetitions >= 2) // threefold repetition
+		val repetitions = board.countRepetitions
+		if (repetitions >= 3) // threefold repetition
 			return (0, Nil)
 
 		val remainingDepth = actualDepth - depth
 		val tableScore = transpositionTable.getScore(board.boardHash, 
 			remainingDepth, alp, bet)
-		if (tableScore != Hash.UNKNOW_VALUE)
+		// dont use repetition table when you encounter the same position twice
+		if (tableScore != Hash.UNKNOW_VALUE && repetitions < 2)
 			return (tableScore, transpositionTable.getMove(board.boardHash))
 
 		var alpha = alp
@@ -252,7 +254,7 @@ class AI(val opponent : Int)
 		var alpha = alp
 		var beta = bet
 		nodesVisited += 1
-		if (board.countRepetitions >= 2) // threefold repetition
+		if (board.countRepetitions >= 3) // threefold repetition
 			return (0, Nil)
 		val score = board.getPlayerScore(opponent)
 		if (max)

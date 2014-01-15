@@ -47,8 +47,6 @@ class GUIControler
 
 		if (!checkForEndGame && computerVsComputer)
 			computerThinkTimer.start
-		else
-			println("Koniec")
 	}))
 	computerThinkTimer.setRepeats(false)
 
