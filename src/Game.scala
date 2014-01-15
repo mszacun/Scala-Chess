@@ -8,6 +8,7 @@ object Game extends App
 	var desiredMove : Array[Move] = null
 	var opp = Piece.BLACK
 	val thinkingTime = 5 * 1000
+	var input = ""
 	
 	val if_we_start = readLine
 	if (if_we_start == "t")
@@ -15,13 +16,13 @@ object Game extends App
 	  	opp = Piece.WHITE
 	  	while (!flag)
 		{
-			print("Start: ")
-			val a = readLine
-			println("End: ")
-			val b = readLine
+			print("Move: ")
+			input = readLine
+			val start = input.substring(0, 2)
+			val end = input.substring(2,4)
+			desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+				m != null && Cord.fromString(start) == m.start && Cord.fromString(end) == m.end)
 		
-			desiredMove  = board.generateMovesForNextPlayer._1.filter(
-					(m : Move) => m != null && Cord.toString(m.start) == a && Cord.toString(m.end) == b)
 			flag = desiredMove.size > 0
 		}
 	  board.makeMove(desiredMove.head)
@@ -44,7 +45,7 @@ object Game extends App
 		println("Board: " + board.toFen)
 		board.piecesList.foreach(p => 
 		{
-			if (p != null && p.pieceType == 1)
+			if (p != null && p.pieceType == Piece.PAWN)
 			{
 				val pawn = p.asInstanceOf[Pawn]
 				if (pawn.isPassedPawn(board))
@@ -57,18 +58,18 @@ object Game extends App
 		val (moves, size) = board.generateMovesForNextPlayer
 		while (!flag)
 		{
-			print("Start: ")
-			val a = readLine
-			println("End: ")
-			val b = readLine
-			if (a == "back")
+			print("Move: ")
+			input = readLine
+			val start = input.substring(0, 2)
+			val end = input.substring(2,4)
+			desiredMove = board.generateMovesForNextPlayer._1.filter((m : Move) =>
+				m != null && Cord.fromString(start) == m.start && Cord.fromString(end) == m.end)
+			if (input == "back")
 			{
 				board.undoMove
 				board.undoMove
 			}
 		
-			desiredMove  = board.generateMovesForNextPlayer._1.filter(
-					(m : Move) => m != null && Cord.toString(m.start) == a && Cord.toString(m.end) == b)
 			flag = desiredMove.size > 0
 		}
 		    
