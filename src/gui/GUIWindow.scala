@@ -1,14 +1,15 @@
 package src.gui
 
 import javax.swing._
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 import javax.swing.JComponent
 import javax.swing.JMenuBar
 
 
-class GUIWindow extends JFrame("Chess")
+class GUIWindow extends JFrame("Chess") with ActionListener
 {
-	val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-	val board = src.Board(startFEN)
+	val board = src.Board(GUIControler.startFEN)
 	val controller = new GUIControler
 	val view = new GUIBoard(board, controller)
 
@@ -18,11 +19,18 @@ class GUIWindow extends JFrame("Chess")
 	val menuMenu = new JMenu("Menu")
 
 	val newGameMenu = new JMenu("New game")
+
 	val humanComputerMenuItem = new JMenuItem("Human vs Computer")
+	humanComputerMenuItem.addActionListener(this)
+
 	val computerHumanMenuItem = new JMenuItem("Computer vs Human")
+	computerHumanMenuItem.addActionListener(this)
+
 	val computerComputerMenuItem = new JMenuItem("Computer vs Computer")
+	computerComputerMenuItem.addActionListener(this)
 
 	newGameMenu.add(humanComputerMenuItem)
+	newGameMenu.add(computerHumanMenuItem)
 	newGameMenu.add(computerComputerMenuItem)
 
 	menuMenu.add(newGameMenu)
@@ -37,4 +45,14 @@ class GUIWindow extends JFrame("Chess")
 	add(view)
 	controller.view = view
 	controller.board = board
+
+	override def actionPerformed(event : ActionEvent) =
+	{
+		event.getSource match
+		{
+			case `humanComputerMenuItem` => controller.startNewGamePVC
+			case `computerHumanMenuItem` => controller.startNewGameCVP
+			case `computerComputerMenuItem` => controller.startNewGameCVC
+		}
+	}
 }

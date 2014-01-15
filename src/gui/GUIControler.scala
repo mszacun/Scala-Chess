@@ -22,7 +22,7 @@ class GUIControler
 	var activeSqr120 : Int = 0
 
 	// is computer playing against iteself?
-	var computerVsComputer = true
+	var computerVsComputer = false
 
 	val blackAI = new AI(Piece.WHITE)
 	val whiteAI = new AI(Piece.BLACK)
@@ -128,6 +128,32 @@ class GUIControler
 			return false
 	}
 
+	def startNewGamePVC =
+	{
+		board = Board(GUIControler.startFEN)
+		view.board = board
+		computerVsComputer = false
+		view.repaint
+	}
+
+	def startNewGameCVP = 
+	{
+		board = Board(GUIControler.startFEN)
+		view.board = board
+		computerVsComputer = false
+		view.repaint
+		computerThinkTimer.start
+	}
+
+	def startNewGameCVC = 
+	{
+		board = Board(GUIControler.startFEN)
+		view.board = board
+		computerVsComputer = true
+		view.repaint
+		computerThinkTimer.start
+	}
+
 }
 
 object GUIControler
@@ -136,5 +162,7 @@ object GUIControler
 	final val BLACK_WON = 0
 	final val WHITE_WON = 1
 	final val DRAW = 2
+
+	final val startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 }
 
