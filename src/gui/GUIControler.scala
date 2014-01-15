@@ -41,8 +41,6 @@ class GUIControler
 			board.makeMove(bestPath.head)
 			view.repaint
 		}
-		else
-			println("Game OVER: " + score)
 
 		checkForEndGame
 	}))
@@ -52,15 +50,20 @@ class GUIControler
 	{
 		if (board.generateValidMovesForNextPlayer.size == 0)
 		{
-			if (board.isCheck(board.whoseMove))
-				view.showEndGame(false)
+			if (board.isCheck(board.whoseMove)) // checkmate
+			{
+				if (board.whoseMove == Piece.WHITE)
+					view.showEndGame(GUIControler.BLACK_WON)
+				else
+					view.showEndGame(GUIControler.WHITE_WON)
+			}
 			else
-				view.showEndGame(true)
+				view.showEndGame(GUIControler.DRAW) // stalemate
 			return true
 		}
 		if (board.countRepetitions >= 3)
 		{
-			view.showEndGame(true)
+			view.showEndGame(GUIControler.DRAW) // threefold repetition
 			return true
 		}
 		
@@ -122,3 +125,12 @@ class GUIControler
 	}
 
 }
+
+object GUIControler
+{
+	// possible game endings
+	final val BLACK_WON = 0
+	final val WHITE_WON = 1
+	final val DRAW = 2
+}
+

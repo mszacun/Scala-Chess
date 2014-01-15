@@ -20,6 +20,11 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 	var squareLength = 0 // length of one square of chessboard
 	var padding = 0 // space for column name and row number
 
+	// sqaures that should be painted in diffrent color
+	var activeSquare = 0
+	var possbileMovesSquare : List[Int] = Nil
+	var attackedSquare = 0
+
 	addMouseListener(this)
 
 	override def paintComponent(graph : Graphics)
@@ -32,7 +37,7 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 		// padding on both sides of the chessboard
 		squareLength = (smallerDimension -  2 * padding) / 8
 
-		var squareColor = GUIBoard.darkSquareColor
+		var sqrColorNumber = 0
 
 		g.setRenderingHint(
 		        RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -46,11 +51,9 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 			x = padding
 			for (column <- 'A' to 'H')
 			{
-				if (squareColor == GUIBoard.darkSquareColor)
-					squareColor = GUIBoard.brightSquareColor
-				else
-					squareColor = GUIBoard.darkSquareColor
-				g.setColor(squareColor)
+				sqrColorNumber = (sqrColorNumber + 1) % 2
+				val sqrColor = GUIBoard.squaresColors(sqrColorNumber)
+				g.setColor(sqrColor)
 
 				g.fillRect(x, y, squareLength, squareLength)
 
@@ -59,15 +62,14 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 				{
 					val piece = board.piecesList(board.board(sqrNumber))
 					val pieceImage = GUIBoard.piecesImages(piece.color)(piece.pieceType)
-					g.drawImage(pieceImage, x, y, squareLength, squareLength, squareColor, null)
+					g.drawImage(pieceImage, x, y, squareLength, squareLength, 
+						sqrColor, null)
 				}
 				x += squareLength
+
 			}
 			y += squareLength
-			if (squareColor == GUIBoard.darkSquareColor)
-				squareColor = GUIBoard.brightSquareColor
-			else
-				squareColor = GUIBoard.darkSquareColor
+			sqrColorNumber = (sqrColorNumber + 1) % 2
 		}
 
 		g.setColor(Color.black)
@@ -95,8 +97,17 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 
 	}
 
-	def showEndGame(isDraw : Boolean) = 
-		println("GAME OVER")
+	def showEndGame(gameResult : Int) = 
+	{
+		val message = gameResult match
+		{
+			case GUIControler.BLACK_WON => "Black won"
+			case GUIControler.WHITE_WON => "White won"
+			case GUIControler.DRAW => "Draw"
+		}
+		JOptionPane.showMessageDialog(null,
+		    "Game Over\n" + message)
+	}
 
 	override def repaint = 
 	{
@@ -160,5 +171,7 @@ object GUIBoard
 
 	val darkSquareColor = Color.gray
 	val brightSquareColor = Color.white
+
+	val squaresColors = Array(darkSquareColor, brightSquareColor)
 }
 
