@@ -11,6 +11,10 @@ import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.event.MouseListener
 import java.awt.event.MouseEvent
+import java.awt.BasicStroke
+
+import scala.collection.mutable.HashSet
+import scala.collection.mutable.Set
 
 import src.Cord
 
@@ -23,7 +27,10 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 	// sqaures that should be painted in diffrent color
 	var activeSquare = 0
 	var possbileMovesSquare : List[Int] = Nil
+
 	var attackedSquare = 0
+	var lastMoveSquares = new HashSet[Int]
+	var possibleMoveSquares = new HashSet[Int]
 
 	addMouseListener(this)
 
@@ -51,13 +58,19 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 			x = padding
 			for (column <- 'A' to 'H')
 			{
+				val sqrNumber = Cord.fromString(column.toString + row)
+
 				sqrColorNumber = (sqrColorNumber + 1) % 2
-				val sqrColor = GUIBoard.squaresColors(sqrColorNumber)
+				val sqrColor = 
+					if (attackedSquare == sqrNumber) new Color(232, 21, 35)
+					else if (lastMoveSquares.contains(sqrNumber)) new Color(92, 140, 191)
+					else if (possibleMoveSquares.contains(sqrNumber)) new Color(106, 196, 98)
+					else GUIBoard.squaresColors(sqrColorNumber)
+
 				g.setColor(sqrColor)
 
 				g.fillRect(x, y, squareLength, squareLength)
 
-				val sqrNumber = Cord.fromString(column.toString + row)
 				if (!board.isEmpty(sqrNumber))
 				{
 					val piece = board.piecesList(board.board(sqrNumber))
@@ -65,6 +78,14 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 					g.drawImage(pieceImage, x, y, squareLength, squareLength, 
 						sqrColor, null)
 				}
+
+				/*if (lastMoveSquares.contains(sqrNumber))
+				{
+					g.setColor(Color.BLACK)
+					g.setStroke(new BasicStroke(squareLength / 20))
+					g.drawRect(x, y, squareLength, squareLength)
+				}*/
+
 				x += squareLength
 
 			}

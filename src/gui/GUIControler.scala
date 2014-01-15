@@ -42,7 +42,7 @@ class GUIControler
 		{
 			println(bestPath + " score: " + score)
 			board.makeMove(bestPath.head)
-			view.repaint
+			prepareAndRepaint
 		}
 
 		if (!checkForEndGame && computerVsComputer)
@@ -97,6 +97,7 @@ class GUIControler
 				activeSqr120 = sqrNumber120
 			}
 		}
+		prepareAndRepaint
 	}
 
 	// tries to move active piece to clicked square, returns if it was possible
@@ -112,7 +113,7 @@ class GUIControler
 		{
 			if (board.makeMove(desiredMove.head))
 			{
-				view.repaint
+				prepareAndRepaint
 				activeSqr120 = 0
 				checkForEndGame
 
@@ -128,12 +129,35 @@ class GUIControler
 			return false
 	}
 
+	def prepareAndRepaint = 
+	{
+		if (board.isCheck(board.whoseMove))
+		{
+			if (board.whoseMove == Piece.WHITE)	
+				view.attackedSquare = board.piecesList(Board.WHITE_KING).position
+			else
+				view.attackedSquare = board.piecesList(Board.BLACK_KING).position
+		}
+		else
+			view.attackedSquare = 0
+
+		view.possibleMoveSquares.clear
+		board.generateValidMovesForNextPlayer.filter(
+			m => m.start == activeSqr120).foreach(m => view.possibleMoveSquares.add(m.end))
+
+		view.lastMoveSquares.clear
+		view.lastMoveSquares.add(board.movesStack.head.start)
+		view.lastMoveSquares.add(board.movesStack.head.end)
+
+		view.repaint
+	}
+
 	def startNewGamePVC =
 	{
 		board = Board(GUIControler.startFEN)
 		view.board = board
 		computerVsComputer = false
-		view.repaint
+		prepareAndRepaint
 	}
 
 	def startNewGameCVP = 
@@ -141,7 +165,7 @@ class GUIControler
 		board = Board(GUIControler.startFEN)
 		view.board = board
 		computerVsComputer = false
-		view.repaint
+		prepareAndRepaint
 		computerThinkTimer.start
 	}
 
@@ -150,7 +174,7 @@ class GUIControler
 		board = Board(GUIControler.startFEN)
 		view.board = board
 		computerVsComputer = true
-		view.repaint
+		prepareAndRepaint
 		computerThinkTimer.start
 	}
 
