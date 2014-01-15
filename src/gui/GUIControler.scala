@@ -21,12 +21,15 @@ class GUIControler
 	// square on board actived by previous click
 	var activeSqr120 : Int = 0
 
+	// is computer playing against iteself?
+	var computerVsComputer = true
+
 	val blackAI = new AI(Piece.WHITE)
 	val whiteAI = new AI(Piece.BLACK)
-	val thinkingTime = 5 * 1000
+	val thinkingTime = 2 * 1000
 
 	// timer used to give time for repaint, before computer starts thinking
-	val computerThinkTimer = new Timer(100, Swing.ActionListener(e => 
+	val computerThinkTimer : Timer = new Timer(100, Swing.ActionListener(e => 
 	{
 		val dimension = view.getSize(null)
 		val (score, bestPath) = 
@@ -42,7 +45,10 @@ class GUIControler
 			view.repaint
 		}
 
-		checkForEndGame
+		if (!checkForEndGame && computerVsComputer)
+			computerThinkTimer.start
+		else
+			println("Koniec")
 	}))
 	computerThinkTimer.setRepeats(false)
 

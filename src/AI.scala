@@ -61,7 +61,7 @@ class AI(val opponent : Int)
 			println("Depth: " + i + " nodes: " + nodesVisited)
 
 			// if time is up, alphaBeta returns Nil path
-			if (currentResult._2 == Nil)
+			if (currentResult._2 == Nil || System.currentTimeMillis > stopTime)
 				return lastResult
 			else
 				lastResult = currentResult
