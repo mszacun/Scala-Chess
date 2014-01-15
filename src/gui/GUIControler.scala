@@ -65,7 +65,7 @@ class GUIControler
 				view.showEndGame(GUIControler.DRAW) // stalemate
 			return true
 		}
-		if (board.countRepetitions >= 3)
+		if (board.countRepetitions >= 3 || board.halfMoveClock >= 50)
 		{
 			view.showEndGame(GUIControler.DRAW) // threefold repetition
 			return true
