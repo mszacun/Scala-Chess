@@ -114,6 +114,7 @@ class GUIControler
 		{
 			if (board.makeMove(desiredMove.head))
 			{
+				view.hintSquares.clear
 				prepareAndRepaint
 				activeSqr120 = 0
 				checkForEndGame
@@ -179,6 +180,19 @@ class GUIControler
 		computerThinkTimer.start
 	}
 
+	def showHint = 
+	{
+		val (score, path) = if (board.whoseMove == Piece.WHITE) 
+								whiteAI.findNextMove(board, thinkingTime)
+							else
+								blackAI.findNextMove(board, thinkingTime)
+		if (path != Nil)
+		{
+			view.hintSquares.add(path.head.start)
+			view.hintSquares.add(path.head.end)
+		}
+		prepareAndRepaint
+	}
 }
 
 object GUIControler

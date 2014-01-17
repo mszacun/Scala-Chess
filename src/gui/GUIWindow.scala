@@ -33,7 +33,11 @@ class GUIWindow extends JFrame("Chess") with ActionListener
 	newGameMenu.add(computerHumanMenuItem)
 	newGameMenu.add(computerComputerMenuItem)
 
+	val hintMenuItem = new JMenuItem("Hint")
+	hintMenuItem.addActionListener(this)
+
 	menuMenu.add(newGameMenu)
+	menuMenu.add(hintMenuItem)
 
 	theMenuBar.add(menuMenu)
 
@@ -53,6 +57,7 @@ class GUIWindow extends JFrame("Chess") with ActionListener
 			case `humanComputerMenuItem` => controller.startNewGamePVC
 			case `computerHumanMenuItem` => controller.startNewGameCVP
 			case `computerComputerMenuItem` => controller.startNewGameCVC
+			case `hintMenuItem` => controller.showHint
 		}
 	}
 }

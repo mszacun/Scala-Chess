@@ -31,6 +31,7 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 	var attackedSquare = 0
 	var lastMoveSquares = new HashSet[Int]
 	var possibleMoveSquares = new HashSet[Int]
+	var hintSquares = new HashSet[Int]
 
 	addMouseListener(this)
 
@@ -65,6 +66,7 @@ class GUIBoard(var board : src.Board, val controler : GUIControler)
 					if (attackedSquare == sqrNumber) new Color(232, 21, 35)
 					else if (lastMoveSquares.contains(sqrNumber)) new Color(92, 140, 191)
 					else if (possibleMoveSquares.contains(sqrNumber)) new Color(106, 196, 98)
+					else if (hintSquares.contains(sqrNumber)) new Color(207, 205, 85)
 					else GUIBoard.squaresColors(sqrColorNumber)
 
 				g.setColor(sqrColor)
