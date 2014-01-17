@@ -15,9 +15,6 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			capturedPieceID = b.board(captureField)
 			capturedPiece = b.piecesList(capturedPieceID)
 
-			b.scores(capturedPiece.color) -= capturedPiece.rank(b)
-			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
-			
 			b.board(end) = pieceID
 			b.board(start) = Board.EMPTY_SQUARE
 			b.board(captureField) = Board.EMPTY_SQUARE
@@ -30,8 +27,6 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			b.enPassant = 0
 			b.numberOfPiecesAlive -= 1
 			
-			b.scores(capturingPiece.color) += capturingPiece.rank(b)
-
 			previousClock = b.halfMoveClock
 			b.halfMoveClock = 0
 		}
@@ -41,8 +36,6 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			val pieceID = b.board(end)
 			val capturingPiece = b.piecesList(pieceID)
 			
-			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
-
 			b.board(start) = pieceID
 			b.board(captureField) = capturedPieceID
 			b.board(end) = Board.EMPTY_SQUARE
@@ -51,9 +44,6 @@ class EnPassantMove(start : Int, end : Int, val captureField : Integer,
 			b.piecesList(capturedPieceID) = capturedPiece
 			b.numberOfPiecesAlive += 1
 			
-			b.scores(capturingPiece.color) += capturingPiece.rank(b)
-			b.scores(capturedPiece.color) += capturedPiece.rank(b)
-
 			b.halfMoveClock = previousClock
 		}
 

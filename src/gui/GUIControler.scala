@@ -44,6 +44,7 @@ class GUIControler
 			board.makeMove(bestPath.head)
 			prepareAndRepaint
 		}
+		println("Board: " + board.toFen + " Rep: " + board.countRepetitions)
 
 		if (!checkForEndGame && computerVsComputer)
 			computerThinkTimer.start

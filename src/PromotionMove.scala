@@ -11,7 +11,6 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 	{
 		val pieceID = b.board(start)
 		pawnPromoted = b.piecesList(pieceID)
-		b.scores(pawnPromoted.color) -= pawnPromoted.rank(b)
 
 		// move it
 		b.board(start) = Board.EMPTY_SQUARE
@@ -39,8 +38,6 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
 
-		b.scores(newPiece.color) += newPiece.rank(b)
-
 		previousClock = b.halfMoveClock
 		b.halfMoveClock = 0
 	}
@@ -50,8 +47,6 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 		val pieceID = pawnPromoted.id
 		val newPiece = b.piecesList(pieceID)
 
-		b.scores(newPiece.color) -= newPiece.rank(b)
-		
 		b.board(end) = Board.EMPTY_SQUARE
 		b.board(start) = pieceID
 		b.piecesList(pieceID) = pawnPromoted
@@ -65,8 +60,6 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 			case Piece.BISHOP => Board.isBishop(pieceID) = false
 			case Piece.ROOK => Board.isRook(pieceID) = false
 		}
-
-		b.scores(pawnPromoted.color) += pawnPromoted.rank(b)
 
 		b.halfMoveClock = previousClock
 	}

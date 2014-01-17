@@ -16,16 +16,11 @@ class CaptureMove(start : Int, end : Int,
 			capturedPieceID = b.board(end)
 			capturedPiece = b.piecesList(capturedPieceID)
 
-			b.scores(capturedPiece.color) -= capturedPiece.rank(b)
-			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
-
 			b.board(end) = pieceID
 			b.board(start) = Board.EMPTY_SQUARE
 			
 			capturingPiece.position = end
 			b.piecesList(capturedPieceID) = null
-
-			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 
 			b.castlingRights &= castlingRightsMask
 			castlingRightsAfter = b.castlingRights // store for restoring while undoin move
@@ -41,18 +36,12 @@ class CaptureMove(start : Int, end : Int,
 			val pieceID = b.board(end)
 			val capturingPiece = b.piecesList(pieceID)
 
-			b.scores(capturingPiece.color) -= capturingPiece.rank(b)
-
 			b.board(start) = pieceID
 			b.board(end) = capturedPieceID
 
 			capturingPiece.position = start
 			b.piecesList(capturedPieceID) = capturedPiece
 			b.numberOfPiecesAlive += 1
-
-
-			b.scores(capturedPiece.color) += capturedPiece.rank(b)
-			b.scores(capturingPiece.color) += capturingPiece.rank(b)
 
 			b.halfMoveClock = previousClock
 		}

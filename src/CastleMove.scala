@@ -21,14 +21,8 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 		b.board(rookEndPos) = rookID
 		b.board(kingEndPos) = kingID
 
-		b.scores(rook.color) -= rook.rank(b)
-		b.scores(king.color) -= king.rank(b)
-
 		rook.position = rookEndPos
 		king.position = kingEndPos
-
-		b.scores(rook.color) += rook.rank(b)
-		b.scores(king.color) += king.rank(b)
 
 		b.enPassant = 0
 		b.castlingRights &= castleRightsAfterMove
@@ -43,17 +37,11 @@ class CastleMove(val rookStartPos : Int, val rookEndPos : Int, val kingStartPos 
 		b.board(rookEndPos) = Board.EMPTY_SQUARE
 		b.board(kingEndPos) = Board.EMPTY_SQUARE
 
-		b.scores(rook.color) -= rook.rank(b)
-		b.scores(king.color) -= king.rank(b)
-
 		b.board(rookStartPos) = rookID
 		b.board(kingStartPos) = kingID
 
 		rook.position = rookStartPos
 		king.position = kingStartPos
-
-		b.scores(rook.color) += rook.rank(b)
-		b.scores(king.color) += king.rank(b)
 	}
 
 	override def toString = Cord.toString(kingStartPos) + Cord.toString(kingEndPos)
