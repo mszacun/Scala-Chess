@@ -109,6 +109,8 @@ object Rook
 
 	final val pieceValue = 500
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	final val positionValue = Array(
 		Array(
 			0, 0, 5, 10, 10, 5, 0, 0,

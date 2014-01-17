@@ -75,6 +75,8 @@ object King
 
 	final val pieceValue = 32767
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	final val positionValueStartGame = Array[Array[Int]](
 		Array[Int](
 			-30, -40, -40, -50, -50, -40, -40, -30,

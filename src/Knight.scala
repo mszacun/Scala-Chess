@@ -8,6 +8,8 @@ object Knight
 
 	final val pieceValue = 320
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	final val positionValue = Array(
 		Array(
 			-50,-40,-30,-30,-30,-30,-40,-50,

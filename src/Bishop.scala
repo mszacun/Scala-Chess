@@ -84,6 +84,8 @@ object Bishop
 
 	final val pieceValue = 325
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	final val positionValue = Array(
 		Array(
 			-20,-10,-10,-10,-10,-10,-10,-20,

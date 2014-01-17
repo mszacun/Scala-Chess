@@ -125,6 +125,8 @@ object Pawn
 
 	final val passedPawnBonus = 50 / 7 // closer to promotin, bigger bonus
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	final val positionValue = Array(
 		// black pawns
 		Array(

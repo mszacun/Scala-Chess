@@ -78,5 +78,7 @@ class Queen(pos : Int, col : Int, identifier : Int)
 		result
 	}
 
+	// position value tables and piece values taken from
+	// http://chessprogramming.wikispaces.com/Simplified+evaluation+function
 	override def rank(b : Board)  = 975
 }
