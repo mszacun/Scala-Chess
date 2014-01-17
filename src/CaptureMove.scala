@@ -7,7 +7,7 @@ class CaptureMove(start : Int, end : Int,
 		// will be assigned during applaying to board
 		var capturedPiece : Piece = null 
 		var capturedPieceID : Int = -1
-		var previousClock = 0
+		var previousLastUndoableMove = 0
 
 		override def apply(b : Board) =
 		{
@@ -27,8 +27,8 @@ class CaptureMove(start : Int, end : Int,
 			b.enPassant = 0
 			b.numberOfPiecesAlive -= 1
 
-			previousClock = b.halfMoveClock
-			b.halfMoveClock = 0
+			previousLastUndoableMove = b.lastUndoAbleMove
+			b.lastUndoAbleMove = b.boardHashHistoryIndex
 		}
 
 		override def undo(b : Board) = 
@@ -43,7 +43,7 @@ class CaptureMove(start : Int, end : Int,
 			b.piecesList(capturedPieceID) = capturedPiece
 			b.numberOfPiecesAlive += 1
 
-			b.halfMoveClock = previousClock
+			b.lastUndoAbleMove = previousLastUndoableMove
 		}
 
 		override def calculateScore(b : Board) = 

@@ -29,6 +29,9 @@ object InteractiveTest extends App
 		println("EnPassant: " + Cord.toString(board.enPassant))
 		println("Castling rights: " + board.castlingRights.toBinaryString)
 		println("Repetitions: " + board.countRepetitions)
+		println("Hashes: " + board.boardHash.toHexString)
+		for (i <- board.lastUndoAbleMove to board.boardHashHistoryIndex)
+			println("    " + board.boardHashHistory(i).toHexString) 
 		print("> ")
 		input = readLine
 

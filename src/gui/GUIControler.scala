@@ -26,7 +26,7 @@ class GUIControler
 
 	val blackAI = new AI(Piece.WHITE)
 	val whiteAI = new AI(Piece.BLACK)
-	val thinkingTime = 2 * 1000
+	val thinkingTime = 7 * 1000
 
 	// timer used to give time for repaint, before computer starts thinking
 	val computerThinkTimer : Timer = new Timer(100, Swing.ActionListener(e => 
@@ -66,7 +66,7 @@ class GUIControler
 				view.showEndGame(GUIControler.DRAW) // stalemate
 			return true
 		}
-		if (board.countRepetitions >= 3 || board.halfMoveClock >= 50)
+		if (board.countRepetitions >= 3 || board.getHalfMoveClock >= 50)
 		{
 			view.showEndGame(GUIControler.DRAW) // threefold repetition
 			return true

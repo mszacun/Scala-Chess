@@ -5,7 +5,7 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 	extends Move(Move.QUIET_MOVE, start, end, enPass,
 	castlingRightsAfterMove)
 {
-	var previousClock : Int = 0 // state of half-move clock before move
+	var previousLastUndoableMove = 0
 	// see in Move
 	override def apply(b : Board) =
 	{
@@ -23,8 +23,8 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 
 		if (resetClock)
 		{
-			previousClock = b.halfMoveClock
-			b.halfMoveClock = 0
+			previousLastUndoableMove = b.lastUndoAbleMove
+			b.lastUndoAbleMove = b.boardHashHistoryIndex
 		}
 	}
 
@@ -39,7 +39,7 @@ class QuietMove(start : Int, end: Int, enPass : Int,
 		piece.position = start
 
 		if (resetClock)
-			b.halfMoveClock = previousClock
+			b.lastUndoAbleMove = previousLastUndoableMove
 	}
 
 	override def calculateScore(b : Board) = 

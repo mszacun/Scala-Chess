@@ -5,7 +5,7 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 {
 	// pawn that was promoted, will be set during applying to board
 	var pawnPromoted : Piece = null
-	var previousClock = 0
+	var previousLastUndoableMove = 0
 
 	override def apply(b : Board) = 
 	{
@@ -38,8 +38,8 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 		castlingRightsAfter = b.castlingRights
 		b.enPassant = enPassant
 
-		previousClock = b.halfMoveClock
-		b.halfMoveClock = 0
+		previousLastUndoableMove = b.lastUndoAbleMove
+		b.lastUndoAbleMove = b.boardHashHistoryIndex
 	}
 
 	override def undo(b : Board) = 
@@ -61,7 +61,7 @@ class PromotionMove(start : Int, end : Int, castlingRightsAfterMove : Int, val p
 			case Piece.ROOK => Board.isRook(pieceID) = false
 		}
 
-		b.halfMoveClock = previousClock
+		b.lastUndoAbleMove = previousLastUndoableMove
 	}
 
 	override def calculateScore(b : Board) = 

@@ -28,9 +28,11 @@ class Board()
 	// history of moves on board in stack form
 	var movesStack : List[Move] = new QuietMove(0, 0, 0, 15, false) :: Nil // no need to check if stack is empty
 	// board hash history since last 
-	val boardHashHistory = new Array[Long](128) 
+	val boardHashHistorySize = 128
+	val boardHashHistory = new Array[Long](boardHashHistorySize) 
+	var lastUndoAbleMove = 0 // index in board history, for example pawn move or capture
 	// number of moves in history
-	var halfMoveClock = 0
+	var boardHashHistoryIndex = 0 // index, where last hash was put
 	var whoseMove = Piece.WHITE
 
 	// number of alive pieces
@@ -58,6 +60,7 @@ class Board()
 		numberOfPiecesAlive = 0
 	}
 
+	// WARNING: Generates also pseudolegal moves
 	final def generateMovesForNextPlayer =
 	{
 		var start = System.nanoTime
@@ -195,6 +198,7 @@ class Board()
 		})
 	}
 
+	// generates captures
 	final def generateAttacksForNextPlayer =
 	{
 		val result = new Array[Move](256)
@@ -263,12 +267,14 @@ class Board()
 		piecesList(piece.id) = piece
 	}
 
+	final def getHalfMoveClock = boardHashHistoryIndex - lastUndoAbleMove
+
 
 	// this method should be called instead of Move.apply!
 	// returns if given move is legal
 	final def makeMove(m : Move) : Boolean = 
 	{
-		halfMoveClock += 1
+		boardHashHistoryIndex += 1
 		movesStack = m :: movesStack
 		m.apply(this)
 
@@ -279,7 +285,7 @@ class Board()
 		updateBoardHash
 		updateScores
 
-		boardHashHistory(halfMoveClock) = boardHash
+		boardHashHistory(boardHashHistoryIndex) = boardHash
 		
 		return !isCheck(whoseMove ^ 1)
 	}
@@ -291,7 +297,7 @@ class Board()
 		val moveToUndo = movesStack.head
 		movesStack = movesStack.tail
 		moveToUndo.undo(this)
-		halfMoveClock -= 1
+		boardHashHistoryIndex -= 1
 
 
 		// revert enPassants and castlingRights
@@ -300,10 +306,10 @@ class Board()
 		enPassant = previousMove.enPassant
 
 		whoseMove ^= 1 // hacker style to switch player :)
-		updateBoardHash
+		updateBoardHash // think about remove this
 		updateScores
 
-		boardHashHistory(halfMoveClock) = boardHash
+		boardHashHistory(boardHashHistoryIndex) = boardHash // or this
 	}
 
 	final def updateScores = 
@@ -332,9 +338,9 @@ class Board()
 
 	final def countRepetitions = 
 	{
-		var i = 0
+		var i = lastUndoAbleMove
 		var repetition = 0
-		while (i <= halfMoveClock)
+		while (i <= boardHashHistoryIndex)
 		{
 			if (boardHashHistory(i) == boardHash)
 				repetition += 1
@@ -489,7 +495,7 @@ class Board()
 			builder.append("-")
 
 		// half-move clock
-		builder.append(" " + halfMoveClock)
+		builder.append(" " + getHalfMoveClock)
 
 		builder.toString
 	}
@@ -715,7 +721,7 @@ object Board
 		val halfMoveClockStart = stringIndex
 		while (stringIndex < fen.size && fen.charAt(stringIndex) != ' ')
 			stringIndex += 1
-		board.halfMoveClock = fen.substring(halfMoveClockStart, stringIndex).toInt
+		board.boardHashHistoryIndex = fen.substring(halfMoveClockStart, stringIndex).toInt
 
 		// TODO: Fullmove clock not supported
 
@@ -723,7 +729,7 @@ object Board
 		board.updateScores	
 		// calculate hash
 		board.updateBoardHash
-		board.boardHashHistory(board.halfMoveClock) = board.boardHash
+		board.boardHashHistory(board.boardHashHistoryIndex) = board.boardHash
 		board
 	} 
 }

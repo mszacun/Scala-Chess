@@ -129,7 +129,7 @@ class AI(val opponent : Int)
 		// if we can force situation two times, we can probably force it 3th time
 		// this is necessary because of transposition table
 		val repetitions = board.countRepetitions
-		if (repetitions >= 3 || board.halfMoveClock >= 50) // threefold repetition
+		if (repetitions >= 3 || board.getHalfMoveClock >= 50) // threefold repetition
 			return (0, Nil)
 
 		val remainingDepth = actualDepth - depth
@@ -137,7 +137,7 @@ class AI(val opponent : Int)
 			remainingDepth, alp, bet)
 		// dont use repetition table when you encounter the same position twice
 		// and when it near fity moves draw
-		if (tableScore != Hash.UNKNOW_VALUE && repetitions < 2 && board.halfMoveClock < 48)
+		if (tableScore != Hash.UNKNOW_VALUE && repetitions < 2 && board.getHalfMoveClock < 48)
 			return (tableScore, transpositionTable.getMove(board.boardHash))
 
 		var alpha = alp
