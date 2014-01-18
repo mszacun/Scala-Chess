@@ -7,7 +7,7 @@ import javax.swing.JComponent
 import javax.swing.JMenuBar
 
 
-class GUIWindow extends JFrame("Chess") with ActionListener
+class GUIWindow extends JFrame("Chess by Marcin Szachun") with ActionListener
 {
 	val board = src.Board(GUIControler.startFEN)
 	val controller = new GUIControler
