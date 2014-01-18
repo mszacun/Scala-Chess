@@ -36,8 +36,12 @@ class GUIWindow extends JFrame("Chess") with ActionListener
 	val hintMenuItem = new JMenuItem("Hint")
 	hintMenuItem.addActionListener(this)
 
+	val computerThinkTimeItem = new JMenuItem("Set AI thinking time")
+	computerThinkTimeItem.addActionListener(this)
+
 	menuMenu.add(newGameMenu)
 	menuMenu.add(hintMenuItem)
+	menuMenu.add(computerThinkTimeItem)
 
 	theMenuBar.add(menuMenu)
 
@@ -58,6 +62,18 @@ class GUIWindow extends JFrame("Chess") with ActionListener
 			case `computerHumanMenuItem` => controller.startNewGameCVP
 			case `computerComputerMenuItem` => controller.startNewGameCVC
 			case `hintMenuItem` => controller.showHint
+			case `computerThinkTimeItem` => showComputerThinkTimeDialog
+		}
+	}
+
+	def showComputerThinkTimeDialog = 
+	{
+		val input = JOptionPane.showInputDialog("Enter new thinking time:")
+		try
+		{
+			controller.thinkingTime = Integer.parseInt(input)
+		} catch {
+			case e : Exception => JOptionPane.showMessageDialog(null, "Invalid input")
 		}
 	}
 }
