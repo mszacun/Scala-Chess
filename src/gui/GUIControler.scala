@@ -193,6 +193,23 @@ class GUIControler
 		}
 		prepareAndRepaint
 	}
+
+	def undoMove = 
+	{
+		// if there are at least two moves made from start of the game
+		if (board.boardHashHistoryIndex > 2)
+		{
+			// undo computer move
+			board.undoMove
+			// undo player move
+			board.undoMove
+
+			// hint is no longer usable
+			view.hintSquares.clear
+
+			prepareAndRepaint
+		}
+	}
 }
 
 object GUIControler
